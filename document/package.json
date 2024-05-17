@@ -1,0 +1,21 @@
+{
+  "name": "@ucstu/nuxt-fast-admin-doc",
+  "version": "1.1.8",
+  "private": true,
+  "scripts": {
+    "prepare": "nuxt prepare",
+    "dev": "nuxi dev",
+    "build": "nuxi build",
+    "generate": "nuxi generate",
+    "preview": "nuxi preview",
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "@nuxt-themes/docus": "^1.15.0",
+    "@nuxt/devtools": "^1.2.0",
+    "@nuxt/eslint-config": "^0.3.10",
+    "@types/node": "^20.12.10",
+    "eslint": "^9.2.0",
+    "nuxt": "^3.11.2"
+  }
+}

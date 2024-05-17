@@ -1,0 +1,36 @@
+{
+  "name": "@ucstu/nuxt-fast-admin",
+  "type": "module",
+  "version": "1.1.8",
+  "main": "./nuxt.config.ts",
+  "homepage": "https://github.com/ucstu/nuxt-fast-admin/tree/master/packages/nuxt-fast-admin#readme",
+  "repository": "https://github.com/ucstu/nuxt-fast-admin/tree/master/packages/nuxt-fast-admin",
+  "scripts": {
+    "prepare": "nuxt prepare .playground",
+    "dev": "nuxi dev .playground",
+    "build": "nuxt build .playground",
+    "generate": "nuxt generate .playground",
+    "preview": "nuxt preview .playground",
+    "release": "pnpm run lint && pnpm publish",
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "@nuxt/eslint-config": "^0.3.10",
+    "eslint": "^9.1.1",
+    "nuxt": "^3.11.2"
+  },
+  "dependencies": {
+    "@ucstu/nuxt-fast-auth": "workspace:^",
+    "@ucstu/nuxt-fast-crud": "workspace:^",
+    "@ucstu/nuxt-fast-nav": "workspace:^",
+    "@ucstu/nuxt-naive-ui": "workspace:^",
+    "@vueuse/core": "^10.9.0",
+    "nuxt-icon": "^0.6.10",
+    "nuxt-open-fetch": "^0.7.0",
+    "type-fest": "^4.17.0",
+    "typescript": "^5.4.5"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

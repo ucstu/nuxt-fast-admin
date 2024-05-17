@@ -1,0 +1,81 @@
+{
+  "name": "@ucstu/nuxt-fast-crud",
+  "version": "1.1.8",
+  "description": "Nuxt fast CRUD module",
+  "homepage": "https://github.com/ucstu/nuxt-fast-admin/tree/master/packages/nuxt-fast-crud#readme",
+  "repository": "https://github.com/ucstu/nuxt-fast-admin/tree/master/packages/nuxt-fast-crud",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/types.d.ts",
+      "import": "./dist/module.mjs",
+      "require": "./dist/module.cjs"
+    },
+    "./module": {
+      "types": "./dist/module.d.ts"
+    },
+    "./extends": {
+      "types": "./dist/runtime/exports/extends.d.ts",
+      "import": "./dist/runtime/exports/extends.mjs"
+    }
+  },
+  "main": "./dist/module.cjs",
+  "types": "./dist/types.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "prepack": "nuxt-module-build build",
+    "dev": "nuxi dev playground",
+    "dev:build": "nuxi build playground",
+    "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground",
+    "release": "pnpm run lint && pnpm run test && pnpm run prepack && pnpm publish",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:watch": "vitest watch"
+  },
+  "dependencies": {
+    "@ant-design/icons-vue": "^7.0.1",
+    "@fast-crud/fast-crud": "^1.20.2",
+    "@fast-crud/fast-extends": "^1.20.2",
+    "@fast-crud/ui-antdv": "^1.20.2",
+    "@fast-crud/ui-antdv4": "^1.20.2",
+    "@fast-crud/ui-element": "^1.20.2",
+    "@fast-crud/ui-interface": "^1.20.2",
+    "@fast-crud/ui-naive": "^1.20.2",
+    "@nuxt/kit": "^3.11.2",
+    "type-fest": "^4.17.0"
+  },
+  "devDependencies": {
+    "@nuxt/devtools": "^1.2.0",
+    "@nuxt/eslint-config": "^0.3.10",
+    "@nuxt/module-builder": "^0.6.0",
+    "@nuxt/schema": "^3.11.2",
+    "@nuxt/test-utils": "^3.12.1",
+    "@types/node": "^20.12.7",
+    "changelogen": "^0.5.5",
+    "eslint": "^9.1.1",
+    "nuxt": "^3.11.2",
+    "vitest": "^1.5.2"
+  },
+  "peerDependencies": {
+    "ant-design-vue": "*",
+    "element-plus": "*",
+    "naive-ui": "*"
+  },
+  "peerDependenciesMeta": {
+    "element-plus": {
+      "optional": true
+    },
+    "ant-design-vue": {
+      "optional": true
+    },
+    "naive-ui": {
+      "optional": true
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

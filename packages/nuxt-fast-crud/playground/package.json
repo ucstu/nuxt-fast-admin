@@ -1,0 +1,13 @@
+{
+  "private": true,
+  "name": "@ucstu/nuxt-fast-crud-playground",
+  "type": "module",
+  "scripts": {
+    "dev": "nuxi dev",
+    "build": "nuxi build",
+    "generate": "nuxi generate"
+  },
+  "dependencies": {
+    "nuxt": "latest"
+  }
+}

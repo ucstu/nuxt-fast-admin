@@ -1,0 +1,4 @@
+{
+  "extends": "./.nuxt/tsconfig.json",
+  "exclude": ["src/runtime/templates/*.d.ts", "dist/runtime/templates/*.d.ts"]
+}
