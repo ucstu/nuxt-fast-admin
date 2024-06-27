@@ -5,6 +5,7 @@
     <input v-model="bar" type="text" />
     <input v-model="bar1" type="text" />
     <input v-model="test" type="text" />
+    <input v-model="test1" type="text" />
   </div>
   <div style="display: flex; gap: 10px">
     <nuxt-link href="/test1">test1</nuxt-link>
@@ -18,4 +19,5 @@ const foo1 = useFuStorage("foo", "foo");
 const bar = useFuConfig("fastUtils.bar");
 const bar1 = useFuConfig("fastUtils.bar", "bar");
 const test = useState("test");
+const test1 = useState("test");
 </script>

@@ -1,5 +1,6 @@
-import type { RequiredDeep } from "type-fest";
-import type { FsNavMenuFilled, FsNavPageFilled } from "./base";
+import type { HookResult } from "@nuxt/schema";
+import type { RequiredDeep } from "@ucstu/nuxt-fast-utils/types";
+import type { FsNavMenu, FsNavMenuFilled, FsNavMenuKeys } from "./base";
 
 export interface ModuleOptions {
   /**
@@ -20,13 +21,7 @@ export interface ModulePublicRuntimeConfig {
   fastNav: ModuleOptionsDefaults;
 }
 
-declare module "@ucstu/nuxt-fast-utils/types" {
-  interface FsUtilsHooks {
-    "fast-nav:menu-fill": (
-      menu: FsNavMenuFilled
-    ) => FsNavMenuFilled | Promise<FsNavMenuFilled>;
-    "fast-nav:page-fill": (
-      page: FsNavPageFilled
-    ) => FsNavPageFilled | Promise<FsNavPageFilled>;
-  }
+export interface ModuleRuntimeHooks {
+  "fast-nav:menus": (menus: Array<FsNavMenu<FsNavMenuKeys>>) => HookResult;
+  "fast-nav:menu": (result: FsNavMenuFilled) => HookResult;
 }

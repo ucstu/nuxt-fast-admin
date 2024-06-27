@@ -1,4 +1,4 @@
-import type { ReadonlyDeep } from "type-fest";
+import type { ReadonlyDeep } from "@ucstu/nuxt-fast-utils/types";
 import type {
   FsNavMenuOrPage,
   FsNavMenuWithPages,
@@ -6,13 +6,13 @@ import type {
 } from "../../module";
 
 export function isFsNavMenu(
-  menuOrPage: FsNavMenuOrPage,
+  menuOrPage: FsNavMenuOrPage
 ): menuOrPage is FsNavMenuWithPages {
   return !!menuOrPage && "key" in menuOrPage;
 }
 
 export function isFsNavPage(
-  menuOrPage: FsNavMenuOrPage,
+  menuOrPage: FsNavMenuOrPage
 ): menuOrPage is FsNavPageFilled {
   return !!menuOrPage && "name" in menuOrPage;
 }

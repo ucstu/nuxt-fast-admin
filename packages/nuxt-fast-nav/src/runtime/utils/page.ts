@@ -1,18 +1,18 @@
-import { fuHooks, getFuConfig } from "#imports";
+import { getFuConfig } from "#imports";
 import type {
   RouteLocationNormalizedLoaded,
   RouteRecordNormalized,
 } from "#vue-router";
 import type { FsNavPage, FsNavPageFilled } from "../types";
 
-function getPageParent(
+function getRouteParent(
   route: RouteRecordNormalized | RouteLocationNormalizedLoaded
 ) {
   if (typeof route.name !== "string") return "$root";
   return route.name.split("-").slice(0, -1).join(".") || "$root";
 }
 
-export function _getPageFilled(
+export function getRouteMetas(
   route: RouteRecordNormalized | RouteLocationNormalizedLoaded
 ): FsNavPageFilled {
   const config = getFuConfig("fastNav");
@@ -23,7 +23,6 @@ export function _getPageFilled(
   const desc = meta.desc ?? "";
 
   return {
-    ...meta,
     name: name?.toString() ?? "undefined",
     path,
     title,
@@ -36,7 +35,7 @@ export function _getPageFilled(
       desc: meta.menu?.desc ?? desc,
       has: meta.menu?.has ?? config.page!.menu!.has!,
       show: meta.menu?.show ?? config.page!.menu!.show!,
-      parent: encodeURI(meta.menu?.parent ?? getPageParent(route)) as Exclude<
+      parent: encodeURI(meta.menu?.parent ?? getRouteParent(route)) as Exclude<
         Exclude<FsNavPage["menu"], undefined>["parent"],
         undefined
       >,
@@ -52,13 +51,4 @@ export function _getPageFilled(
       show: meta.tab?.show ?? config.page!.tab!.show!,
     },
   };
-}
-
-export async function getPageFilled(
-  route: RouteRecordNormalized | RouteLocationNormalizedLoaded
-): Promise<FsNavPageFilled | undefined> {
-  const pageFilled = _getPageFilled(route);
-  return fuHooks.hookExists("fast-nav:page-fill")
-    ? await fuHooks.callHookSync("fast-nav:page-fill", pageFilled)
-    : pageFilled;
 }

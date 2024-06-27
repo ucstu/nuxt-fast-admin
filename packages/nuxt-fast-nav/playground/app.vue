@@ -17,7 +17,7 @@
 
 <script setup lang="tsx">
 import { NuxtLink } from "#components";
-import { type FsNavMenuOrPage } from "../src/module";
+import type { FsNavMenuOrPage } from "../src/module";
 
 const { menus, histories, closePage } = useNav();
 

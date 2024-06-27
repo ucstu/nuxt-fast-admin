@@ -61,6 +61,7 @@ export default defineNuxtModule<ModuleOptions>({
     } satisfies AppConfigInput["fastAuth"];
 
     addModuleTypeTemplate({
+      nuxt,
       name,
       options,
       __dirname,

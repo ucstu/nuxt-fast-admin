@@ -64,7 +64,7 @@ export function useUser() {
  * @returns 认证状态
  */
 export function useStatus() {
-  return useState<AuthStatus>("fast-auth-status", () => ({
+  return useState<AuthStatus>("fast-auth:status", () => ({
     signIn: false,
     signUp: false,
     signOut: false,

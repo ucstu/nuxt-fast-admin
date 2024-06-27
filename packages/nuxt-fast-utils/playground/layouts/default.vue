@@ -1,10 +1,10 @@
 <template>
   <div>
-    {{ meta }}
+    {{ route.meta }}
     <slot />
   </div>
 </template>
 
 <script setup lang="ts">
-const meta = useFuRouteMeta();
+const route = useRoute();
 </script>

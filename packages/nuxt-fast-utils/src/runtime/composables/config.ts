@@ -13,10 +13,11 @@ export function useFuConfig<
   D extends Get<AppConfig, `${K}`>,
   K extends Keys = Keys
 >(key: K, defaultValue: D): ToRefDeep<AppConfig, K, D>;
-export function useFuConfig<
-  D extends Get<AppConfig, `${K}`>,
-  K extends Keys = Keys
->(key: K, defaultValue: undefined, direct: true): D;
+export function useFuConfig<D extends Get<AppConfig, `${K}`>, K extends Keys = Keys>(
+  key: K,
+  defaultValue: undefined,
+  direct: boolean
+): D;
 export function useFuConfig<
   D extends Get<AppConfig, `${K}`> | undefined,
   K extends Keys = Keys

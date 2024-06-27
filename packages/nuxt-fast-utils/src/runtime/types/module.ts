@@ -1,4 +1,5 @@
 import type { RouteMeta, RouteRecordNormalized } from "#vue-router";
+import type { HookResult } from "@nuxt/schema";
 import type { RequiredDeep } from "type-fest";
 
 export interface ModuleOptions {}
@@ -15,7 +16,14 @@ export interface ModulePublicRuntimeConfig {
 }
 
 export interface ModuleRuntimeHooks {
-  "fast-utils:route-meta": (
-    routeRecordNormalized: RouteRecordNormalized
-  ) => RouteMeta | Promise<RouteMeta>;
+  /**
+   * 路由钩子
+   * 用于修改路由元信息
+   * @param route 路由
+   * @param result 结果
+   */
+  "fast-utils:route": (
+    route: RouteRecordNormalized,
+    result: RouteMeta
+  ) => HookResult;
 }

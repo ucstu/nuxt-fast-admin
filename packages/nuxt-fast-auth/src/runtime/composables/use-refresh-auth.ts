@@ -34,7 +34,7 @@ export interface RefreshAuthStatus extends AuthStatus {
  * @returns 认证状态
  */
 function useStatus() {
-  return useState<RefreshAuthStatus>("fast-auth-status", () => ({
+  return useState<RefreshAuthStatus>("fast-auth:status", () => ({
     signIn: false,
     signUp: false,
     signOut: false,

@@ -94,6 +94,7 @@ export default defineNuxtModule<ModuleOptions>({
     });
 
     addModuleTypeTemplate({
+      nuxt,
       name,
       options,
       __dirname,
@@ -123,6 +124,11 @@ declare module "${resolve(
           },
         });
       }
+    });
+
+    addPlugin({
+      name: `${name}:config`,
+      src: resolve("./runtime/plugins/config"),
     });
 
     addPlugin({

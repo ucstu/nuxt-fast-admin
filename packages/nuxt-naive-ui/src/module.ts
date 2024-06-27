@@ -73,6 +73,7 @@ export default defineNuxtModule<ModuleOptions>({
     }
 
     addModuleTypeTemplate({
+      nuxt,
       name,
       options,
       __dirname,
@@ -81,7 +82,7 @@ export default defineNuxtModule<ModuleOptions>({
     addPlugin({
       name,
       mode: "server",
-      src: resolve("./runtime/plugins/naive.server"),
+      src: resolve("./runtime/plugins/plugin"),
     });
 
     const components = Object.keys(Naive).filter((name) =>

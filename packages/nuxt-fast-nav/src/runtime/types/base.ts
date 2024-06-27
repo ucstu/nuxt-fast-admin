@@ -1,6 +1,10 @@
 import type { ResolvedAppConfig } from "#build/types/app.config";
 import type { RouteMeta, RouteRecordName } from "#vue-router";
-import type { LiteralUnion, RequiredDeep, SetFieldType } from "type-fest";
+import type {
+  LiteralUnion,
+  RequiredDeep,
+  SetFieldType,
+} from "@ucstu/nuxt-fast-utils/types";
 
 export interface FsNavOptions {}
 

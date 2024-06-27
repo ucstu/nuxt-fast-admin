@@ -1,4 +1,9 @@
-import { addImportsSources, createResolver, defineNuxtModule } from "@nuxt/kit";
+import {
+  addImportsSources,
+  addPlugin,
+  createResolver,
+  defineNuxtModule,
+} from "@nuxt/kit";
 import type { AppConfigInput } from "@nuxt/schema";
 import { name, version } from "../package.json";
 import type {
@@ -6,6 +11,7 @@ import type {
   ModuleOptions,
   ModuleOptionsDefaults,
 } from "./runtime/types";
+import { addModuleTypeTemplate } from "./utils";
 
 export type * from "./runtime/types";
 
@@ -29,29 +35,26 @@ export default defineNuxtModule<ModuleOptions>({
 
     nuxt.options.appConfig.fastUtils = {} satisfies AppConfigInput["fastUtils"];
 
+    addModuleTypeTemplate({
+      nuxt,
+      name,
+      options,
+      __dirname,
+    });
+
+    addPlugin({
+      name,
+      src: resolve("./runtime/plugins/plugin"),
+    });
+
     addImportsSources({
       from: resolve("./runtime/composables"),
-      imports: [
-        "toRefDeep",
-        "useFuConfig",
-        "getFuConfig",
-        "useFuStorage",
-        "useFuRouteMetas",
-        "useFuRouteMeta",
-        "getFuRouteMeta",
-      ],
+      imports: ["toRefDeep", "useFuConfig", "getFuConfig", "useFuStorage"],
     });
 
     addImportsSources({
       from: resolve("./runtime/utils"),
-      imports: [
-        "cookieStorage",
-        "sessionCookieStorage",
-        "callHookSync",
-        "callHookParallelSync",
-        "isRouteRecordNormalized",
-        "isRouteLocationNormalized",
-      ],
+      imports: ["cookieStorage", "sessionCookieStorage"],
     });
   },
 });

@@ -13,6 +13,10 @@ declare module "<%= options.moduleName %>" {
 
 interface AddModuleTypeTemplateOptions {
   /**
+   * nuxt对象
+   */
+  nuxt: Nuxt;
+  /**
    * 模块名称
    */
   name: string;
@@ -42,12 +46,28 @@ interface AddModuleTypeTemplateOptions {
  * @param options
  */
 export function addModuleTypeTemplate(options: AddModuleTypeTemplateOptions) {
-  const { name, options: _options, __dirname: __dirname_, getContents } = options;
+  const {
+    name,
+    nuxt,
+    options: _options,
+    __dirname: __dirname_,
+    getContents,
+  } = options;
   const filePath = name.replace(/^@/, "");
   const fileName = filePath.split("/").pop() ?? filePath;
   const optionsName = `${upperFirst(
     camelCase(name.replace(/^@ucstu\/nuxt-/, "").replace("fast", "fs"))
   )}Options`;
+
+  if (__dirname_.endsWith("src")) {
+    nuxt.hook("prepare:types", ({ references }) => {
+      references.push({
+        path: nuxt.options.rootDir.endsWith("playground")
+          ? "../../dist/types.d.ts"
+          : "../dist/types.d.ts",
+      });
+    });
+  }
 
   addTemplate({
     write: true,
