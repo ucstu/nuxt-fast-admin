@@ -75,7 +75,7 @@
       </n-button>
       <n-button v-if="headerConfig!.theme" text @click="changeTheme">
         <template #icon>
-          <fa-icon :name="ICON_MAP[naiveUiTheme.current.value]" />
+          <fa-icon :name="ICON_MAP[naiveUiTheme]" />
         </template>
       </n-button>
       <slot name="suffix-end" />
@@ -109,8 +109,8 @@ const ICON_MAP: Record<string, string> = {
 };
 
 const { useParents, currentPage } = useNav();
-const menuConfig = useAppConfigRef("fastAdmin.layouts.default.menu");
-const headerConfig = useAppConfigRef("fastAdmin.layouts.default.header");
+const menuConfig = useFuConfig("fastAdmin.layouts.default.menu");
+const headerConfig = useFuConfig("fastAdmin.layouts.default.header");
 const { applicationFullscreen } = useDefaultLayoutStore()!;
 const parents = useParents();
 
@@ -120,10 +120,10 @@ const breadcrumbs = computedEager(() => {
   });
 });
 
-const naiveUiTheme = useNiaveUiTheme();
+const { store: naiveUiTheme } = useNaiveUiTheme();
 function changeTheme() {
-  const index = Object.keys(ICON_MAP).indexOf(naiveUiTheme.current.value);
-  naiveUiTheme.current.value = Object.keys(ICON_MAP)[(index + 1) % 3];
+  const index = Object.keys(ICON_MAP).indexOf(naiveUiTheme.value);
+  naiveUiTheme.value = Object.keys(ICON_MAP)[(index + 1) % 3];
 }
 
 const dropdownOptions = computedEager(() => {

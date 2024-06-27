@@ -1,4 +1,4 @@
-import type { RequiredDeep } from "type-fest";
+import type { RequiredDeep } from "@ucstu/nuxt-fast-utils/types";
 
 interface LocalProvider {
   /**
@@ -27,10 +27,5 @@ export interface ModuleOptions {
 export type ModuleOptionsDefaults = RequiredDeep<ModuleOptions>;
 
 export interface ModulePublicRuntimeConfig {
-  fastAuth: ModuleOptionsDefaults & {
-    /**
-     * 服务端渲染
-     */
-    ssr: boolean;
-  };
+  fastAuth: ModuleOptionsDefaults;
 }

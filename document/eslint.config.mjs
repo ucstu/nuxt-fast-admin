@@ -8,7 +8,7 @@ export default createConfigForNuxt({
     stylistic: false,
   },
   dirs: {
-    src: ["./.playground"],
+    src: ["."],
   },
 }).append(
   // your custom flat config here...
@@ -18,5 +18,5 @@ export default createConfigForNuxt({
       "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/ban-ts-comment": "off",
     },
-  },
+  }
 );

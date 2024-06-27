@@ -17,9 +17,9 @@ export function isFsNavPage(
   return !!menuOrPage && "name" in menuOrPage;
 }
 
-export function pageEqual(
+export function isFsNavPageEqual(
   a?: ReadonlyDeep<FsNavPageFilled> | FsNavPageFilled,
-  b?: ReadonlyDeep<FsNavPageFilled> | FsNavPageFilled,
+  b?: ReadonlyDeep<FsNavPageFilled> | FsNavPageFilled
 ) {
   return a?.name === b?.name && a?.path === b?.path;
 }

@@ -153,8 +153,8 @@ const emit = defineEmits<{
 }>();
 
 const router = useRouter();
-const adminConfig = useAppConfigRef("fastAdmin");
-const authConfig = useAppConfigRef("fastAuth");
+const adminConfig = useFuConfig("fastAdmin");
+const authConfig = useFuConfig("fastAuth");
 
 function isFetchError(error: Error | undefined | null): error is FetchError {
   return error instanceof FetchError;

@@ -1,9 +1,8 @@
 import { defineNuxtRouteMiddleware } from "#app";
-import { navigateTo, useAuth, useRuntimeConfig } from "#imports";
-import defu from "defu";
+import { getFuConfig, navigateTo, useAuth, useRuntimeConfig } from "#imports";
 import {
   authDirect,
-  useAppConfigRef,
+  useToken,
   type UseLocalAuthRet,
   type UseRefreshAuthRet,
 } from "../composables";
@@ -11,10 +10,12 @@ import type { FsAuthMeta, FsAuthPage, GuardOptions } from "../types";
 import { isFsAuthPage } from "../utils";
 
 export default defineNuxtRouteMiddleware(async (to, from) => {
+  const config = getFuConfig("fastAuth");
   const runtimeConfig = useRuntimeConfig();
-  const config = useAppConfigRef("fastAuth").value!;
-  const { token, refreshToken, user, getUser, refresh } =
-    useAuth() as UseRefreshAuthRet & UseLocalAuthRet;
+  const token = useToken();
+  const refreshToken = useRefreshToken();
+  const user = useUser();
+  const { getUser, refresh } = useAuth() as UseRefreshAuthRet & UseLocalAuthRet;
 
   if (runtimeConfig.public.fastAuth.provider.type === "refresh") {
     if (!token.value && refreshToken.value) {
@@ -29,7 +30,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     | FsAuthPage
     | FsAuthMeta;
   const auth: FsAuthMeta = isFsAuthPage(raw) ? raw.auth : raw;
-  let page: Omit<FsAuthPage, "redirect"> & {
+  const page: Omit<FsAuthPage, "redirect"> & {
     redirect: Required<Exclude<FsAuthPage["redirect"], undefined>>;
   } = {
     redirect: {
@@ -39,15 +40,6 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     },
     auth,
   };
-  page = defu(
-    (await config.pageHooks!.getPageMeta?.({
-      to,
-      from,
-      page,
-      user: user.value,
-    })) ?? {},
-    page,
-  ) as typeof page;
 
   const options: GuardOptions = { to, from, page, user: user.value };
   // 调用页面前置认证钩子
@@ -71,7 +63,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
         return navigateTo(
           page.redirect.unAuth === true
             ? config.pages!.signIn!
-            : page.redirect.unAuth,
+            : page.redirect.unAuth
         );
       }
       // 如果已认证
@@ -89,7 +81,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
           return navigateTo(
             page.redirect.failed === true
               ? config.pages!.home!
-              : page.redirect.failed,
+              : page.redirect.failed
           );
         }
         // 如果有权限
@@ -105,7 +97,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
           return navigateTo(
             page.redirect.passed === true
               ? config.pages!.home!
-              : page.redirect.passed,
+              : page.redirect.passed
           );
         }
       }

@@ -1,27 +1,21 @@
-import { callWithNuxt } from "#app";
-import { useNuxtApp } from "#imports";
+import { fuHooks, getFuConfig } from "#imports";
 import type {
   RouteLocationNormalizedLoaded,
   RouteRecordNormalized,
 } from "#vue-router";
-import type { FsNavPage, FsNavPageFilled } from "../../module";
-import { useAppConfigRef } from "../composables/config";
-
-declare module "#vue-router" {
-  interface RouteMeta extends FsNavPage {}
-}
+import type { FsNavPage, FsNavPageFilled } from "../types";
 
 function getPageParent(
-  route: RouteRecordNormalized | RouteLocationNormalizedLoaded,
+  route: RouteRecordNormalized | RouteLocationNormalizedLoaded
 ) {
   if (typeof route.name !== "string") return "$root";
   return route.name.split("-").slice(0, -1).join(".") || "$root";
 }
 
 export function _getPageFilled(
-  route: RouteRecordNormalized | RouteLocationNormalizedLoaded,
+  route: RouteRecordNormalized | RouteLocationNormalizedLoaded
 ): FsNavPageFilled {
-  const config = useAppConfigRef("fastNav").value!;
+  const config = getFuConfig("fastNav");
 
   const { name, path, meta } = route;
   const title = meta.title ?? name?.toString() ?? "undefined";
@@ -61,12 +55,10 @@ export function _getPageFilled(
 }
 
 export async function getPageFilled(
-  route: RouteRecordNormalized | RouteLocationNormalizedLoaded,
+  route: RouteRecordNormalized | RouteLocationNormalizedLoaded
 ): Promise<FsNavPageFilled | undefined> {
-  const nuxtApp = useNuxtApp();
-  const config = useAppConfigRef("fastNav").value!;
   const pageFilled = _getPageFilled(route);
-  return config.hooks!.getPage
-    ? await callWithNuxt(nuxtApp, () => config.hooks!.getPage!(pageFilled))
+  return fuHooks.hookExists("fast-nav:page-fill")
+    ? await fuHooks.callHookSync("fast-nav:page-fill", pageFilled)
     : pageFilled;
 }

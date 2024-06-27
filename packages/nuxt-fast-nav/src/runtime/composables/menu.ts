@@ -1,25 +1,16 @@
-import { callWithNuxt } from "#app";
-import {
-  isFsNavMenu,
-  useAppConfig,
-  useNuxtApp,
-  useRouter,
-  useState,
-  type Ref,
-} from "#imports";
-import type { FsNavMenu, FsNavMenuWithPages, FsNavPageFilled } from "../types";
-import { _getMenuFilled, getMenuFilled, getPageFilled } from "../utils";
+import { isFsNavMenu, useFuPageMetas, useState } from "#imports";
+import { computedEager } from "@ucstu/nuxt-fast-utils/exports";
+import { clone } from "lodash-es";
+import type { FsNavMenuWithPages, FsNavPageFilled } from "../types";
+import { _getMenuFilled } from "../utils";
 
-/**
- * 使用菜单
- * @returns 菜单
- */
-export const useMenus = (): Ref<FsNavMenuWithPages> =>
-  useState<FsNavMenuWithPages>("fast-nav-menus", () =>
+export function _useMenus() {
+  return useState<FsNavMenuWithPages>("fast-nav-menus", () =>
     _getMenuFilled({
       key: "$root",
-    }),
+    })
   );
+}
 
 function addPageToMenu(menu: FsNavMenuWithPages, page: FsNavPageFilled) {
   menu.children ??= [];
@@ -28,7 +19,7 @@ function addPageToMenu(menu: FsNavMenuWithPages, page: FsNavPageFilled) {
     menu.show === true
       ? true
       : menu.children.some((item) =>
-          isFsNavMenu(item) ? item.show : item.menu.show,
+          isFsNavMenu(item) ? item.show : item.menu.show
         );
 }
 
@@ -36,7 +27,7 @@ function addPageToMenus(
   page: FsNavPageFilled,
   current: FsNavMenuWithPages,
   root: FsNavMenuWithPages = current,
-  parents: Array<string> = page.menu.parent.split("."),
+  parents: Array<string> = page.menu.parent.split(".")
 ) {
   // 如果 parent 为 $root
   if (page.menu.parent === "$root") {
@@ -47,18 +38,18 @@ function addPageToMenus(
   // 如果 children 链 或者 parents 链 到头
   if (!current.children?.length || !parents.length) {
     console.warn(
-      `[fast-nav] 未找到页面 ${page.path} 的父级菜单 ${page.menu.parent}`,
+      `[fast-nav] 未找到页面 ${page.path} 的父级菜单 ${page.menu.parent}`
     );
     addPageToMenu(root, page);
     return;
   }
   const parent = parents.shift();
   const menu = (current.children as Array<FsNavMenuWithPages>).find(
-    (menu) => menu.key === parent,
+    (menu) => menu.key === parent
   );
   if (!menu) {
     console.warn(
-      `[fast-nav] 未找到页面 ${page.path} 的父级菜单 ${page.menu.parent}`,
+      `[fast-nav] 未找到页面 ${page.path} 的父级菜单 ${page.menu.parent}`
     );
     addPageToMenu(root, page);
     return;
@@ -81,23 +72,17 @@ function sortMenus(menu: FsNavMenuWithPages) {
   });
 }
 
-export async function refreshMenus() {
-  const nuxtApp = useNuxtApp();
-  const router = useRouter();
-  const menus = useMenus();
+export function useMenus() {
+  const _menus = _useMenus();
+  const pages = useFuPageMetas();
+  console.log(pages.value);
 
-  const { fastNav = {} } = useAppConfig() as {
-    fastNav?: { menus?: Array<FsNavMenu> };
-  };
-  const _menus = (await getMenuFilled({
-    key: "$root",
-    children: fastNav.menus,
-  })) as FsNavMenuWithPages;
-  for (const route of router.getRoutes()) {
-    const page = await callWithNuxt(nuxtApp, () => getPageFilled(route));
-    if (!page || !page.name) continue;
-    addPageToMenus(page, _menus);
-  }
-  sortMenus(_menus);
-  menus.value = _menus;
+  return computedEager(() => {
+    const menus = clone(_menus.value);
+    for (const page of pages.value) {
+      addPageToMenus(page as FsNavPageFilled, menus);
+    }
+    sortMenus(menus);
+    return menus;
+  });
 }

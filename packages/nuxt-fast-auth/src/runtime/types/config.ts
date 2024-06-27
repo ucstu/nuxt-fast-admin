@@ -1,10 +1,10 @@
 import type { navigateTo } from "#imports";
 import type { RouteLocationNormalized } from "#vue-router";
-import type { ReadonlyDeep, UnknownRecord } from "type-fest";
+import type { ReadonlyDeep, UnknownRecord } from "@ucstu/nuxt-fast-utils/types";
 import type {
-  FsAuthConfigOption,
   FsAuthForm,
   FsAuthMeta,
+  FsAuthOptions,
   FsAuthPage,
   FsAuthPer,
   FsAuthUser,
@@ -15,26 +15,26 @@ export interface BaseAuthHooks {
    * 注册
    * @param form 注册表单
    */
-  signUp?(form: FsAuthForm): void | Promise<void>;
+  "fast-auth:sign-up"(form: FsAuthForm): void | Promise<void>;
   /**
    * 注销
    */
-  signOut?(): void | Promise<void>;
+  "fast-auth:sign-out"(): void | Promise<void>;
   /**
    * 获取用户
    * @param token 令牌
    * @returns 用户信息
    */
-  getUser?(
-    token: string | undefined | null,
+  "fast-auth:get-user"(
+    token: string | undefined | null
   ): FsAuthUser | undefined | null | Promise<FsAuthUser | undefined | null>;
   /**
    * 获取权限列表
    * @param user 用户信息
    * @returns 权限列表
    */
-  getPermissions?(
-    user: ReadonlyDeep<FsAuthUser> | undefined | null,
+  "fast-auth:get-permissions"(
+    user: ReadonlyDeep<FsAuthUser> | undefined | null
   ): Exclude<FsAuthPer, boolean>[];
 }
 
@@ -58,8 +58,8 @@ export interface LocalAuthHooks extends BaseAuthHooks {
    * @param form 登录表单
    * @returns 令牌 | 登录结果
    */
-  signIn?(
-    form: FsAuthForm,
+  "fast-auth:sign-in"(
+    form: FsAuthForm
   ): string | Promise<string> | LocalSignInResult | Promise<LocalSignInResult>;
 }
 
@@ -83,27 +83,29 @@ export interface RefreshAuthHooks extends LocalAuthHooks {
    * @param form 登录表单
    * @returns 登录结果
    */
-  signIn?(form: FsAuthForm): RefreshSignInResult | Promise<RefreshSignInResult>;
+  "fast-auth:sign-in"(
+    form: FsAuthForm
+  ): RefreshSignInResult | Promise<RefreshSignInResult>;
   /**
-   * 刷新
+   * 刷新令牌
    * @param refreshToken 刷新令牌
    */
-  refresh?(
+  "fast-auth:refresh-token"?(
     refreshToken: string | undefined | null,
-    token: string | undefined | null,
+    token: string | undefined | null
   ): RefreshSignInResult | Promise<RefreshSignInResult>;
 }
 
-export type AuthHooks = FsAuthConfigOption extends {
+export type AuthHooks = FsAuthOptions extends {
   provider: { type: string };
 }
-  ? FsAuthConfigOption["provider"]["type"] extends "local"
+  ? FsAuthOptions["provider"]["type"] extends "local"
     ? LocalAuthHooks
-    : FsAuthConfigOption["provider"]["type"] extends "refresh"
-      ? RefreshAuthHooks
-      : FsAuthConfigOption["provider"]["type"] extends "base"
-        ? BaseAuthHooks
-        : BaseAuthHooks & LocalAuthHooks & RefreshAuthHooks
+    : FsAuthOptions["provider"]["type"] extends "refresh"
+    ? RefreshAuthHooks
+    : FsAuthOptions["provider"]["type"] extends "base"
+    ? BaseAuthHooks
+    : BaseAuthHooks & LocalAuthHooks & RefreshAuthHooks
   : BaseAuthHooks & LocalAuthHooks & RefreshAuthHooks;
 
 /**
@@ -130,14 +132,6 @@ export interface GuardOptions {
 
 export interface PageHooks {
   /**
-   * 获取页面鉴权元数据
-   * @param options 选项
-   * @returns 页面鉴权元数据
-   */
-  getPageMeta?(
-    options: GuardOptions,
-  ): FsAuthPage | undefined | null | Promise<FsAuthPage | undefined | null>;
-  /**
    * 前置认证钩子
    * @param options 选项
    * @returns 跳转 | null
@@ -145,7 +139,9 @@ export interface PageHooks {
    * @description 返回值为 undefined 时终止路由守卫
    * @description 注意：不写返回值时默认返回 undefined
    */
-  beforeAuth?: (options: GuardOptions) => ReturnType<typeof navigateTo> | null;
+  "fast-auth:before-auth"(
+    options: GuardOptions
+  ): ReturnType<typeof navigateTo> | null;
   /**
    * 无需认证
    * @param options 选项
@@ -154,7 +150,9 @@ export interface PageHooks {
    * @description 返回值为 undefined 时终止路由守卫
    * @description 注意：不写返回值时默认返回 undefined
    */
-  noAuth?: (options: GuardOptions) => ReturnType<typeof navigateTo> | null;
+  "fast-auth:no-auth"(
+    options: GuardOptions
+  ): ReturnType<typeof navigateTo> | null;
   /**
    * 需要认证但未认证
    * @param options 选项
@@ -163,7 +161,9 @@ export interface PageHooks {
    * @description 返回值为 undefined 时终止路由守卫
    * @description 注意：不写返回值时默认返回 undefined
    */
-  unAuth?: (options: GuardOptions) => ReturnType<typeof navigateTo> | null;
+  "fast-auth:un-auth"(
+    options: GuardOptions
+  ): ReturnType<typeof navigateTo> | null;
   /**
    * 需要鉴权且已通过
    * @param options 选项
@@ -172,7 +172,9 @@ export interface PageHooks {
    * @description 返回值为 undefined 时终止路由守卫
    * @description 注意：不写返回值时默认返回 undefined
    */
-  passed?: (options: GuardOptions) => ReturnType<typeof navigateTo> | null;
+  "fast-auth:passed"(
+    options: GuardOptions
+  ): ReturnType<typeof navigateTo> | null;
   /**
    * 需要鉴权但未通过
    * @param options 选项
@@ -181,7 +183,9 @@ export interface PageHooks {
    * @description 返回值为 undefined 时终止路由守卫
    * @description 注意：不写返回值时默认返回 undefined
    */
-  failed?: (options: GuardOptions) => ReturnType<typeof navigateTo> | null;
+  "fast-auth:failed"(
+    options: GuardOptions
+  ): ReturnType<typeof navigateTo> | null;
   /**
    * 后置认证钩子
    * @param options 选项
@@ -190,7 +194,9 @@ export interface PageHooks {
    * @description 返回值为 undefined 时终止路由守卫
    * @description 注意：不写返回值时默认返回 undefined
    */
-  afterAuth?: (options: GuardOptions) => ReturnType<typeof navigateTo> | null;
+  "fast-auth:after-auth"(
+    options: GuardOptions
+  ): ReturnType<typeof navigateTo> | null;
 }
 
 export interface FsAuthConfig {
@@ -272,31 +278,4 @@ export interface FsAuthConfig {
      */
     authMeta?: FsAuthPage | FsAuthMeta;
   };
-  /**
-   * 认证钩子函数
-   */
-  authHooks?: UnknownRecord & AuthHooks;
-  /**
-   * 页面鉴权钩子
-   * @description 钩子调用顺序
-   * - beforeAuth 前置认证
-   * - 如果无需认证则调用 noAuth
-   * - 如果需要认证但未认证则调用 unAuth
-   * - 如果需要鉴权且已通过则调用 passed
-   * - 如果需要鉴权但未通过则调用 failed
-   * - afterAuth 后置认证
-   */
-  pageHooks?: UnknownRecord & PageHooks;
-}
-
-declare module "@nuxt/schema" {
-  interface CustomAppConfig {
-    fastAuth?: FsAuthConfig;
-  }
-}
-
-declare module "nuxt/schema" {
-  interface CustomAppConfig {
-    fastAuth?: FsAuthConfig;
-  }
 }

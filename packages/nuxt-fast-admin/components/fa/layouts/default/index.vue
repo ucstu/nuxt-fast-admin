@@ -81,7 +81,7 @@ export { useDefaultLayoutStore };
 
 <script setup lang="ts">
 const { content, showPage } = useProvideDefaultLayoutStore();
-const layoutConfig = useAppConfigRef("fastAdmin.layouts.default");
+const layoutConfig = useFuConfig("fastAdmin.layouts.default");
 
 // #region 菜单栏
 const resizer = ref<HTMLElement>();

@@ -1,13 +1,8 @@
-import {
-  computed,
-  toRef,
-  useAuth,
-  type ComputedRef,
-  type MaybeRefOrGetter,
-} from "#imports";
-import type { LiteralUnion } from "type-fest";
+import { getFuConfig, useFuConfig, type MaybeRefOrGetter } from "#imports";
+import { computedEager, toRef } from "@ucstu/nuxt-fast-utils/exports";
+import type { LiteralUnion } from "@ucstu/nuxt-fast-utils/types";
 import type { FsAuthMeta, FsAuthPer } from "../types";
-import { useAppConfigRef } from "./config";
+import { useUser } from "./use-auth";
 
 /**
  * 原始鉴权
@@ -53,17 +48,17 @@ export function auth(
     | MaybeRefOrGetter<FsAuthMeta>[]
     | [
         MaybeRefOrGetter<LiteralUnion<"!" | "|", FsAuthPer>>,
-        ...MaybeRefOrGetter<FsAuthMeta>[],
+        ...MaybeRefOrGetter<FsAuthMeta>[]
       ]
-): ComputedRef<boolean> {
-  const { user } = useAuth();
-  const config = useAppConfigRef("fastAuth");
-  const hasRef = computed(() => [
+) {
+  const user = useUser();
+  const config = useFuConfig("fastAuth");
+  const hasRef = computedEager(() => [
     !!user.value,
     ...(config.value!.authHooks!.getPermissions?.(user.value) ?? []),
   ]);
-  const needsRef = computed(() => needs.map((need) => toRef(need).value));
-  return computed(() => _auth(hasRef.value, needsRef.value as FsAuthMeta));
+  const needsRef = computedEager(() => needs.map((need) => toRef(need).value));
+  return computedEager(() => _auth(hasRef.value, needsRef.value as FsAuthMeta));
 }
 
 /**
@@ -81,11 +76,11 @@ export function authDirect(
     | FsAuthMeta[]
     | [LiteralUnion<"!" | "|", FsAuthPer> | FsAuthMeta, ...FsAuthMeta[]]
 ): boolean {
-  const { user } = useAuth();
-  const config = useAppConfigRef("fastAuth");
+  const user = useUser();
+  const config = getFuConfig("fastAuth");
   const has = [
-    !!user.value,
-    ...(config.value!.authHooks!.getPermissions?.(user.value) ?? []),
+    Boolean(user.value),
+    ...(config.authHooks!.getPermissions?.(user.value) ?? []),
   ];
   return _auth(has, needs as FsAuthMeta);
 }

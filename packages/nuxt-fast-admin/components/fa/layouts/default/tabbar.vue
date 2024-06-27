@@ -73,7 +73,7 @@ import { computedEager } from "@vueuse/core";
 import type { DropdownOption } from "naive-ui";
 import { useDefaultLayoutStore } from "./index.vue";
 
-const tabbarConfig = useAppConfigRef("fastAdmin.layouts.default.tabbar");
+const tabbarConfig = useFuConfig("fastAdmin.layouts.default.tabbar");
 
 const { showPage, refreshPage, pageFullscreen } = useDefaultLayoutStore()!;
 const { histories, currentPage, closePage, closeAllPages, closeOtherPages } =

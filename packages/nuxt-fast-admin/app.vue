@@ -32,10 +32,11 @@
 <script setup lang="tsx">
 import type { RouteLocationRaw } from "#vue-router";
 import { FsUiContext } from "@fast-crud/ui-naive";
+import defu from "defu";
 import type { FunctionalComponent } from "vue";
 
 const { isLoading } = useLoadingIndicator();
-const appConfig = useAppConfigRef("fastAdmin.app");
+const appConfig = useFuConfig("fastAdmin.app");
 const RegisterFeedbackGlobal: FunctionalComponent = () => {
   globalThis.$dialog = useDialog();
   globalThis.$loadingBar = useLoadingBar();
@@ -67,15 +68,14 @@ function handleClearError(
   }
 }
 
-const { theme, themeOverrides } = useNiaveUiTheme();
+const naiveUiThemeConfig = useNaiveUiThemeConfig();
 watch(
-  [theme, themeOverrides],
-  ([theme, themeOverrides]) => {
-    appConfig.value!.naiveConfig = {
-      ...appConfig.value!.naiveConfig,
-      theme,
-      themeOverrides,
-    };
+  naiveUiThemeConfig,
+  (naiveUiThemeConfig) => {
+    appConfig.value!.naiveConfig = defu(
+      naiveUiThemeConfig,
+      appConfig.value!.naiveConfig,
+    );
   },
   { immediate: true },
 );

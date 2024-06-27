@@ -11,7 +11,7 @@ export default defineNuxtPlugin({
     const { refreshMenus } = useNav();
     const runtimeConfig = useRuntimeConfig();
     const { token, user, getUser } = useAuth();
-    const adminConfig = useAppConfigRef("fastAdmin");
+    const adminConfig = useFuConfig("fastAdmin");
 
     if (adminConfig.value.app!.head) {
       addRouteMiddleware((to) => {
@@ -45,9 +45,7 @@ export default defineNuxtPlugin({
           ([name, options1]) => [
             name,
             createOpenFetch((options2) => {
-              const { token } = callWithNuxt(nuxtApp, useAuth) as ReturnType<
-                typeof useAuth
-              >;
+              const { token } = useAuth();
 
               const options = defu<
                 FetchOptions<ResponseType>,
@@ -62,7 +60,7 @@ export default defineNuxtPlugin({
                   : undefined,
                 onRequestError(ctx) {
                   callWithNuxt(nuxtApp, () =>
-                    handleError(ctx.error, ctx.options.config?.error)
+                    handleError(ctx.error, ctx.options.config?.error),
                   );
                 },
                 onResponseError(ctx) {
@@ -71,19 +69,19 @@ export default defineNuxtPlugin({
                   error.statusMessage = ctx.response.statusText;
                   error.response = ctx.response;
                   callWithNuxt(nuxtApp, () =>
-                    handleError(error, ctx.options.config?.error)
+                    handleError(error, ctx.options.config?.error),
                   );
                 },
               });
 
               return adminConfig.value.hooks!.fetchOptions
                 ? (callWithNuxt(nuxtApp, () =>
-                    adminConfig.value.hooks!.fetchOptions!(options)
+                    adminConfig.value.hooks!.fetchOptions!(options),
                   ) as FetchOptions<ResponseType>)
                 : options;
             }),
-          ]
-        )
+          ],
+        ),
       ),
     };
   },

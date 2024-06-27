@@ -1,18 +1,19 @@
 <template>
-  <n-config-provider
-    :theme="naiveTheme.theme.value"
-    :theme-overrides="naiveTheme.themeOverrides.value"
-  >
+  <n-config-provider v-bind="naiveUiThemeConfig">
     Nuxt module playground!
     <n-button @click="changeTheme">Default</n-button>
   </n-config-provider>
 </template>
 
+<script lang="ts">
+const thems = ["light", "dark", "auto"];
+</script>
+
 <script setup lang="ts">
-const naiveTheme = useNiaveUiTheme();
+const { store: naiveUiTheme } = useNaiveUiTheme();
+const naiveUiThemeConfig = useNaiveUiThemeConfig();
 
 function changeTheme() {
-  naiveTheme.current.value =
-    naiveTheme.theme.value?.name === "light" ? "dark" : "light";
+  naiveUiTheme.value = thems[(thems.indexOf(naiveUiTheme.value) + 1) % 3];
 }
 </script>

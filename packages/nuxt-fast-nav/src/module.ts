@@ -2,15 +2,20 @@ import {
   addImportsSources,
   addPlugin,
   addTemplate,
-  addTypeTemplate,
   createResolver,
   defineNuxtModule,
+  installModule,
   updateTemplates,
 } from "@nuxt/kit";
 import type { AppConfigInput } from "@nuxt/schema";
+import { addModuleTypeTemplate } from "@ucstu/nuxt-fast-utils/utils";
 import { minimatch } from "minimatch";
 import { name, version } from "../package.json";
-import type { ModuleOptions, ModuleOptionsDefaults } from "./runtime/types";
+import type {
+  FsNavConfig,
+  ModuleOptions,
+  ModuleOptionsDefaults,
+} from "./runtime/types";
 
 export type * from "./runtime/types";
 
@@ -26,11 +31,12 @@ export default defineNuxtModule<ModuleOptions>({
     },
   } satisfies ModuleOptionsDefaults,
   setup(_options, nuxt) {
+    installModule("@ucstu/nuxt-fast-utils");
+
     const options = _options as ModuleOptionsDefaults;
-    const { appDir, rootDir } = nuxt.options;
 
     const { resolve } = createResolver(import.meta.url);
-    nuxt.options.runtimeConfig.public.fastNav = options as any;
+    nuxt.options.runtimeConfig.public.fastNav = options;
 
     nuxt.options.appConfig.fastNav = {
       menu: {
@@ -53,38 +59,7 @@ export default defineNuxtModule<ModuleOptions>({
         },
       },
       home: "/",
-      hooks: {},
     } satisfies AppConfigInput["fastNav"];
-
-    // Nuxt Bug Patch
-    if (__dirname.endsWith("src")) {
-      nuxt.hook("prepare:types", ({ references }) => {
-        references.push({
-          types: getModulePath(rootDir),
-        });
-      });
-    }
-
-    addTypeTemplate({
-      src: resolve("./runtime/templates/types.d.ts"),
-      filename: "types/ucstu/nuxt-fast-nav.d.ts",
-      options: {
-        self: getModuleName(__dirname.endsWith("src"), rootDir),
-        page: resolve(appDir, "../pages/runtime/composables"),
-      },
-    });
-
-    addTemplate({
-      write: true,
-      filename: "types/ucstu/nuxt-fast-nav/config.ts",
-      getContents() {
-        return `export interface FsNavConfig ${JSON.stringify(
-          options,
-          null,
-          2,
-        )};`;
-      },
-    });
 
     addTemplate({
       write: true,
@@ -110,11 +85,32 @@ export default defineNuxtModule<ModuleOptions>({
         }
         const _interface = JSON.stringify(result, null, 2).replaceAll(
           "{}",
-          "never",
+          "never"
         );
-        return `export interface FsNavMenuKey ${
+        return `export interface _FsNavMenuKey ${
           _interface === "never" ? "{}" : _interface
         };`;
+      },
+    });
+
+    addModuleTypeTemplate({
+      name,
+      options,
+      __dirname,
+      getContents({ nuxt, options }) {
+        return `import type { _FsNavMenuKey } from "./nuxt-fast-nav/menu-key";
+declare module "${options.moduleName}" {
+  interface FsNavMenuKey extends _FsNavMenuKey {}
+}
+
+import type { FsNavPage } from "${options.moduleName}";
+declare module "${resolve(
+          nuxt.options.appDir,
+          "../pages/runtime/composables"
+        )}" {
+  interface PageMeta extends FsNavPage {}
+}
+`;
       },
     });
 
@@ -141,19 +137,19 @@ export default defineNuxtModule<ModuleOptions>({
 
     addImportsSources({
       from: resolve("./runtime/utils"),
-      imports: ["isFsNavMenu", "isFsNavPage"],
+      imports: ["isFsNavMenu", "isFsNavPage", "isFsNavPageEqual"],
     });
   },
 });
 
-function getModuleName(isDev: boolean, rootDir: string) {
-  return !isDev
-    ? `${name}/module`
-    : rootDir.endsWith("playground")
-      ? "../../../../src/module"
-      : "../../../src/module";
+declare module "@nuxt/schema" {
+  interface CustomAppConfig {
+    fastNav?: FsNavConfig;
+  }
 }
 
-function getModulePath(rootDir: string) {
-  return rootDir.endsWith("playground") ? "../../dist/types" : "../dist/types";
+declare module "nuxt/schema" {
+  interface CustomAppConfig {
+    fastNav?: FsNavConfig;
+  }
 }

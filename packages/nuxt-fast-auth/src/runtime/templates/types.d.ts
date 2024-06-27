@@ -1,13 +1,11 @@
 // @ts-expect-error
-import type { FsAuthConfig } from "./nuxt-fast-auth/config";
+import type { _FsAuthOptions } from "./nuxt-fast-auth/options";
 
 // @ts-expect-error
 import type { FsAuthMeta, FsAuthPage } from "<%= options.self %>";
-
 declare module "<%= options.self %>" {
-  interface FsAuthConfigOption extends FsAuthConfig {}
+  interface FsAuthOptions extends _FsAuthOptions {}
 }
-
 declare module "<%= options.page %>" {
   interface PageMeta {
     /**

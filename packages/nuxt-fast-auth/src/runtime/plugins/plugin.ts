@@ -2,7 +2,6 @@ import { defineNuxtPlugin } from "#app";
 import { useAuth, useRuntimeConfig } from "#imports";
 import {
   authDirect,
-  useAppConfigRef,
   useRefreshAuth,
   type UseLocalAuthRet,
   type UseRefreshAuthRet,
@@ -30,7 +29,7 @@ declare module "vue" {
 export default defineNuxtPlugin({
   async setup(nuxtApp) {
     const runtimeConfig = useRuntimeConfig();
-    const config = useAppConfigRef("fastAuth").value!;
+    const config = getFuConfig("fastAuth");
     const { token, refreshToken, user, remember, getUser, refresh } =
       useAuth() as UseRefreshAuthRet & UseLocalAuthRet;
 

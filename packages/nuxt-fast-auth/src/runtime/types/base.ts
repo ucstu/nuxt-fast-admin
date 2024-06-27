@@ -1,7 +1,8 @@
 import type { RouteLocationRaw } from "#vue-router";
-import type { LiteralUnion } from "type-fest";
+import type { LiteralUnion } from "@ucstu/nuxt-fast-utils/types";
+import type { AuthHooks, PageHooks } from "./config";
 
-export interface FsAuthConfigOption {}
+export interface FsAuthOptions {}
 
 /**
  * 鉴权权限
@@ -36,7 +37,7 @@ export type FsAuthPer = string | number | bigint | boolean;
  */
 export type FsAuthMeta<
   D extends number = 10,
-  A extends number[] = [],
+  A extends number[] = []
 > = A["length"] extends D
   ? never
   :
@@ -92,4 +93,8 @@ export interface FsAuthForm {
  */
 export interface FsAuthUser {
   [key: string]: any;
+}
+
+declare module "@ucstu/nuxt-fast-utils/types" {
+  export interface FastUtilsHooks extends AuthHooks, PageHooks {}
 }

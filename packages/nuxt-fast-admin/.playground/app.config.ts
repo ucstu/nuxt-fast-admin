@@ -47,6 +47,6 @@ export default defineAppConfig({
         key: "bar",
         title: "bar",
       },
-    ] as const,
+    ],
   },
 });

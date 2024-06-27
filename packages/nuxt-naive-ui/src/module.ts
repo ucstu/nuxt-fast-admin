@@ -5,11 +5,18 @@ import {
   createResolver,
   defineNuxtModule,
   extendViteConfig,
+  installModule,
 } from "@nuxt/kit";
 import type { AppConfigInput } from "@nuxt/schema";
+import { addModuleTypeTemplate } from "@ucstu/nuxt-fast-utils/utils";
+import { camelCase, upperFirst } from "lodash-es";
 import Naive from "naive-ui";
 import { name, version } from "../package.json";
-import type { ModuleOptions, ModuleOptionsDefaults } from "./runtime/types";
+import type {
+  ModuleOptions,
+  ModuleOptionsDefaults,
+  NaiveUiConfig,
+} from "./runtime/types";
 
 export type * from "./runtime/types";
 
@@ -18,36 +25,20 @@ export default defineNuxtModule<ModuleOptions>({
     name,
     version,
     configKey: "naiveUi",
-    compatibility: {
-      nuxt: "^3.10.0",
-    },
   },
-  defaults: {
-    defaultTheme: "auto",
-  } satisfies ModuleOptionsDefaults,
+  defaults: {} satisfies ModuleOptionsDefaults,
   setup(_options, nuxt) {
+    installModule("@ucstu/nuxt-fast-utils");
+
     const options = _options as ModuleOptionsDefaults;
-    const { ssr, rootDir } = nuxt.options;
 
     const { resolve } = createResolver(import.meta.url);
 
-    nuxt.options.runtimeConfig.public.naiveUi = {
-      ...options,
-      ssr,
-    } as any;
+    nuxt.options.runtimeConfig.public.naiveUi = options;
 
     nuxt.options.appConfig.naiveUi = {
       defaultTheme: "auto",
     } satisfies AppConfigInput["naiveUi"];
-
-    // Nuxt Bug Patch
-    if (__dirname.endsWith("src")) {
-      nuxt.hook("prepare:types", ({ references }) => {
-        references.push({
-          types: getModulePath(rootDir),
-        });
-      });
-    }
 
     if (process.env.NODE_ENV === "development") {
       const optimizeDeps = ["naive-ui"];
@@ -81,38 +72,54 @@ export default defineNuxtModule<ModuleOptions>({
       }
     }
 
+    addModuleTypeTemplate({
+      name,
+      options,
+      __dirname,
+    });
+
     addPlugin({
       name,
       mode: "server",
       src: resolve("./runtime/plugins/naive.server"),
     });
 
-    const naiveComponents = Object.keys(Naive).filter((name) =>
-      /^(N[A-Z]|n-[a-z])/.test(name),
+    const components = Object.keys(Naive).filter((name) =>
+      /^N[A-Z]|n-[a-z]/.test(name)
     );
 
     const clientOnlyComponents = ["NDrawer", "NDrawerContent", "NModal"];
 
-    naiveComponents.forEach((name) => {
+    components.forEach((name) => {
       addComponent({
         export: name,
         name,
         filePath: resolve("./runtime/components"),
-        mode: clientOnlyComponents.includes(name) ? "client" : "all",
+        mode: clientOnlyComponents.includes(upperFirst(camelCase(name)))
+          ? "client"
+          : "all",
       });
     });
 
     const composables = Object.keys(Naive).filter((name) =>
-      /^use[A-Z]/.test(name),
+      /^use[A-Z]/.test(name)
     );
 
     addImportsSources({
       from: resolve("./runtime/composables"),
-      imports: [...composables, "useNiaveUiTheme"],
+      imports: [...composables, "useNaiveUiTheme", "useNaiveUiThemeConfig"],
     });
   },
 });
 
-function getModulePath(rootDir: string) {
-  return rootDir.endsWith("playground") ? "../../dist/types" : "../dist/types";
+declare module "@nuxt/schema" {
+  interface CustomAppConfig {
+    naiveUi?: NaiveUiConfig;
+  }
+}
+
+declare module "nuxt/schema" {
+  interface CustomAppConfig {
+    naiveUi?: NaiveUiConfig;
+  }
 }

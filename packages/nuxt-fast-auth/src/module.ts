@@ -2,15 +2,19 @@ import {
   addImportsSources,
   addPlugin,
   addRouteMiddleware,
-  addTemplate,
-  addTypeTemplate,
   createResolver,
   defineNuxtModule,
+  installModule,
 } from "@nuxt/kit";
 import type { AppConfigInput } from "@nuxt/schema";
+import { addModuleTypeTemplate } from "@ucstu/nuxt-fast-utils/utils";
 import { camelCase } from "lodash-es";
 import { name, version } from "../package.json";
-import type { ModuleOptions, ModuleOptionsDefaults } from "./runtime/types";
+import type {
+  FsAuthConfig,
+  ModuleOptions,
+  ModuleOptionsDefaults,
+} from "./runtime/types";
 
 export type * from "./runtime/types";
 
@@ -26,14 +30,12 @@ export default defineNuxtModule<ModuleOptions>({
     },
   } satisfies ModuleOptionsDefaults,
   setup(_options, nuxt) {
+    installModule("@ucstu/nuxt-fast-utils");
+
     const options = _options as ModuleOptionsDefaults;
-    const { ssr, appDir, rootDir } = nuxt.options;
 
     const { resolve } = createResolver(import.meta.url);
-    nuxt.options.runtimeConfig.public.fastAuth = {
-      ...options,
-      ssr,
-    };
+    nuxt.options.runtimeConfig.public.fastAuth = options;
 
     nuxt.options.appConfig.fastAuth = {
       provider: {
@@ -56,41 +58,22 @@ export default defineNuxtModule<ModuleOptions>({
           },
         },
       },
-      authHooks: {},
-      pageHooks: {},
     } satisfies AppConfigInput["fastAuth"];
 
-    // Nuxt Bug Patch
-    if (__dirname.endsWith("src")) {
-      nuxt.hook("prepare:types", ({ references }) => {
-        references.push({
-          types: getModulePath(rootDir),
-        });
-      });
-    }
-
-    addTypeTemplate({
-      src: resolve("./runtime/templates/types.d.ts"),
-      filename: "types/ucstu/nuxt-fast-auth.d.ts",
-      options: {
-        self: getModuleName(__dirname.endsWith("src"), rootDir),
-        page: resolve(appDir, "../pages/runtime/composables"),
-        provider:
-          __dirname.endsWith("dist") || rootDir.endsWith("playground")
-            ? options.provider.type
-            : "unknown",
-      },
-    });
-
-    addTemplate({
-      write: true,
-      filename: "types/ucstu/nuxt-fast-auth/config.ts",
-      getContents() {
-        return `export interface FsAuthConfig ${JSON.stringify(
-          options,
-          null,
-          2,
-        )};`;
+    addModuleTypeTemplate({
+      name,
+      options,
+      __dirname,
+      getContents(data) {
+        return `import type { FsAuthMeta, FsAuthPage } from "<%= options.self %>";
+declare module "<%= options.page %>" {
+  interface PageMeta {
+    /**
+     * 页面鉴权配置
+     */
+    auth?: FsAuthPage | FsAuthMeta;
+  }
+}`;
       },
     });
 
@@ -113,7 +96,7 @@ export default defineNuxtModule<ModuleOptions>({
 
     addImportsSources({
       from: resolve(`./runtime/utils`),
-      imports: ["isFsAuthPage"],
+      imports: ["isFsAuthPage", "isFsAuthMeta"],
     });
 
     addRouteMiddleware({
@@ -128,10 +111,18 @@ function getModuleName(isDev: boolean, rootDir: string) {
   return !isDev
     ? `${name}/module`
     : rootDir.endsWith("playground")
-      ? "../../../../src/module"
-      : "../../../src/module";
+    ? "../../../../src/module"
+    : "../../../src/module";
 }
 
-function getModulePath(rootDir: string) {
-  return rootDir.endsWith("playground") ? "../../dist/types" : "../dist/types";
+declare module "@nuxt/schema" {
+  interface CustomAppConfig {
+    fastAuth?: FsAuthConfig;
+  }
+}
+
+declare module "nuxt/schema" {
+  interface CustomAppConfig {
+    fastAuth?: FsAuthConfig;
+  }
 }

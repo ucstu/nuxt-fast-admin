@@ -1,18 +1,16 @@
 import {
-  computed,
+  cookieStorage,
+  getFuConfig,
   navigateTo,
   readonly,
+  sessionCookieStorage,
+  useFuStorage,
   useRuntimeConfig,
   useState,
-  watch,
-  type Ref,
 } from "#imports";
 import type { RouteLocationRaw } from "#vue-router";
-import type { ReadonlyDeep } from "type-fest";
+import { watchImmediate } from "@ucstu/nuxt-fast-utils/exports";
 import type { BaseAuthHooks, FsAuthUser } from "../types";
-import { useCookieSync, useStorageSync } from "../utils";
-import { useAppConfigRef } from "./config";
-import { useTokenExpires } from "./token";
 
 /**
  * 认证状态
@@ -45,60 +43,53 @@ export interface AuthStatus {
  * 使用记住登录
  * @returns 记住登录
  */
-export const useRemember = (): Ref<number | boolean> => {
-  const config = useRuntimeConfig();
-  return (
-    config.public.fastAuth.ssr
-      ? useCookieSync<number | boolean>("fast-auth-remember", {
-          defaultValue: () => false,
-          cookieOptions: computed(() => ({
-            expires: useTokenExpires(true),
-          })),
-        })
-      : useStorageSync<number | boolean>("fast-auth-remember", {
-          storage: "localStorage",
-          defaultValue: () => false,
-        })
-  ) as Ref<number | boolean>;
-};
+export function useRemember() {
+  return useFuStorage<boolean>("fast-auth-remember", false);
+}
+
 /**
  * 使用用户
  * @description 使用用户信息
  * @returns 用户
  */
-export const useUser = (): Ref<FsAuthUser | undefined | null> =>
-  useState<FsAuthUser | undefined | null>("fast-auth-user", () => undefined);
+export function useUser() {
+  return useState<FsAuthUser | undefined | null>(
+    "fast-auth-user",
+    () => undefined
+  );
+}
+
 /**
  * 使用认证状态
  * @returns 认证状态
  */
-export const useStatus = (): Ref<AuthStatus> =>
-  useState<AuthStatus>("fast-auth-status", () => ({
+export function useStatus() {
+  return useState<AuthStatus>("fast-auth-status", () => ({
     signIn: false,
     signUp: false,
     signOut: false,
     getUser: false,
     authed: false,
   }));
+}
+
 /**
  * 使用令牌
  * @returns 令牌
  */
-export const useToken = (): Ref<string | undefined | null> => {
-  const config = useRuntimeConfig();
-  const remember = useRemember();
-  return config.public.fastAuth.ssr
-    ? useCookieSync<string>("fast-auth-token", {
-        cookieOptions: computed(() => ({
-          expires: useTokenExpires(remember.value),
-        })),
-      })
-    : useStorageSync<string>("fast-auth-token", {
-        storage: computed(() =>
-          remember.value ? "localStorage" : "sessionStorage",
-        ),
-      });
-};
+export function useToken() {
+  const remenber = useRemember();
+  const runtimeConfig = useRuntimeConfig().public.fastUtils;
+  return useFuStorage<string | undefined>("fast-auth-token", undefined, () =>
+    runtimeConfig.ssr
+      ? remenber.value
+        ? cookieStorage
+        : sessionCookieStorage
+      : remenber.value
+      ? localStorage
+      : sessionStorage
+  );
+}
 
 /**
  * 跳转选项
@@ -132,7 +123,7 @@ async function signOut(options: SignOutOptions = {}) {
   const user = useUser();
   const token = useToken();
   const status = useStatus();
-  const config = useAppConfigRef("fastAuth").value!;
+  const config = getFuConfig("fastAuth");
 
   const { navigate = false } = options;
 
@@ -151,7 +142,7 @@ async function signOut(options: SignOutOptions = {}) {
   if (navigate) {
     navigateTo(
       navigate === true ? config.pages!.signIn! : navigate,
-      options.navigateOptions,
+      options.navigateOptions
     );
   }
 }
@@ -163,7 +154,7 @@ async function getUser(token?: string | undefined | null) {
   const user = useUser();
   const _token = useToken();
   const status = useStatus();
-  const config = useAppConfigRef("fastAuth").value!;
+  const config = getFuConfig("fastAuth");
 
   status.value.getUser = true;
   const authHooks = config.authHooks as BaseAuthHooks;
@@ -176,25 +167,17 @@ async function getUser(token?: string | undefined | null) {
   status.value.getUser = false;
 }
 
-export type UseAuthRet = {
-  user: ReadonlyDeep<Ref<FsAuthUser | undefined | null>>;
-  token: ReadonlyDeep<Ref<string | undefined | null>>;
-  status: ReadonlyDeep<Ref<AuthStatus>>;
-  remember: Ref<number | boolean>;
-  signOut: typeof signOut;
-  getUser: typeof getUser;
-};
 /**
  * 使用认证
  * @returns 认证
  */
-export function useAuth(): UseAuthRet {
+export function useAuth() {
   const user = useUser();
   const token = useToken();
   const status = useStatus();
   const remember = useRemember();
 
-  watch(user, (value) => (status.value.authed = !!value), { immediate: true });
+  watchImmediate(user, (value) => (status.value.authed = Boolean(value)));
 
   return {
     user: readonly(user),

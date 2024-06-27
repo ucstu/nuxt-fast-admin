@@ -4,17 +4,15 @@
   "private": true,
   "scripts": {
     "dev": "pnpm run --filter @ucstu/nuxt-fast-admin dev",
-    "dev:all": "pnpm run --filter @ucstu/nuxt-fast-* dev",
-    "dev:auth": "pnpm run --filter @ucstu/nuxt-fast-auth dev",
-    "dev:crud": "pnpm run --filter @ucstu/nuxt-fast-crud dev",
-    "dev:nav": "pnpm run --filter @ucstu/nuxt-fast-nav dev",
-    "prepare": "pnpm run --no-bail --filter @ucstu/nuxt-* dev:prepare",
-    "prepack": "pnpm run --no-bail --filter @ucstu/nuxt-* prepack",
-    "release": "pnpm run --no-bail --filter @ucstu/nuxt-* release",
-    "lint": "pnpm run --no-bail --filter @ucstu/nuxt-* lint",
-    "test": "pnpm run --no-bail --filter @ucstu/nuxt-* test",
-    "type-check": "pnpm --no-bail --filter @ucstu/nuxt-* exec tsc --noEmit",
-    "clean": "npx --yes shx rm -rf ./**/dist ./**/.nuxt ./**/node_modules"
+    "dev:doc": "pnpm run --filter @ucstu/nuxt-fast-admin-doc dev",
+    "prepare": "pnpm run --no-bail --filter @ucstu/nuxt-fast-utils dev:prepare && pnpm run --no-bail --filter @ucstu/nuxt-fast-utils prepack && pnpm run --no-bail --filter \"./packages/**\" --filter !@ucstu/nuxt-fast-utils dev:prepare",
+    "prepack": "pnpm run --no-bail --filter \"./packages/**\" prepack",
+    "release": "pnpm run --no-bail --filter \"./packages/**\" release",
+    "lint": "pnpm run --no-bail --filter \"./packages/**\" lint",
+    "test": "pnpm run --no-bail --filter \"./packages/**\" test",
+    "check": "pnpm --no-bail --filter \"./packages/**\" exec tsc --noEmit",
+    "format": "pnpx prettier --write .",
+    "clean": "pnpx shx rm -rf ./**/dist | pnpx shx rm -rf ./**/.nuxt | pnpx shx rm -rf ./**/node_modules"
   },
   "keywords": [
     "nuxt",

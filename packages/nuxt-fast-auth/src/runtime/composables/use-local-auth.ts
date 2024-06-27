@@ -1,6 +1,5 @@
-import { navigateTo } from "#imports";
+import { getFuConfig, navigateTo } from "#imports";
 import type { FsAuthForm, LocalAuthHooks } from "../types";
-import { useAppConfigRef } from "./config";
 import {
   useAuth,
   useRemember,
@@ -8,7 +7,6 @@ import {
   useToken,
   useUser,
   type NavigateOptions,
-  type UseAuthRet,
 } from "./use-auth";
 
 /**
@@ -34,12 +32,12 @@ interface LocalSignOptions extends NavigateOptions {
  */
 async function localSignIn<F extends FsAuthForm = FsAuthForm>(
   form: F,
-  options: LocalSignOptions = {},
+  options: LocalSignOptions = {}
 ) {
   const user = useUser();
   const token = useToken();
   const status = useStatus();
-  const config = useAppConfigRef("fastAuth").value!;
+  const config = getFuConfig("fastAuth");
   const { getUser } = useAuth();
   const rememberRef = useRemember();
 
@@ -60,7 +58,7 @@ async function localSignIn<F extends FsAuthForm = FsAuthForm>(
       if (navigate) {
         navigateTo(
           navigate === true ? config.pages!.home! : navigate,
-          navigateOptions,
+          navigateOptions
         );
       }
     } else if (result) {
@@ -75,7 +73,7 @@ async function localSignIn<F extends FsAuthForm = FsAuthForm>(
       if (navigate) {
         navigateTo(
           navigate === true ? config.pages!.home! : navigate,
-          navigateOptions,
+          navigateOptions
         );
       }
     } else {
@@ -108,10 +106,10 @@ interface LocalSignUpOptions extends LocalSignOptions {
  */
 async function localSignUp<F extends FsAuthForm = FsAuthForm>(
   form: F,
-  options: LocalSignUpOptions = {},
+  options: LocalSignUpOptions = {}
 ) {
   const status = useStatus();
-  const config = useAppConfigRef("fastAuth").value!;
+  const config = getFuConfig("fastAuth");
 
   const { autoSignIn = true } = options;
 
@@ -137,7 +135,7 @@ export type UseLocalAuthRet<F extends FsAuthForm = FsAuthForm> = UseAuthRet & {
  * @returns 本地鉴权
  */
 export function useLocalAuth<
-  F extends FsAuthForm = FsAuthForm,
+  F extends FsAuthForm = FsAuthForm
 >(): UseLocalAuthRet<F> {
   return {
     ...useAuth(),

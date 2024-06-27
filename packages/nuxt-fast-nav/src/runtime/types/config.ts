@@ -1,17 +1,10 @@
-import type {
-  FsNavMenu,
-  FsNavMenuFilled,
-  FsNavMenuKeyOption,
-  FsNavPageFilled,
-  MenuMeta,
-  TabMeta,
-} from "../../module";
+import type { FsNavMenu, FsNavMenuKeys, MenuMeta, TabMeta } from "./base";
 
 export interface FsNavConfig {
   /**
    * 父级菜单
    */
-  menus?: Array<FsNavMenu<FsNavMenuKeyOption>>;
+  menus?: Array<FsNavMenu<FsNavMenuKeys>>;
   /**
    * 菜单配置
    */
@@ -52,38 +45,4 @@ export interface FsNavConfig {
    * @default "/"
    */
   home?: string;
-  /**
-   * 钩子函数
-   */
-  hooks?: {
-    /**
-     * 获取菜单
-     * @param menu 菜单
-     * @description key === "$root" 为根菜单
-     * @returns 菜单
-     */
-    getMenu?: (
-      menu: FsNavMenuFilled,
-    ) => FsNavMenuFilled | undefined | Promise<FsNavMenuFilled | undefined>;
-    /**
-     * 获取页面
-     * @param page 页面
-     * @returns 页面
-     */
-    getPage?: (
-      page: FsNavPageFilled,
-    ) => FsNavPageFilled | undefined | Promise<FsNavPageFilled | undefined>;
-  };
-}
-
-declare module "@nuxt/schema" {
-  interface CustomAppConfig {
-    fastNav?: FsNavConfig;
-  }
-}
-
-declare module "nuxt/schema" {
-  interface CustomAppConfig {
-    fastNav?: FsNavConfig;
-  }
 }

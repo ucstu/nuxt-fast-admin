@@ -1,4 +1,4 @@
-import type { FsAuthMeta, FsAuthPage } from "@ucstu/nuxt-fast-auth/module";
+import type { FsAuthMeta, FsAuthPage } from "@ucstu/nuxt-fast-auth/types";
 import type { DialogApiInjection } from "naive-ui/lib/dialog/src/DialogProvider";
 import type { LoadingBarApiInjection } from "naive-ui/lib/loading-bar/src/LoadingBarProvider";
 import type { MessageApiInjection } from "naive-ui/lib/message/src/MessageProvider";
@@ -84,7 +84,7 @@ export default defineAppConfig({
   fastNav: {
     hooks: {
       getPage(page) {
-        const authConfig = useAppConfigRef("fastAuth");
+        const authConfig = useFuConfig("fastAuth");
 
         if (IGNORE.includes(page.name?.toString() ?? "undefined")) {
           return;

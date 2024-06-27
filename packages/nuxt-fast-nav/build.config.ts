@@ -7,6 +7,7 @@ export default defineBuildConfig({
     "#vue-router",
     "#build/types/app.config",
     "defu",
+    "hookable",
     "lodash-es",
   ],
 });

@@ -1,10 +1,8 @@
-import type { FsNavMenu, FsNavMenuFilled } from "../../module";
-import { useAppConfigRef } from "../composables/config";
+import { fuHooks, getFuConfig } from "#imports";
+import type { FsNavMenu, FsNavMenuFilled } from "../types";
 
-export function _getMenuFilled(
-  menu: FsNavMenu,
-): Omit<FsNavMenuFilled, "children"> {
-  const config = useAppConfigRef("fastNav").value!;
+export function _getMenuFilled(menu: FsNavMenu): Omit<FsNavMenuFilled, "children"> {
+  const config = getFuConfig("fastNav");
 
   const title = menu.title ?? menu.key.toString();
   const icon = menu.icon ?? config.menu!.icon!;
@@ -23,20 +21,18 @@ export function _getMenuFilled(
 }
 
 export async function getMenuFilled(
-  menu: FsNavMenu,
+  menu: FsNavMenu
 ): Promise<FsNavMenuFilled | undefined> {
-  const config = useAppConfigRef("fastNav").value!;
-
-  const menuFilled = {
+  const menuFilled: FsNavMenuFilled = {
     ..._getMenuFilled(menu),
     children: (
       await Promise.all(
-        menu.children?.map((child) => getMenuFilled(child as FsNavMenu)) ?? [],
+        menu.children?.map((child) => getMenuFilled(child as FsNavMenu)) ?? []
       )
     ).filter(Boolean) as Array<FsNavMenuFilled>,
   };
 
-  return config.hooks!.getMenu
-    ? await config.hooks!.getMenu(menuFilled)
+  return fuHooks.hookExists("fast-nav:menu-fill")
+    ? await fuHooks.callHookSync("fast-nav:menu-fill", menuFilled)
     : menuFilled;
 }

@@ -9,26 +9,35 @@ definePageMeta({
   title: "index",
 });
 
-const { crudRef, crudBinding } = useFaCrud("petstore3", {
-  request: {
-    async pageRequest(query, fetch) {
-      return fetch("/pet/findByStatus", {
-        method: "GET",
-        query: {
-          status: "available",
+const { $petstore3 } = useNuxtApp();
+const { crudRef, crudBinding, crudExpose } = useFs({
+  createCrudOptions() {
+    return {
+      crudOptions: {
+        request: {
+          async pageRequest() {
+            return $petstore3("/pet/findByStatus", {
+              method: "GET",
+              query: {
+                status: "available",
+              },
+            });
+          },
         },
-      });
-    },
-  },
-  columns: {
-    id: {
-      title: "ID",
-      type: "number",
-    },
-    name: {
-      title: "Name",
-      type: "text",
-    },
+        columns: {
+          id: {
+            title: "ID",
+            type: "number",
+          },
+          name: {
+            title: "Name",
+            type: "text",
+          },
+        },
+      },
+    };
   },
 });
+
+crudExpose.doRefresh();
 </script>

@@ -1,16 +1,14 @@
 import {
-  computed,
+  cookieStorage,
   navigateTo,
   readonly,
+  useFuStorage,
   useRuntimeConfig,
   useState,
   type Ref,
 } from "#imports";
-import type { ReadonlyDeep } from "type-fest";
+import type { ReadonlyDeep } from "@ucstu/nuxt-fast-utils/types";
 import type { FsAuthForm, RefreshAuthHooks } from "../types";
-import { useCookieSync, useStorageSync } from "../utils";
-import { useAppConfigRef } from "./config";
-import { useTokenExpires } from "./token";
 import {
   useAuth,
   useRemember,
@@ -25,6 +23,9 @@ import {
  * 刷新认证状态
  */
 export interface RefreshAuthStatus extends AuthStatus {
+  /**
+   * 刷新中
+   */
   refresh: boolean;
 }
 
@@ -32,8 +33,8 @@ export interface RefreshAuthStatus extends AuthStatus {
  * 使用认证状态
  * @returns 认证状态
  */
-const useStatus = (): Ref<RefreshAuthStatus> =>
-  useState<RefreshAuthStatus>("fast-auth-status", () => ({
+function useStatus() {
+  return useState<RefreshAuthStatus>("fast-auth-status", () => ({
     signIn: false,
     signUp: false,
     signOut: false,
@@ -41,25 +42,26 @@ const useStatus = (): Ref<RefreshAuthStatus> =>
     authed: false,
     refresh: false,
   }));
+}
+
 /**
  * 使用刷新令牌
  * @returns 刷新令牌
  */
-const useRefreshToken = (): Ref<string | undefined | null> => {
-  const config = useRuntimeConfig();
-  const remember = useRemember();
-  return config.public.fastAuth.ssr
-    ? useCookieSync<string>("fast-auth-refresh-token", {
-        cookieOptions: computed(() => ({
-          expires: useTokenExpires(remember.value),
-        })),
-      })
-    : useStorageSync<string>("fast-auth-refresh-token", {
-        storage: computed(() =>
-          remember.value ? "localStorage" : "sessionStorage",
-        ),
-      });
-};
+function useRefreshToken() {
+  const remenber = useRemember();
+  const runtimeConfig = useRuntimeConfig().public.fastUtils;
+  return useFuStorage<string | undefined>(
+    "fast-auth-refresh-token",
+    undefined,
+    () =>
+      runtimeConfig.ssr
+        ? cookieStorage
+        : remenber.value
+        ? localStorage
+        : sessionStorage
+  );
+}
 
 /**
  * 登录选项
@@ -84,7 +86,7 @@ interface RefreshSignOptions extends NavigateOptions {
  */
 async function refreshSignIn<F extends FsAuthForm = FsAuthForm>(
   form: F,
-  options: RefreshSignOptions = {},
+  options: RefreshSignOptions = {}
 ) {
   const user = useUser();
   const token = useToken();
@@ -92,7 +94,7 @@ async function refreshSignIn<F extends FsAuthForm = FsAuthForm>(
   const { getUser } = useAuth();
   const rememberRef = useRemember();
   const refreshToken = useRefreshToken();
-  const config = useAppConfigRef("fastAuth").value!;
+  const config = getFuConfig("fastAuth");
 
   const { remember = false, navigate = false, navigateOptions } = options;
 
@@ -113,7 +115,7 @@ async function refreshSignIn<F extends FsAuthForm = FsAuthForm>(
       if (navigate) {
         navigateTo(
           navigate === true ? config.pages!.home! : navigate,
-          navigateOptions,
+          navigateOptions
         );
       }
     } else {
@@ -141,7 +143,7 @@ async function refreshSignOut(options: RefreshSignOutOptions = {}) {
   const token = useToken();
   const status = useStatus();
   const refreshToken = useRefreshToken();
-  const config = useAppConfigRef("fastAuth").value!;
+  const config = getFuConfig("fastAuth");
 
   const { navigate = false } = options;
 
@@ -161,7 +163,7 @@ async function refreshSignOut(options: RefreshSignOutOptions = {}) {
   if (navigate) {
     navigateTo(
       navigate === true ? config.pages!.signIn! : navigate,
-      options.navigateOptions,
+      options.navigateOptions
     );
   }
 }
@@ -185,10 +187,10 @@ interface RefreshSignUpOptions extends RefreshSignOptions {
  */
 async function refreshSignUp<F extends FsAuthForm = FsAuthForm>(
   form: F,
-  options: RefreshSignUpOptions = {},
+  options: RefreshSignUpOptions = {}
 ) {
   const status = useStatus();
-  const config = useAppConfigRef("fastAuth").value!;
+  const config = getFuConfig("fastAuth");
 
   const { autoSignIn = true } = options;
 
@@ -211,11 +213,11 @@ async function refreshSignUp<F extends FsAuthForm = FsAuthForm>(
  */
 async function refresh(
   refreshToken?: string | undefined | null,
-  token?: string | undefined | null,
+  token?: string | undefined | null
 ) {
   const _token = useToken();
   const status = useStatus();
-  const config = useAppConfigRef("fastAuth").value!;
+  const config = getFuConfig("fastAuth");
   const { getUser } = useAuth();
   const _refreshToken = useRefreshToken();
 
@@ -225,7 +227,7 @@ async function refresh(
     const result =
       (await authHooks.refresh?.(
         refreshToken ?? _refreshToken.value,
-        token ?? _token.value,
+        token ?? _token.value
       )) || null;
     if (result) {
       _token.value = result.token;

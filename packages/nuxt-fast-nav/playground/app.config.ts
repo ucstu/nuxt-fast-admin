@@ -21,6 +21,6 @@ export default defineAppConfig({
           },
         ],
       },
-    ] as const,
+    ],
   },
 });

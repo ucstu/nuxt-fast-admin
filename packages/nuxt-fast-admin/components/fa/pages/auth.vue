@@ -122,15 +122,15 @@
 </template>
 
 <script setup lang="ts">
-import type { FsAuthForm } from "@ucstu/nuxt-fast-auth/module";
+import type { FsAuthForm } from "@ucstu/nuxt-fast-auth/types";
 import { computedEager } from "@vueuse/core";
 import defu from "defu";
 import type { FormInst, FormRules } from "naive-ui";
 import { FetchError } from "ofetch";
 
 const router = useRouter();
-const adminConfig = useAppConfigRef("fastAdmin");
-const authConfig = useAppConfigRef("fastAdmin.pages.auth");
+const adminConfig = useFuConfig("fastAdmin");
+const authConfig = useFuConfig("fastAdmin.pages.auth");
 const { signIn, signUp, status } = useAuth();
 
 const background = computedEager(() =>

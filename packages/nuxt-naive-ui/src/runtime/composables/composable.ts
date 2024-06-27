@@ -1,45 +1,32 @@
+import { useFuConfig, useFuStorage, useRuntimeConfig } from "#imports";
 import {
-  computed,
-  onMounted,
-  onUnmounted,
-  ref,
-  useRuntimeConfig,
-  watch,
-  type ComputedRef,
-  type Ref,
-} from "#imports";
+  computedEager,
+  useColorMode,
+  useMounted,
+} from "@ucstu/nuxt-fast-utils/exports";
 import {
   darkTheme,
   lightTheme,
-  useOsTheme,
   type GlobalTheme,
   type GlobalThemeOverrides,
 } from "naive-ui";
-import { useCookieSync, useStorageSync } from "../utils/reactivity";
-import { useAppConfigRef } from "./config";
 
-const useTheme = (): Ref<string> => {
-  const config = useAppConfigRef("naiveUi").value!;
-  const runtimeConfig = useRuntimeConfig();
-  return (
-    runtimeConfig.public.naiveUi.ssr
-      ? useCookieSync<string>("naive-ui-theme", {
-          defaultValue: () => config.defaultTheme!,
-          cookieOptions: computed(() => ({
-            expires: new Date(Date.now() + 400 * 24 * 60 * 60 * 1000),
-          })),
-        })
-      : useStorageSync<string>("naive-ui-theme", {
-          storage: "localStorage",
-          defaultValue: () => config.defaultTheme!,
-        })
-  ) as Ref<string>;
-};
+export function useNaiveUiTheme(theme?: string) {
+  const config = useFuConfig("naiveUi");
+  const colorMode = useColorMode({
+    storageRef: useFuStorage(
+      "naive-ui-theme",
+      () => config.value.defaultTheme ?? "auto",
+    ),
+  });
+  if (theme) colorMode.value = theme;
+  return colorMode;
+}
 
 function getTheme(
   theme: string,
-  themes?: Record<string, Omit<GlobalTheme, "name">>,
-): GlobalTheme | undefined {
+  themes?: Partial<Record<string, GlobalTheme>>,
+) {
   switch (theme) {
     case "auto":
       return undefined;
@@ -48,70 +35,50 @@ function getTheme(
     case "light":
       return lightTheme;
     default:
-      return themes?.[theme] ? { name: theme, ...themes[theme] } : undefined;
+      return themes?.[theme];
   }
 }
 
 function getThemeOverrides(
   theme: string,
   themesOverrides?: Partial<Record<string, GlobalThemeOverrides>>,
-): GlobalThemeOverrides | undefined {
+) {
   if (theme === "auto") return undefined;
   return themesOverrides?.[theme];
 }
 
-type UseNiaveUiThemeRet = {
-  theme: ComputedRef<GlobalTheme | undefined>;
-  current: Ref<string>;
-  themeOverrides: ComputedRef<GlobalThemeOverrides | undefined>;
-};
-export function useNiaveUiTheme(theme?: string): UseNiaveUiThemeRet {
-  const osTheme = useOsTheme();
-  const currentTheme = useTheme();
-  const config = useAppConfigRef("naiveUi");
-  const runtimeConfig = useRuntimeConfig();
+export function useNaiveUiThemeConfig() {
+  const isMounted = useMounted();
+  const config = useFuConfig("naiveUi");
+  const runtimeConfig = useRuntimeConfig().public.fastUtils;
+  const { store, system } = useNaiveUiTheme();
 
-  if (theme) {
-    currentTheme.value = theme;
-  }
-
-  const realTheme = ref<string>(
-    currentTheme.value === "auto" || currentTheme.value == "auto"
-      ? "light"
-      : currentTheme.value,
+  const theme = computedEager(() =>
+    store.value === "auto"
+      ? runtimeConfig.ssr
+        ? isMounted.value
+          ? system.value
+          : "light"
+        : system.value
+      : store.value,
   );
 
-  if (runtimeConfig.public.naiveUi.ssr) {
-    onMounted(() => {
-      const unWatch = watch(
-        [currentTheme, osTheme],
-        ([currentTheme, osTheme]) => {
-          realTheme.value =
-            currentTheme === "auto" ? osTheme ?? currentTheme : currentTheme;
-        },
-        { immediate: true },
-      );
-      onUnmounted(unWatch);
-    });
-  } else {
-    const unWatch = watch(
-      [currentTheme, osTheme],
-      ([currentTheme, osTheme]) => {
-        realTheme.value =
-          currentTheme === "auto" ? osTheme ?? currentTheme : currentTheme;
-      },
-      { immediate: true },
-    );
-    onUnmounted(unWatch);
-  }
+  const customThemes = computedEager(
+    () =>
+      Object.fromEntries(
+        Object.entries(config.value.customThemes ?? {}).map(([key, value]) => [
+          key,
+          {
+            ...value,
+            name: key,
+          },
+        ]),
+      ) as Record<string, GlobalTheme>,
+  );
+  const themesOverrides = computedEager(() => config.value.themesOverrides);
 
-  return {
-    theme: computed(() =>
-      getTheme(realTheme.value, config.value!.customThemes ?? {}),
-    ),
-    current: currentTheme,
-    themeOverrides: computed(() =>
-      getThemeOverrides(realTheme.value, config.value!.themesOverrides ?? {}),
-    ),
-  };
+  return computedEager(() => ({
+    theme: getTheme(theme.value, customThemes.value),
+    themeOverrides: getThemeOverrides(theme.value, themesOverrides.value),
+  }));
 }

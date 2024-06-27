@@ -11,9 +11,9 @@
     >
       user: {{ user }}<br >
       token: {{ token }}<br >
-      admin: {{ $auth("admin") }}
+      admin: {{ auth("admin") }}
     </button>
-    <el-input :readonly="!$auth('admin')" type="text" value="admin" />
+    <!-- <el-input :readonly="!auth('admin')" type="text" value="admin" /> -->
     <button
       @click="
         signOut({

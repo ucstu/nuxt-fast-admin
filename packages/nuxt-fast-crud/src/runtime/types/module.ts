@@ -1,4 +1,4 @@
-import type { RequiredDeep } from "type-fest";
+import type { RequiredDeep } from "@ucstu/nuxt-fast-utils/types";
 
 export interface ModuleOptions {
   /**

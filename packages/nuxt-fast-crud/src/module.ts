@@ -1,14 +1,23 @@
+import FastCrud from "@fast-crud/fast-crud";
 import {
   addComponent,
   addImportsSources,
   addPlugin,
+  addTemplate,
+  addTypeTemplate,
   createResolver,
   defineNuxtModule,
   extendViteConfig,
+  installModule,
 } from "@nuxt/kit";
 import type { AppConfigInput } from "@nuxt/schema";
+import { camelCase, upperFirst } from "lodash-es";
 import { name, version } from "../package.json";
-import type { ModuleOptions, ModuleOptionsDefaults } from "./runtime/types";
+import type {
+  FsCrudConfig,
+  ModuleOptions,
+  ModuleOptionsDefaults,
+} from "./runtime/types";
 
 export type * from "./runtime/types";
 
@@ -22,11 +31,13 @@ export default defineNuxtModule<ModuleOptions>({
     framework: "naive",
   } satisfies ModuleOptionsDefaults,
   setup(_options, nuxt) {
+    installModule("@ucstu/nuxt-fast-utils");
+
     const options = _options as ModuleOptionsDefaults;
     const { rootDir } = nuxt.options;
 
     const { resolve } = createResolver(import.meta.url);
-    nuxt.options.runtimeConfig.public.fastCrud = options as any;
+    nuxt.options.runtimeConfig.public.fastCrud = options;
 
     nuxt.options.appConfig.fastCrud = {
       fsSetupOptions: {
@@ -38,15 +49,6 @@ export default defineNuxtModule<ModuleOptions>({
       },
     } satisfies AppConfigInput["fastCrud"];
 
-    // Nuxt Bug Patch
-    if (__dirname.endsWith("src")) {
-      nuxt.hook("prepare:types", ({ references }) => {
-        references.push({
-          types: getModulePath(rootDir),
-        });
-      });
-    }
-
     if (options.framework === "naive") {
       if (process.env.NODE_ENV === "development") {
         const optimizeDeps = ["naive-ui"];
@@ -55,7 +57,7 @@ export default defineNuxtModule<ModuleOptions>({
           config.optimizeDeps.include ||= [];
           for (const item of optimizeDeps) {
             if (!config.optimizeDeps.include.includes(item)) {
-              config.optimizeDeps.include.push(item);
+              config.optimizeDeps.include.push(`${name} > ${item}`);
             }
           }
         });
@@ -93,67 +95,51 @@ export default defineNuxtModule<ModuleOptions>({
         config.optimizeDeps.include ||= [];
         for (const item of optimizeDeps) {
           if (!config.optimizeDeps.include.includes(item)) {
-            config.optimizeDeps.include.push(item);
+            config.optimizeDeps.include.push(`${name} > ${item}`);
           }
         }
       });
     }
-    nuxt.options.build.transpile.push(
+    const transpile = [
       "@fast-crud/fast-crud",
       "@fast-crud/fast-extends",
       "@fast-crud/ui-interface",
       `@fast-crud/ui-${options.framework}`,
-    );
+    ];
+    for (const item of transpile) {
+      if (!nuxt.options.build.transpile.includes(item)) {
+        nuxt.options.build.transpile.push(item);
+      }
+    }
+
+    addTemplate({
+      write: true,
+      filename: "types/ucstu/nuxt-fast-crud/options.ts",
+      getContents() {
+        return `export interface _FsCrudOptions ${JSON.stringify(
+          options,
+          null,
+          2
+        )};`;
+      },
+    });
+
+    addTypeTemplate({
+      src: resolve("./runtime/templates/types.d.ts"),
+      filename: "types/ucstu/nuxt-fast-auth.d.ts",
+      options: {
+        self: getModuleName(__dirname.endsWith("src"), rootDir),
+      },
+    });
 
     addPlugin({
       name,
       src: resolve(`./runtime/plugins/${options.framework}`),
     });
 
-    const components = [
-      "FsActionbar",
-      "FsBox",
-      "FsButton",
-      "FsCell",
-      "FsColumnsFilterLayoutDefault",
-      "FsComponentRender",
-      "FsContainer",
-      "FsCrud",
-      "FsDateFormat",
-      "FsDictCascader",
-      "FsDictCascaderFormat",
-      "FsDictCheckbox",
-      "FsDictRadio",
-      "FsDictSelect",
-      "FsDictSwitch",
-      "FsDictTree",
-      "FsEditable",
-      "FsEditableCell",
-      "FsForm",
-      "FsFormHelper",
-      "FsFormItem",
-      "FsFormProvider",
-      "FsFormWrapper",
-      "FsIcon",
-      "FsIconSvg",
-      "FsIconify",
-      "FsLabel",
-      "FsLayoutCard",
-      "FsLayoutDefault",
-      "FsLoading",
-      "FsPage",
-      "FsRender",
-      "FsRowHandle",
-      "FsSearch",
-      "FsSearchLayoutDefault",
-      "FsSearchV1",
-      "FsSlotRender",
-      "FsTable",
-      "FsTableSelect",
-      "FsTabsFilter",
-      "FsToolbar",
-      "FsValuesFormat",
-    ];
+    const components = Object.keys(FastCrud).filter((name) =>
+      /^Fs[A-Z]|fs-[a-z]/.test(name)
+    );
 
     const clientOnlyComponents = ["FsCrud"];
 
@@ -162,25 +148,15 @@ export default defineNuxtModule<ModuleOptions>({
         name,
         export: name,
         filePath: resolve("./runtime/components"),
-        mode: clientOnlyComponents.includes(name) ? "client" : "all",
+        mode: clientOnlyComponents.includes(upperFirst(camelCase(name)))
+          ? "client"
+          : "all",
       });
     });
 
-    const composables = [
-      "useColumns",
-      "useCompute",
-      "useCrud",
-      "useDict",
-      "useDictDefine",
-      "useDrag",
-      "useExpose",
-      "useFormWrapper",
-      "useFs",
-      "useFsAsync",
-      "useTypes",
-      "useUi",
-      "useUiRender",
-    ];
+    const composables = Object.keys(FastCrud).filter(
+      (name) => /^use[A-Z]/.test(name) || ["dict"].includes(name)
+    );
 
     addImportsSources({
       from: resolve("./runtime/composables"),
@@ -189,6 +165,22 @@ export default defineNuxtModule<ModuleOptions>({
   },
 });
 
-function getModulePath(rootDir: string) {
-  return rootDir.endsWith("playground") ? "../../dist/types" : "../dist/types";
+function getModuleName(isDev: boolean, rootDir: string) {
+  return !isDev
+    ? `${name}/module`
+    : rootDir.endsWith("playground")
+    ? "../../../../src/module"
+    : "../../../src/module";
+}
+
+declare module "@nuxt/schema" {
+  interface CustomAppConfig {
+    fastCrud?: FsCrudConfig;
+  }
+}
+
+declare module "nuxt/schema" {
+  interface CustomAppConfig {
+    fastCrud?: FsCrudConfig;
+  }
 }

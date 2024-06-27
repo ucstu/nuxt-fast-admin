@@ -2,9 +2,9 @@ import type { ResolvedAppConfig } from "#build/types/app.config";
 import type { RouteMeta, RouteRecordName } from "#vue-router";
 import type { LiteralUnion, RequiredDeep, SetFieldType } from "type-fest";
 
-export interface FsNavConfigOption {}
+export interface FsNavOptions {}
 
-export interface FsNavMenuKeyOption {}
+export interface FsNavMenuKeys {}
 
 type KeysDeep<
   M extends Array<FsNavMenu>,
@@ -12,28 +12,28 @@ type KeysDeep<
   I extends number = 30,
   IA extends number[] = [],
   D extends number = 10,
-  DA extends number[] = [],
+  DA extends number[] = []
 > = M["length"] extends IA["length"]
   ? never
   : I extends IA["length"]
-    ? never
-    : // 自身
-      | `${P}${Exclude<M[IA["length"]]["key"], symbol>}`
-        // 子级
-        | (M[IA["length"]]["children"] extends Array<FsNavMenu>
-            ? DA["length"] extends D
-              ? never
-              : KeysDeep<
-                  M[IA["length"]]["children"],
-                  `${P}${Exclude<M[IA["length"]]["key"], symbol>}.`,
-                  I,
-                  [],
-                  D,
-                  [0, ...DA]
-                >
-            : never)
-        // 下一个
-        | KeysDeep<M, P, I, [0, ...IA], D, []>;
+  ? never
+  : // 自身
+    | `${P}${Exclude<M[IA["length"]]["key"], symbol>}`
+      // 子级
+      | (M[IA["length"]]["children"] extends Array<FsNavMenu>
+          ? DA["length"] extends D
+            ? never
+            : KeysDeep<
+                M[IA["length"]]["children"],
+                `${P}${Exclude<M[IA["length"]]["key"], symbol>}.`,
+                I,
+                [],
+                D,
+                [0, ...DA]
+              >
+          : never)
+      // 下一个
+      | KeysDeep<M, P, I, [0, ...IA], D, []>;
 
 export interface BaseMeta {
   /**
@@ -102,8 +102,8 @@ interface MenuMetaParent {
   parent?:
     | "$root"
     | LiteralUnion<
-        FsNavConfigOption extends { check: { parent: boolean } }
-          ? FsNavConfigOption["check"]["parent"] extends true
+        FsNavOptions extends { check: { parent: boolean } }
+          ? FsNavOptions["check"]["parent"] extends true
             ? ResolvedAppConfig["fastNav"] extends { menus: Array<FsNavMenu> }
               ? KeysDeep<ResolvedAppConfig["fastNav"]["menus"]>
               : string
