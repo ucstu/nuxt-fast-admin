@@ -1,74 +1,88 @@
+import { computed, getRouteMeta, useRouter, useState } from "#imports";
+import type { LocationQuery } from "#vue-router";
 import {
-  getFuConfig,
-  navigateTo,
-  toValue,
-  useRouter,
-  useState,
-  type MaybeRefOrGetter,
-} from "#imports";
-import { type RouteLocationNormalized } from "#vue-router";
-import type { FsNavPageFilled } from "../types";
-import { isFsNavPageEqual } from "../utils";
+  createSharedComposable,
+  extendRef,
+} from "@ucstu/nuxt-fast-utils/exports";
+import defu from "defu";
+import { isEqual } from "lodash-es";
+import type { BaseMeta, TabMeta } from "../types";
 
-export function useHistories() {
-  return useState<Array<string>>("fast-nav:histories", () => []);
+interface History {
+  /**
+   * 页面路径
+   */
+  path: string;
+  /**
+   * 查询参数
+   */
+  query?: LocationQuery;
+  /**
+   * 元数据
+   */
+  meta?: BaseMeta & {
+    /**
+     * 标签配置
+     */
+    tab?: TabMeta;
+  };
 }
 
-export function useCurrentPage() {
-  return useRouter().currentRoute.value.meta as FsNavPageFilled;
+function historyEqual(a: History, b: History) {
+  return a.path === b.path && isEqual(a.query, b.query);
 }
 
-export async function openPage(
-  route: MaybeRefOrGetter<RouteLocationNormalized>
-) {
-  const page = toValue(route).meta as FsNavPageFilled;
-  const histories = useHistories();
-  if (
-    !page ||
-    histories.value.some((history) => isFsNavPageEqual(page, history))
-  )
-    return;
-  histories.value.push(page);
-}
+export const useHistories = createSharedComposable(() => {
+  const { currentRoute } = useRouter();
 
-export async function closePage(page?: FsNavPageFilled) {
-  const histories = useHistories();
-  const current = useCurrentPage();
-  const config = getFuConfig("fastNav");
-
-  page ??= current;
-
-  const index = histories.value.findIndex((history) =>
-    isFsNavPageEqual(page, history)
+  const histories = useState<Array<History>>("fast-nav:histories", () => []);
+  const result = computed(() =>
+    histories.value.map((item) => ({
+      ...item,
+      meta: defu(item.meta ?? {}, getRouteMeta(item.path)) as Exclude<
+        History["meta"],
+        undefined
+      >,
+    }))
   );
-  // 如果没有找到页面，则不关闭
-  if (!page || index === -1) return;
-  // 如果关闭的不是当前页面，则直接关闭
-  if (!isFsNavPageEqual(page, current)) {
-    histories.value.splice(index, 1);
-    return;
-  }
-  // 如果是最后一个页面并且是首页，则不关闭
-  if (histories.value.length === 1 && page.path === config.home) return;
-  // 关闭当前页面
-  histories.value.splice(index, 1);
-  // 导航到旁边页面或者首页
-  await navigateTo(
-    histories.value[index] ?? histories.value[index - 1] ?? config.home
+  const current = computed(() =>
+    result.value.find((item) => historyEqual(item, currentRoute.value))
   );
-}
 
-export async function closeAllPages() {
-  const histories = useHistories();
-  const config = getFuConfig("fastNav");
-  histories.value = [];
-  await navigateTo(config.home);
-}
-
-export async function closeOtherPages(page?: FsNavPageFilled) {
-  const histories = useHistories();
-  const current = useCurrentPage();
-  histories.value = histories.value.filter(
-    (history) => !isFsNavPageEqual(page ?? current, history)
-  );
-}
+  return extendRef(result, {
+    current,
+    open(history = current.value) {
+      if (!history) return;
+      const index = histories.value.findIndex((item) =>
+        historyEqual(item, history)
+      );
+      if (index !== -1) {
+        if (!isEqual(histories.value[index].meta, history.meta)) {
+          histories.value[index].meta = history.meta;
+        }
+        return;
+      }
+      histories.value.push(history);
+    },
+    close(history = current.value) {
+      if (!history) return;
+      const index = histories.value.findIndex((item) =>
+        historyEqual(item, history)
+      );
+      if (index === -1) return;
+      histories.value.splice(index, 1);
+    },
+    closeAll() {
+      histories.value.splice(0, histories.value.length);
+    },
+    closeOthers(history = current.value) {
+      if (!history) return;
+      const index = histories.value.findIndex((item) =>
+        historyEqual(item, history)
+      );
+      if (index === -1) return;
+      histories.value.splice(0, index);
+      histories.value.splice(1, histories.value.length);
+    },
+  });
+});

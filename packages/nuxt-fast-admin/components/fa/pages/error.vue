@@ -98,10 +98,10 @@ import { computedEager } from "@vueuse/core";
 import defu from "defu";
 import type { NResult } from "naive-ui";
 import {
-  ErrorIcon,
-  InfoIcon,
-  SuccessIcon,
-  WarningIcon,
+    ErrorIcon,
+    InfoIcon,
+    SuccessIcon,
+    WarningIcon,
 } from "naive-ui/es/_internal/icons/index";
 import { FetchError } from "ofetch";
 import type { ErrorLevel } from "../../../types/base";
@@ -153,8 +153,8 @@ const emit = defineEmits<{
 }>();
 
 const router = useRouter();
-const adminConfig = useFuConfig("fastAdmin");
-const authConfig = useFuConfig("fastAuth");
+const adminConfig = refAppConfig("fastAdmin");
+const authConfig = refAppConfig("fastAuth");
 
 function isFetchError(error: Error | undefined | null): error is FetchError {
   return error instanceof FetchError;

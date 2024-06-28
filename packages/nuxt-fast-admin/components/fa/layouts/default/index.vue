@@ -48,10 +48,10 @@
 <script lang="ts">
 import type { NLayoutSider } from "#components";
 import {
-  createInjectionState,
-  useDraggable,
-  useElementSize,
-  useFullscreen,
+    createInjectionState,
+    useDraggable,
+    useElementSize,
+    useFullscreen,
 } from "@vueuse/core";
 
 const [useProvideDefaultLayoutStore, useDefaultLayoutStore] =
@@ -81,7 +81,7 @@ export { useDefaultLayoutStore };
 
 <script setup lang="ts">
 const { content, showPage } = useProvideDefaultLayoutStore();
-const layoutConfig = useFuConfig("fastAdmin.layouts.default");
+const layoutConfig = refAppConfig("fastAdmin.layouts.default");
 
 // #region 菜单栏
 const resizer = ref<HTMLElement>();

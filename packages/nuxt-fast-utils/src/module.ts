@@ -49,7 +49,15 @@ export default defineNuxtModule<ModuleOptions>({
 
     addImportsSources({
       from: resolve("./runtime/composables"),
-      imports: ["toRefDeep", "useFuConfig", "getFuConfig", "useFuStorage"],
+      imports: [
+        "toRefDeep",
+        "useStorage",
+        "refAppConfig",
+        "getAppConfig",
+        "useRouteMeta",
+        "getRouteMeta",
+        "useRouteMetas",
+      ],
     });
 
     addImportsSources({

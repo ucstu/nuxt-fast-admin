@@ -36,7 +36,7 @@ import defu from "defu";
 import type { FunctionalComponent } from "vue";
 
 const { isLoading } = useLoadingIndicator();
-const appConfig = useFuConfig("fastAdmin.app");
+const appConfig = refAppConfig("fastAdmin.app");
 const RegisterFeedbackGlobal: FunctionalComponent = () => {
   globalThis.$dialog = useDialog();
   globalThis.$loadingBar = useLoadingBar();

@@ -11,7 +11,7 @@ export default defineNuxtPlugin({
     const { refreshMenus } = useNav();
     const runtimeConfig = useRuntimeConfig();
     const { token, user, getUser } = useAuth();
-    const adminConfig = useFuConfig("fastAdmin");
+    const adminConfig = refAppConfig("fastAdmin");
 
     if (adminConfig.value.app!.head) {
       addRouteMiddleware((to) => {

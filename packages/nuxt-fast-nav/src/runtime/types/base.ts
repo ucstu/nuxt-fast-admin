@@ -1,5 +1,5 @@
 import type { ResolvedAppConfig } from "#build/types/app.config";
-import type { RouteMeta, RouteRecordName } from "#vue-router";
+import type { LocationQuery, RouteMeta, RouteRecordName } from "#vue-router";
 import type {
   LiteralUnion,
   RequiredDeep,
@@ -163,3 +163,23 @@ export interface FsNavMenuWithPages extends Omit<FsNavMenuFilled, "children"> {
   children?: Array<FsNavMenuOrPage>;
 }
 export type FsNavMenuOrPage = FsNavMenuWithPages | FsNavPageFilled;
+
+export interface FsNavHistory {
+  /**
+   * 页面路径
+   */
+  path: string;
+  /**
+   * 查询参数
+   */
+  query?: LocationQuery;
+  /**
+   * 元数据
+   */
+  meta?: BaseMeta & {
+    /**
+     * 标签配置
+     */
+    tab?: TabMeta;
+  };
+}

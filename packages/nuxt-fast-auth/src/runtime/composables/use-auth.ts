@@ -1,6 +1,6 @@
 import {
   cookieStorage,
-  getFuConfig,
+  getAppConfig,
   navigateTo,
   readonly,
   sessionCookieStorage,
@@ -123,7 +123,7 @@ async function signOut(options: SignOutOptions = {}) {
   const user = useUser();
   const token = useToken();
   const status = useStatus();
-  const config = getFuConfig("fastAuth");
+  const config = getAppConfig("fastAuth");
 
   const { navigate = false } = options;
 
@@ -154,7 +154,7 @@ async function getUser(token?: string | undefined | null) {
   const user = useUser();
   const _token = useToken();
   const status = useStatus();
-  const config = getFuConfig("fastAuth");
+  const config = getAppConfig("fastAuth");
 
   status.value.getUser = true;
   const authHooks = config.authHooks as BaseAuthHooks;

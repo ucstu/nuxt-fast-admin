@@ -38,8 +38,8 @@
 </template>
 
 <script setup lang="tsx">
-const adminConfig = useFuConfig("fastAdmin");
-const menuConfig = useFuConfig("fastAdmin.layouts.default.menu");
+const adminConfig = refAppConfig("fastAdmin");
+const menuConfig = refAppConfig("fastAdmin.layouts.default.menu");
 
 const { currentPage, menus } = useNav();
 const options = useMenuOptions(menus);

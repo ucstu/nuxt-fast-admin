@@ -4,8 +4,8 @@ import { getRouteMetas as getRouteMeta } from "../utils";
 export default defineNuxtPlugin({
   enforce: "pre",
   async setup(nuxtApp) {
-    nuxtApp.hook("fast-utils:route", async (route, meta) => {
-      Object.assign(meta, getRouteMeta(route));
+    nuxtApp.hook("fast-utils:get-route-meta", async (route, meta) => {
+      Object.assign(meta, getRouteMeta(route, meta));
     });
   },
 });

@@ -1,31 +1,32 @@
-import { callWithNuxt, useRuntimeConfig } from "#app";
-import { defineNuxtPlugin, useFuConfig, useRouter } from "#imports";
-import { openPage, useMenus } from "../composables";
-import type { FsNavPageFilled } from "../types";
-import { addPageToMenus, getMenuFilled, sortMenus } from "../utils";
+import {
+  defineNuxtPlugin,
+  refAppConfig,
+  useRouteMetas,
+  useRouter,
+} from "#imports";
+import { watchDeep } from "@ucstu/nuxt-fast-utils/exports";
+import { useHistories } from "../composables";
+import type { FsNavHistory } from "../types";
 
 export default defineNuxtPlugin({
-  dependsOn: ["@ucstu/nuxt-fast-utils"],
   async setup(nuxtApp) {
-    const menus = useMenus();
     const router = useRouter();
-    const config = useFuConfig("fastNav");
-    const runtimeConfig = useRuntimeConfig();
+    const { open } = useHistories();
+    const { refresh } = useRouteMetas();
+    const config = refAppConfig("fastNav");
 
-    router.afterEach((to) => callWithNuxt(nuxtApp, () => openPage(to)));
-
-    // 如果开启了 SSR 并且是客户端环境，则不重复初始化菜单
-    if (runtimeConfig.public.fastUtils.ssr && import.meta.client) return;
-
-    if (!config.value.menus) config.value.menus = [];
-    await nuxtApp.callHook("fast-nav:menus", config.value.menus);
-    menus.value = getMenuFilled({
-      key: "$root",
-      children: config.value.menus,
+    router.afterEach(async (to) => {
+      const history: FsNavHistory = {
+        path: to.path,
+        query: to.query,
+      };
+      await nuxtApp.callHook("fast-nav:get-history", to, history);
+      open(history);
     });
-    for (const route of router.getRoutes()) {
-      addPageToMenus(route.meta as FsNavPageFilled, menus.value);
-    }
-    sortMenus(menus.value);
+
+    watchDeep(
+      () => config.value.page,
+      () => refresh()
+    );
   },
 });

@@ -1,12 +1,5 @@
-import type {
-  RouteLocationNormalized,
-  RouteLocationRaw,
-  RouteRecordNormalized,
-} from "#vue-router";
+import type { RouteMeta } from "#vue-router";
 
-export type RouteRecordOrLocation =
-  | RouteRecordNormalized
-  | RouteLocationNormalized
-  | RouteLocationRaw;
-
-export interface FsUtilsRouteMeta {}
+export interface RouteMetas<T extends RouteMeta = RouteMeta> {
+  [path: string]: T;
+}

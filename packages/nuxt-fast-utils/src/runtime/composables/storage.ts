@@ -1,44 +1,44 @@
 import { cookieStorage, customRef, watch } from "#imports";
 import {
+  useStorage as _useStorage,
   toRef,
-  useStorage,
   type MaybeRefOrGetter,
   type RemovableRef,
   type StorageLike,
   type UseStorageOptions,
 } from "@vueuse/core";
 
-export function useFuStorage(
+export function useStorage(
   key: string,
   defaults: MaybeRefOrGetter<string>,
   storage?: MaybeRefOrGetter<StorageLike>,
   options?: UseStorageOptions<string>
 ): RemovableRef<string>;
-export function useFuStorage(
+export function useStorage(
   key: string,
   defaults: MaybeRefOrGetter<boolean>,
   storage?: MaybeRefOrGetter<StorageLike>,
   options?: UseStorageOptions<boolean>
 ): RemovableRef<boolean>;
-export function useFuStorage(
+export function useStorage(
   key: string,
   defaults: MaybeRefOrGetter<number>,
   storage?: MaybeRefOrGetter<StorageLike>,
   options?: UseStorageOptions<number>
 ): RemovableRef<number>;
-export function useFuStorage<T>(
+export function useStorage<T>(
   key: string,
   defaults: MaybeRefOrGetter<T>,
   storage?: MaybeRefOrGetter<StorageLike>,
   options?: UseStorageOptions<T>
 ): RemovableRef<T>;
-export function useFuStorage<T = unknown>(
+export function useStorage<T = unknown>(
   key: string,
   defaults: MaybeRefOrGetter<null>,
   storage?: MaybeRefOrGetter<StorageLike>,
   options?: UseStorageOptions<T>
 ): RemovableRef<T>;
-export function useFuStorage<T>(
+export function useStorage<T>(
   key: string,
   defaults: MaybeRefOrGetter<T>,
   storage: MaybeRefOrGetter<StorageLike> | undefined,
@@ -49,9 +49,9 @@ export function useFuStorage<T>(
     storageRef.value = cookieStorage;
   }
   return customRef((track, trigger) => {
-    let storageValue = useStorage(key, defaults, storageRef.value, options);
+    let storageValue = _useStorage(key, defaults, storageRef.value, options);
     watch(storageRef, (newStorage) => {
-      storageValue = useStorage(key, defaults, newStorage, options);
+      storageValue = _useStorage(key, defaults, newStorage, options);
       trigger();
     });
     return {

@@ -84,7 +84,7 @@ export default defineAppConfig({
   fastNav: {
     hooks: {
       getPage(page) {
-        const authConfig = useFuConfig("fastAuth");
+        const authConfig = refAppConfig("fastAuth");
 
         if (IGNORE.includes(page.name?.toString() ?? "undefined")) {
           return;

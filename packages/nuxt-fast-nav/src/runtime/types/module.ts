@@ -1,6 +1,7 @@
+import type { RouteLocationNormalizedGeneric } from "#vue-router";
 import type { HookResult } from "@nuxt/schema";
 import type { RequiredDeep } from "@ucstu/nuxt-fast-utils/types";
-import type { FsNavMenu, FsNavMenuFilled, FsNavMenuKeys } from "./base";
+import type { FsNavHistory } from "./base";
 
 export interface ModuleOptions {
   /**
@@ -22,6 +23,8 @@ export interface ModulePublicRuntimeConfig {
 }
 
 export interface ModuleRuntimeHooks {
-  "fast-nav:menus": (menus: Array<FsNavMenu<FsNavMenuKeys>>) => HookResult;
-  "fast-nav:menu": (result: FsNavMenuFilled) => HookResult;
+  "fast-nav:get-history": (
+    to: RouteLocationNormalizedGeneric,
+    result: FsNavHistory
+  ) => HookResult;
 }

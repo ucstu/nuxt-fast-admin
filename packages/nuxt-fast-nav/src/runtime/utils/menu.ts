@@ -1,10 +1,10 @@
-import { getFuConfig } from "#imports";
+import { getAppConfig } from "#imports";
 import type { FsNavMenu, FsNavMenuFilled } from "../types";
 
 export function getMenuFilled(
   menu: FsNavMenu
 ): Omit<FsNavMenuFilled, "children"> {
-  const config = getFuConfig("fastNav");
+  const config = getAppConfig("fastNav");
 
   const title = menu.title ?? menu.key.toString();
   const icon = menu.icon ?? config.menu!.icon!;

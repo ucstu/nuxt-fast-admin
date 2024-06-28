@@ -1,23 +1,19 @@
-import { getFuConfig } from "#imports";
-import type {
-  RouteLocationNormalizedLoaded,
-  RouteRecordNormalized,
-} from "#vue-router";
+import { getAppConfig } from "#imports";
+import type { RouteMeta, RouteRecordNormalized } from "#vue-router";
 import type { FsNavPage, FsNavPageFilled } from "../types";
 
-function getRouteParent(
-  route: RouteRecordNormalized | RouteLocationNormalizedLoaded
-) {
+function getRouteParent(route: RouteRecordNormalized) {
   if (typeof route.name !== "string") return "$root";
   return route.name.split("-").slice(0, -1).join(".") || "$root";
 }
 
 export function getRouteMetas(
-  route: RouteRecordNormalized | RouteLocationNormalizedLoaded
+  route: RouteRecordNormalized,
+  meta: RouteMeta
 ): FsNavPageFilled {
-  const config = getFuConfig("fastNav");
+  const config = getAppConfig("fastNav");
 
-  const { name, path, meta } = route;
+  const { name, path, children } = route;
   const title = meta.title ?? name?.toString() ?? "undefined";
   const icon = meta.icon ?? config.page!.icon!;
   const desc = meta.desc ?? "";
@@ -34,7 +30,10 @@ export function getRouteMetas(
       icon: meta.menu?.icon ?? icon,
       desc: meta.menu?.desc ?? desc,
       has: meta.menu?.has ?? config.page!.menu!.has!,
-      show: meta.menu?.show ?? config.page!.menu!.show!,
+      show:
+        meta.menu?.show ?? children.length > 0
+          ? config.page!.menu!.show!
+          : false,
       parent: encodeURI(meta.menu?.parent ?? getRouteParent(route)) as Exclude<
         Exclude<FsNavPage["menu"], undefined>["parent"],
         undefined

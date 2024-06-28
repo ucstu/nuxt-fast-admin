@@ -1,24 +1,24 @@
 import type { ResolvedAppConfig } from "#build/types/app.config";
 import { useAppConfig } from "#imports";
+import { get } from "lodash-es";
 import type { Get, LiteralUnion, Paths } from "type-fest";
 import { toRefDeep, type ToRefDeep } from "./reactivity";
 
 type AppConfig = ReturnType<typeof useAppConfig>;
 type Keys = LiteralUnion<Paths<ResolvedAppConfig>, string>;
 
-export function useFuConfig<K extends Keys = Keys>(
+export function refAppConfig<K extends Keys = Keys>(
   key: K
 ): ToRefDeep<AppConfig, K>;
-export function useFuConfig<
+export function refAppConfig<
   D extends Get<AppConfig, `${K}`>,
   K extends Keys = Keys
 >(key: K, defaultValue: D): ToRefDeep<AppConfig, K, D>;
-export function useFuConfig<D extends Get<AppConfig, `${K}`>, K extends Keys = Keys>(
-  key: K,
-  defaultValue: undefined,
-  direct: boolean
-): D;
-export function useFuConfig<
+export function refAppConfig<
+  D extends Get<AppConfig, `${K}`>,
+  K extends Keys = Keys
+>(key: K, defaultValue: undefined, direct: boolean): D;
+export function refAppConfig<
   D extends Get<AppConfig, `${K}`> | undefined,
   K extends Keys = Keys
 >(key: K, defaultValue?: D, direct?: boolean) {
@@ -31,8 +31,6 @@ export function useFuConfig<
   return result;
 }
 
-export function getFuConfig<K extends Keys = Keys>(
-  key: K
-): Get<AppConfig, `${K}`> {
-  return useFuConfig(key, undefined, true);
+export function getAppConfig<K extends Keys = Keys>(key: K): AppConfig[K] {
+  return get(useAppConfig(), key);
 }

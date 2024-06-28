@@ -143,7 +143,7 @@ declare module "${resolve(
 
     addImportsSources({
       from: resolve("./runtime/utils"),
-      imports: ["isFsNavMenu", "isFsNavPage", "isFsNavPageEqual"],
+      imports: ["isFsNavMenu", "isFsNavPage"],
     });
   },
 });

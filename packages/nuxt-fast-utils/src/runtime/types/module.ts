@@ -17,12 +17,11 @@ export interface ModulePublicRuntimeConfig {
 
 export interface ModuleRuntimeHooks {
   /**
-   * 路由钩子
-   * 用于修改路由元信息
+   * 获取路由元信息
    * @param route 路由
    * @param result 结果
    */
-  "fast-utils:route": (
+  "fast-utils:get-route-meta": (
     route: RouteRecordNormalized,
     result: RouteMeta
   ) => HookResult;

@@ -1,4 +1,4 @@
-import { getFuConfig, navigateTo } from "#imports";
+import { getAppConfig, navigateTo } from "#imports";
 import type { FsAuthForm, LocalAuthHooks } from "../types";
 import {
   useAuth,
@@ -37,7 +37,7 @@ async function localSignIn<F extends FsAuthForm = FsAuthForm>(
   const user = useUser();
   const token = useToken();
   const status = useStatus();
-  const config = getFuConfig("fastAuth");
+  const config = getAppConfig("fastAuth");
   const { getUser } = useAuth();
   const rememberRef = useRemember();
 
@@ -109,7 +109,7 @@ async function localSignUp<F extends FsAuthForm = FsAuthForm>(
   options: LocalSignUpOptions = {}
 ) {
   const status = useStatus();
-  const config = getFuConfig("fastAuth");
+  const config = getAppConfig("fastAuth");
 
   const { autoSignIn = true } = options;
 

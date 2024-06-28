@@ -1,21 +1,25 @@
-import { defineNuxtPlugin, useRouter, useState } from "#imports";
-import type { RouteMeta } from "#vue-router";
-
-interface RouteCache {
-  [path: string]: RouteMeta;
-}
+import { defineNuxtPlugin, useNuxtApp, useRouter } from "#imports";
+import { cloneDeep } from "lodash-es";
+import { useOriginalRouteMetas, useRouteMetas } from "../composables";
 
 export default defineNuxtPlugin({
-  async setup(nuxtApp) {
+  async setup() {
     const router = useRouter();
-    const metas = useState<RouteCache>("fast-utils:routes", () => ({}));
+    const nuxtApp = useNuxtApp();
+    const routeMetas = useRouteMetas();
+    const originalRouteMetas = useOriginalRouteMetas();
+
     for (const route of router.getRoutes()) {
-      if (metas.value[route.path]) {
-        Object.assign(route.meta, metas.value[route.path]);
-        continue;
+      originalRouteMetas.set(route.path, route.meta);
+      if (!routeMetas.has(route.path)) {
+        routeMetas.set(route.path, cloneDeep(route.meta));
+        await nuxtApp.callHook(
+          "fast-utils:get-route-meta",
+          route,
+          routeMetas.get(route.path)!
+        );
       }
-      await nuxtApp.callHook("fast-utils:route", route, route.meta);
-      metas.value[route.path] = route.meta;
+      route.meta = routeMetas.get(route.path)!;
     }
   },
 });

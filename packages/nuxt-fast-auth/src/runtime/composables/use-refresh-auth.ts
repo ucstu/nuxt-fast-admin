@@ -94,7 +94,7 @@ async function refreshSignIn<F extends FsAuthForm = FsAuthForm>(
   const { getUser } = useAuth();
   const rememberRef = useRemember();
   const refreshToken = useRefreshToken();
-  const config = getFuConfig("fastAuth");
+  const config = getAppConfig("fastAuth");
 
   const { remember = false, navigate = false, navigateOptions } = options;
 
@@ -143,7 +143,7 @@ async function refreshSignOut(options: RefreshSignOutOptions = {}) {
   const token = useToken();
   const status = useStatus();
   const refreshToken = useRefreshToken();
-  const config = getFuConfig("fastAuth");
+  const config = getAppConfig("fastAuth");
 
   const { navigate = false } = options;
 
@@ -190,7 +190,7 @@ async function refreshSignUp<F extends FsAuthForm = FsAuthForm>(
   options: RefreshSignUpOptions = {}
 ) {
   const status = useStatus();
-  const config = getFuConfig("fastAuth");
+  const config = getAppConfig("fastAuth");
 
   const { autoSignIn = true } = options;
 
@@ -217,7 +217,7 @@ async function refresh(
 ) {
   const _token = useToken();
   const status = useStatus();
-  const config = getFuConfig("fastAuth");
+  const config = getAppConfig("fastAuth");
   const { getUser } = useAuth();
   const _refreshToken = useRefreshToken();
 

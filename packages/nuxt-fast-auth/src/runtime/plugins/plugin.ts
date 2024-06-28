@@ -29,7 +29,7 @@ declare module "vue" {
 export default defineNuxtPlugin({
   async setup(nuxtApp) {
     const runtimeConfig = useRuntimeConfig();
-    const config = getFuConfig("fastAuth");
+    const config = getAppConfig("fastAuth");
     const { token, refreshToken, user, remember, getUser, refresh } =
       useAuth() as UseRefreshAuthRet & UseLocalAuthRet;
 

@@ -3,7 +3,7 @@ import type { FsNavMenuOrPage } from "@ucstu/nuxt-fast-nav/types";
 import type { MenuOption } from "naive-ui";
 
 function menusToOptions(menus: FsNavMenuOrPage): MenuOption | undefined {
-  const adminConfig = useFuConfig("fastAdmin");
+  const adminConfig = refAppConfig("fastAdmin");
   const title = menus.key === "$root" ? adminConfig.value.name : menus.title;
   const options: MenuOption = {
     key: isFsNavMenu(menus) ? menus.key : menus.name,

@@ -1,5 +1,5 @@
 import { defineNuxtRouteMiddleware } from "#app";
-import { getFuConfig, navigateTo, useAuth, useRuntimeConfig } from "#imports";
+import { getAppConfig, navigateTo, useAuth, useRuntimeConfig } from "#imports";
 import {
   authDirect,
   useToken,
@@ -10,7 +10,7 @@ import type { FsAuthMeta, FsAuthPage, GuardOptions } from "../types";
 import { isFsAuthPage } from "../utils";
 
 export default defineNuxtRouteMiddleware(async (to, from) => {
-  const config = getFuConfig("fastAuth");
+  const config = getAppConfig("fastAuth");
   const runtimeConfig = useRuntimeConfig();
   const token = useToken();
   const refreshToken = useRefreshToken();

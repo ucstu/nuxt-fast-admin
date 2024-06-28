@@ -28,7 +28,7 @@ export function handleError(
   error: NuxtError | Error | string | undefined | null,
   config: ErrorConfig = {},
 ) {
-  const adminConfig = useFuConfig("fastAdmin");
+  const adminConfig = refAppConfig("fastAdmin");
   const _error: NuxtError | Error | undefined | null =
     typeof error === "string" ? new Error(error) : error;
   const { handler, level, duration, interval, propagate } = defu(

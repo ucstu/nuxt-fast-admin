@@ -129,8 +129,8 @@ import type { FormInst, FormRules } from "naive-ui";
 import { FetchError } from "ofetch";
 
 const router = useRouter();
-const adminConfig = useFuConfig("fastAdmin");
-const authConfig = useFuConfig("fastAdmin.pages.auth");
+const adminConfig = refAppConfig("fastAdmin");
+const authConfig = refAppConfig("fastAdmin.pages.auth");
 const { signIn, signUp, status } = useAuth();
 
 const background = computedEager(() =>

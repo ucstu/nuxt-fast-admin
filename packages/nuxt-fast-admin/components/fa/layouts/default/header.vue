@@ -109,8 +109,8 @@ const ICON_MAP: Record<string, string> = {
 };
 
 const { useParents, currentPage } = useNav();
-const menuConfig = useFuConfig("fastAdmin.layouts.default.menu");
-const headerConfig = useFuConfig("fastAdmin.layouts.default.header");
+const menuConfig = refAppConfig("fastAdmin.layouts.default.menu");
+const headerConfig = refAppConfig("fastAdmin.layouts.default.header");
 const { applicationFullscreen } = useDefaultLayoutStore()!;
 const parents = useParents();
 

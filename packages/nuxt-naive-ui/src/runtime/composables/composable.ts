@@ -1,4 +1,4 @@
-import { useFuConfig, useFuStorage, useRuntimeConfig } from "#imports";
+import { refAppConfig, useFuStorage, useRuntimeConfig } from "#imports";
 import {
   computedEager,
   useColorMode,
@@ -12,11 +12,11 @@ import {
 } from "naive-ui";
 
 export function useNaiveUiTheme(theme?: string) {
-  const config = useFuConfig("naiveUi");
+  const config = refAppConfig("naiveUi");
   const colorMode = useColorMode({
     storageRef: useFuStorage(
       "naive-ui-theme",
-      () => config.value.defaultTheme ?? "auto",
+      () => config.value.defaultTheme ?? "auto"
     ),
   });
   if (theme) colorMode.value = theme;
@@ -25,7 +25,7 @@ export function useNaiveUiTheme(theme?: string) {
 
 function getTheme(
   theme: string,
-  themes?: Partial<Record<string, GlobalTheme>>,
+  themes?: Partial<Record<string, GlobalTheme>>
 ) {
   switch (theme) {
     case "auto":
@@ -41,7 +41,7 @@ function getTheme(
 
 function getThemeOverrides(
   theme: string,
-  themesOverrides?: Partial<Record<string, GlobalThemeOverrides>>,
+  themesOverrides?: Partial<Record<string, GlobalThemeOverrides>>
 ) {
   if (theme === "auto") return undefined;
   return themesOverrides?.[theme];
@@ -49,7 +49,7 @@ function getThemeOverrides(
 
 export function useNaiveUiThemeConfig() {
   const isMounted = useMounted();
-  const config = useFuConfig("naiveUi");
+  const config = refAppConfig("naiveUi");
   const runtimeConfig = useRuntimeConfig().public.fastUtils;
   const { store, system } = useNaiveUiTheme();
 
@@ -60,7 +60,7 @@ export function useNaiveUiThemeConfig() {
           ? system.value
           : "light"
         : system.value
-      : store.value,
+      : store.value
   );
 
   const customThemes = computedEager(
@@ -72,8 +72,8 @@ export function useNaiveUiThemeConfig() {
             ...value,
             name: key,
           },
-        ]),
-      ) as Record<string, GlobalTheme>,
+        ])
+      ) as Record<string, GlobalTheme>
   );
   const themesOverrides = computedEager(() => config.value.themesOverrides);
 

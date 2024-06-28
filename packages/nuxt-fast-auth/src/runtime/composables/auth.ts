@@ -1,4 +1,4 @@
-import { getFuConfig, useFuConfig, type MaybeRefOrGetter } from "#imports";
+import { getFuConfig, refAppConfig, type MaybeRefOrGetter } from "#imports";
 import { computedEager, toRef } from "@ucstu/nuxt-fast-utils/exports";
 import type { LiteralUnion } from "@ucstu/nuxt-fast-utils/types";
 import type { FsAuthMeta, FsAuthPer } from "../types";
@@ -52,7 +52,7 @@ export function auth(
       ]
 ) {
   const user = useUser();
-  const config = useFuConfig("fastAuth");
+  const config = refAppConfig("fastAuth");
   const hasRef = computedEager(() => [
     !!user.value,
     ...(config.value!.authHooks!.getPermissions?.(user.value) ?? []),
@@ -77,7 +77,7 @@ export function authDirect(
     | [LiteralUnion<"!" | "|", FsAuthPer> | FsAuthMeta, ...FsAuthMeta[]]
 ): boolean {
   const user = useUser();
-  const config = getFuConfig("fastAuth");
+  const config = getAppConfig("fastAuth");
   const has = [
     Boolean(user.value),
     ...(config.authHooks!.getPermissions?.(user.value) ?? []),
