@@ -144,11 +144,6 @@ declare module "${resolve(
       from: resolve("./runtime/composables"),
       imports: ["useNavMenus", "useNavHistories"],
     });
-
-    addImportsSources({
-      from: resolve("./runtime/utils"),
-      imports: ["historyEqual"],
-    });
   },
 });
 

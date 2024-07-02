@@ -14,31 +14,23 @@ import { extendRef } from "@ucstu/nuxt-fast-utils/exports";
 import defu from "defu";
 import { isEqual } from "lodash-es";
 import type { FsNavHistory, FsNavPageFilled } from "../types";
-import { historyEqual } from "../utils";
 
-async function findAsync<T>(
-  array: Array<T>,
-  predicate: (item: T) => Promise<boolean>
-) {
-  const results = await Promise.all(array.map(predicate));
-  return array.find((_, index) => results[index]);
-}
-
-async function findSameHistory(
-  array: Array<FsNavHistory>,
-  history: FsNavHistory,
+function historyEqual(
+  a: FsNavHistory,
+  b: FsNavHistory,
   nuxtApp = useNuxtApp()
-) {
-  return await findAsync(
-    array,
-    async (item) =>
-      await new Promise((resolve) => {
-        const result = ref(false);
-        nuxtApp
-          .callHook("fast-nav:history-equal", item, history, result)
-          .then(() => resolve(result.value));
-      })
+): boolean {
+  const result = ref(false);
+  nuxtApp.hooks.callHookWith(
+    (hooks, args) => {
+      hooks.forEach((hook) => hook(...args));
+    },
+    "fast-nav:history-equal",
+    a,
+    b,
+    result
   );
+  return result.value;
 }
 
 export function useNavHistories(nuxtApp = useNuxtApp()) {
@@ -56,14 +48,18 @@ export function useNavHistories(nuxtApp = useNuxtApp()) {
     }))
   );
   const current = computed(() =>
-    result.value.find((item) => historyEqual(item, { to: currentRoute.value }))
+    result.value.find((item) =>
+      historyEqual(item, { to: currentRoute.value }, nuxtApp)
+    )
   );
 
   return extendRef(result, {
     current,
     async open(history: FsNavHistory | undefined = current.value) {
       if (!history) return;
-      const old = await findSameHistory(histories.value, history, nuxtApp);
+      const old = histories.value.find((item) =>
+        historyEqual(item, history, nuxtApp)
+      );
       if (old) {
         if (!isEqual(old, history)) {
           override(old, history);
@@ -74,17 +70,17 @@ export function useNavHistories(nuxtApp = useNuxtApp()) {
     },
     async close(history: FsNavHistory | undefined = current.value) {
       if (!history) return;
-      const old = await findSameHistory(histories.value, history, nuxtApp);
+      const old = histories.value.find((item) => historyEqual(item, history));
       if (!old) {
         return console.warn(`[fast-nav] 未找到历史 `, history, ` 的记录`);
       }
 
-      histories.value.splice(histories.value.indexOf(old), 1);
-      if (histories.value.length === 0) {
-        await navigateTo(config.value.home);
-      } else {
-        await navigateBack();
-      }
+      const index = histories.value.indexOf(old);
+      histories.value.splice(index, 1);
+      await navigateTo(
+        (histories.value[index] ?? histories.value[index - 1])?.to ??
+          config.value.home
+      );
     },
     async closeAll() {
       histories.value.splice(0, histories.value.length);
@@ -92,12 +88,14 @@ export function useNavHistories(nuxtApp = useNuxtApp()) {
     },
     async closeOthers(history: FsNavHistory | undefined = current.value) {
       if (!history) return;
-      const index = histories.value.findIndex((item) =>
-        historyEqual(item, history)
-      );
-      if (index === -1) return;
+      const old = histories.value.find((item) => historyEqual(item, history));
+      if (!old) {
+        return console.warn(`[fast-nav] 未找到历史 `, history, ` 的记录`);
+      }
+
+      const index = histories.value.indexOf(old);
       histories.value.splice(0, index);
-      histories.value.splice(1, histories.value.length);
+      histories.value.splice(1, histories.value.length - 1);
     },
   });
 }

@@ -1,6 +1,5 @@
 import type { Ref } from "#imports";
 import type { RouteLocationNormalizedGeneric } from "#vue-router";
-import type { HookResult } from "@nuxt/schema";
 import type { RequiredDeep } from "@ucstu/nuxt-fast-utils/types";
 import type { FsNavHistory } from "./base";
 
@@ -37,7 +36,7 @@ export interface ModuleRuntimeHooks {
   "fast-nav:get-history": (
     to: RouteLocationNormalizedGeneric,
     result: Ref<FsNavHistory>
-  ) => HookResult;
+  ) => void;
   /**
    * 历史记录是否相等
    * @param a a
@@ -48,5 +47,5 @@ export interface ModuleRuntimeHooks {
     a: FsNavHistory,
     b: FsNavHistory,
     result: Ref<boolean>
-  ) => HookResult;
+  ) => void;
 }
