@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "pnpm run --filter @ucstu/nuxt-fast-admin dev",
     "dev:doc": "pnpm run --filter @ucstu/nuxt-fast-admin-doc dev",
-    "prepare": "pnpm run --no-bail --filter @ucstu/nuxt-fast-utils dev:prepare && pnpm run --no-bail --filter @ucstu/nuxt-fast-utils prepack && pnpm run --no-bail --filter \"./packages/**\" --filter !@ucstu/nuxt-fast-utils dev:prepare",
+    "prepare": "pnpm run --no-bail --filter \"./packages/**\" dev:prepare",
     "prepack": "pnpm run --no-bail --filter \"./packages/**\" prepack",
     "release": "pnpm run --no-bail --filter \"./packages/**\" release",
     "lint": "pnpm run --no-bail --filter \"./packages/**\" lint",

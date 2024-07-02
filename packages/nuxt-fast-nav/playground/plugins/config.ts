@@ -1,13 +1,12 @@
 import { defineNuxtPlugin } from "#app";
+import { override } from "#imports";
 
 export default defineNuxtPlugin({
   enforce: "pre",
   async setup(nuxtApp) {
     nuxtApp.hook("fast-nav:get-history", async (route, history) => {
-      Object.assign(history, {
-        meta: {
-          title: "test 12112121",
-        },
+      override(history.value, {
+        meta: {},
       });
     });
   },

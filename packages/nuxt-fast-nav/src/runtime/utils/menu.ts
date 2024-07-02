@@ -1,23 +1,30 @@
-import { getAppConfig } from "#imports";
+import { useAppConfig } from "#imports";
 import type { FsNavMenu, FsNavMenuFilled } from "../types";
+import { getPageFilled } from "./page";
 
 export function getMenuFilled(
-  menu: FsNavMenu
-): Omit<FsNavMenuFilled, "children"> {
-  const config = getAppConfig("fastNav");
-
-  const title = menu.title ?? menu.key.toString();
-  const icon = menu.icon ?? config.menu!.icon!;
-  const desc = menu.desc ?? "";
+  menu: FsNavMenu,
+  parent: string = ""
+): FsNavMenuFilled {
+  const config = useAppConfig().fastNav;
 
   return {
     ...menu,
-    title,
-    icon,
-    desc,
-    key: menu.key,
+    parent,
+    title: menu.title ?? menu.key.toString(),
+    icon: menu.icon ?? config.menu!.icon!,
+    desc: menu.desc ?? "",
     show: menu.show ?? config.menu!.show!,
     disabled: menu.disabled ?? config.menu!.disabled!,
     order: menu.order ?? config.menu!.order!,
+    children:
+      menu.children?.map((item) =>
+        "key" in item
+          ? getMenuFilled(
+              item as FsNavMenu,
+              `${parent ? `${parent}.` : ""}${menu.key}`
+            )
+          : getPageFilled(item as Parameters<typeof getPageFilled>[0])
+      ) ?? [],
   };
 }

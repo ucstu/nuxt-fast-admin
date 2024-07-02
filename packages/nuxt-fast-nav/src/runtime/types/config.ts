@@ -1,3 +1,4 @@
+import type { RouteLocationRaw } from "#vue-router";
 import type { FsNavMenu, FsNavMenuKeys, MenuMeta, TabMeta } from "./base";
 
 export interface FsNavConfig {
@@ -40,9 +41,9 @@ export interface FsNavConfig {
     tab?: Pick<TabMeta, "has" | "show">;
   };
   /**
-   * 首页路径
-   * @description 用于关闭所有标签时跳转的路径
+   * 首页路由
+   * @description 用于关闭所有标签时跳转
    * @default "/"
    */
-  home?: string;
+  home?: RouteLocationRaw;
 }

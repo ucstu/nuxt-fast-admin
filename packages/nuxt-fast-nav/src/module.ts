@@ -29,9 +29,11 @@ export default defineNuxtModule<ModuleOptions>({
     check: {
       parent: true,
     },
+    autoFillMeta: true,
   } satisfies ModuleOptionsDefaults,
   setup(_options, nuxt) {
     installModule("@ucstu/nuxt-fast-utils");
+    installModule("@ucstu/nuxt-fast-route");
 
     const options = _options as ModuleOptionsDefaults;
 
@@ -87,7 +89,7 @@ export default defineNuxtModule<ModuleOptions>({
           "{}",
           "never"
         );
-        return `export interface _FsNavMenuKey ${
+        return `export interface _FsNavMenuKeys ${
           _interface === "never" ? "{}" : _interface
         };`;
       },
@@ -99,9 +101,9 @@ export default defineNuxtModule<ModuleOptions>({
       options,
       __dirname,
       getContents({ nuxt, options }) {
-        return `import type { _FsNavMenuKey } from "./nuxt-fast-nav/menu-key";
+        return `import type { _FsNavMenuKeys } from "./nuxt-fast-nav/menu-key";
 declare module "${options.moduleName}" {
-  interface FsNavMenuKey extends _FsNavMenuKey {}
+  interface FsNavMenuKeys extends _FsNavMenuKeys {}
 }
 
 import type { FsNavPage } from "${options.moduleName}";
@@ -126,10 +128,12 @@ declare module "${resolve(
       }
     });
 
-    addPlugin({
-      name: `${name}:config`,
-      src: resolve("./runtime/plugins/config"),
-    });
+    if (options.autoFillMeta) {
+      addPlugin({
+        name: `${name}:config`,
+        src: resolve("./runtime/plugins/config"),
+      });
+    }
 
     addPlugin({
       name,
@@ -138,12 +142,12 @@ declare module "${resolve(
 
     addImportsSources({
       from: resolve("./runtime/composables"),
-      imports: ["useNav"],
+      imports: ["useNavMenus", "useNavHistories"],
     });
 
     addImportsSources({
       from: resolve("./runtime/utils"),
-      imports: ["isFsNavMenu", "isFsNavPage"],
+      imports: ["historyEqual"],
     });
   },
 });

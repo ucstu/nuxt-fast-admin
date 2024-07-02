@@ -1,17 +1,12 @@
-import {
-  addImportsSources,
-  addPlugin,
-  createResolver,
-  defineNuxtModule,
-} from "@nuxt/kit";
+import { addImportsSources, createResolver, defineNuxtModule } from "@nuxt/kit";
 import type { AppConfigInput } from "@nuxt/schema";
 import { name, version } from "../package.json";
+import { addModuleTypeTemplate } from "../utils";
 import type {
   FsUtilsConfig,
   ModuleOptions,
   ModuleOptionsDefaults,
 } from "./runtime/types";
-import { addModuleTypeTemplate } from "./utils";
 
 export type * from "./runtime/types";
 
@@ -42,27 +37,14 @@ export default defineNuxtModule<ModuleOptions>({
       __dirname,
     });
 
-    addPlugin({
-      name,
-      src: resolve("./runtime/plugins/plugin"),
-    });
-
     addImportsSources({
       from: resolve("./runtime/composables"),
-      imports: [
-        "toRefDeep",
-        "useStorage",
-        "refAppConfig",
-        "getAppConfig",
-        "useRouteMeta",
-        "getRouteMeta",
-        "useRouteMetas",
-      ],
+      imports: ["toRefDeep", "useStorage"],
     });
 
     addImportsSources({
       from: resolve("./runtime/utils"),
-      imports: ["cookieStorage", "sessionCookieStorage"],
+      imports: ["cookieStorage", "sessionCookieStorage", "override"],
     });
   },
 });

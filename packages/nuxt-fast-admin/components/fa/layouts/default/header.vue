@@ -99,7 +99,6 @@
 
 <script setup lang="ts">
 import { FaIcon } from "#components";
-import { computedEager } from "@vueuse/core";
 import { useDefaultLayoutStore } from "./index.vue";
 
 const ICON_MAP: Record<string, string> = {
@@ -114,7 +113,7 @@ const headerConfig = refAppConfig("fastAdmin.layouts.default.header");
 const { applicationFullscreen } = useDefaultLayoutStore()!;
 const parents = useParents();
 
-const breadcrumbs = computedEager(() => {
+const breadcrumbs = computed(() => {
   return parents.value.map((parent) => {
     return useMenuOptions(parent).value;
   });
@@ -126,7 +125,7 @@ function changeTheme() {
   naiveUiTheme.value = Object.keys(ICON_MAP)[(index + 1) % 3];
 }
 
-const dropdownOptions = computedEager(() => {
+const dropdownOptions = computed(() => {
   return headerConfig.value!.dropdown!.options!.map((option) => {
     return {
       ...option,

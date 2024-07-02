@@ -1,5 +1,5 @@
-import { getFuConfig, refAppConfig, type MaybeRefOrGetter } from "#imports";
-import { computedEager, toRef } from "@ucstu/nuxt-fast-utils/exports";
+import { refAppConfig, type MaybeRefOrGetter } from "#imports";
+import { toRef } from "@ucstu/nuxt-fast-utils/exports";
 import type { LiteralUnion } from "@ucstu/nuxt-fast-utils/types";
 import type { FsAuthMeta, FsAuthPer } from "../types";
 import { useUser } from "./use-auth";
@@ -53,12 +53,12 @@ export function auth(
 ) {
   const user = useUser();
   const config = refAppConfig("fastAuth");
-  const hasRef = computedEager(() => [
+  const hasRef = computed(() => [
     !!user.value,
     ...(config.value!.authHooks!.getPermissions?.(user.value) ?? []),
   ]);
-  const needsRef = computedEager(() => needs.map((need) => toRef(need).value));
-  return computedEager(() => _auth(hasRef.value, needsRef.value as FsAuthMeta));
+  const needsRef = computed(() => needs.map((need) => toRef(need).value));
+  return computed(() => _auth(hasRef.value, needsRef.value as FsAuthMeta));
 }
 
 /**

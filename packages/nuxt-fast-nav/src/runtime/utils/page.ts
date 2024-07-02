@@ -1,53 +1,52 @@
-import { getAppConfig } from "#imports";
-import type { RouteMeta, RouteRecordNormalized } from "#vue-router";
-import type { FsNavPage, FsNavPageFilled } from "../types";
+import { useAppConfig } from "#imports";
+import type { RouteMeta, RouteRecordRaw } from "#vue-router";
+import type { FsNavExtra, FsNavPageFilled } from "../types";
 
-function getRouteParent(route: RouteRecordNormalized) {
-  if (typeof route.name !== "string") return "$root";
-  return route.name.split("-").slice(0, -1).join(".") || "$root";
+function getPageParent(options: Optinos) {
+  return (
+    options.to.path.replace("/", "").split("/").slice(0, -1).join(".") ||
+    "$root"
+  );
 }
 
-export function getRouteMetas(
-  route: RouteRecordNormalized,
-  meta: RouteMeta
-): FsNavPageFilled {
-  const config = getAppConfig("fastNav");
+interface Optinos extends RouteMeta, Required<FsNavExtra> {
+  children?: Array<RouteRecordRaw>;
+}
+export function getPageFilled(options: Optinos): FsNavPageFilled {
+  const config = useAppConfig().fastNav;
 
-  const { name, path, children } = route;
-  const title = meta.title ?? name?.toString() ?? "undefined";
-  const icon = meta.icon ?? config.page!.icon!;
-  const desc = meta.desc ?? "";
+  const { to, children } = options;
+  const title = options.title ?? to.path;
+  const icon = options.icon ?? config.page!.icon!;
+  const desc = options.desc ?? "";
 
   return {
-    name: name?.toString() ?? "undefined",
-    path,
     title,
     icon,
     desc,
     menu: {
-      ...meta.menu,
-      title: meta.menu?.title ?? title,
-      icon: meta.menu?.icon ?? icon,
-      desc: meta.menu?.desc ?? desc,
-      has: meta.menu?.has ?? config.page!.menu!.has!,
+      ...options.menu,
+      title: options.menu?.title ?? title,
+      icon: options.menu?.icon ?? icon,
+      desc: options.menu?.desc ?? desc,
+      has: options.menu?.has ?? config.page!.menu!.has!,
       show:
-        meta.menu?.show ?? children.length > 0
+        options.menu?.show ??
+        ((children?.length ?? 0) === 0 && !/\/:.*?\(\)/.test(to.path))
           ? config.page!.menu!.show!
           : false,
-      parent: encodeURI(meta.menu?.parent ?? getRouteParent(route)) as Exclude<
-        Exclude<FsNavPage["menu"], undefined>["parent"],
-        undefined
-      >,
-      disabled: meta.menu?.disabled ?? config.page!.menu!.disabled!,
-      order: meta.menu?.order ?? config.page!.menu!.order!,
+      parent: encodeURI(options.menu?.parent ?? getPageParent(options)),
+      disabled: options.menu?.disabled ?? config.page!.menu!.disabled!,
+      order: options.menu?.order ?? config.page!.menu!.order!,
     },
     tab: {
-      ...meta.tab,
-      title: meta.tab?.title ?? title,
-      icon: meta.tab?.icon ?? icon,
-      desc: meta.tab?.desc ?? desc,
-      has: meta.tab?.has ?? config.page!.tab!.has!,
-      show: meta.tab?.show ?? config.page!.tab!.show!,
+      ...options.tab,
+      title: options.tab?.title ?? title,
+      icon: options.tab?.icon ?? icon,
+      desc: options.tab?.desc ?? desc,
+      has: options.tab?.has ?? config.page!.tab!.has!,
+      show: options.tab?.show ?? config.page!.tab!.show!,
     },
+    to,
   };
 }

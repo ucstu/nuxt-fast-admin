@@ -1,32 +1,24 @@
-import {
-  defineNuxtPlugin,
-  refAppConfig,
-  useRouteMetas,
-  useRouter,
-} from "#imports";
-import { watchDeep } from "@ucstu/nuxt-fast-utils/exports";
-import { useHistories } from "../composables";
+import { defineNuxtPlugin, ref, useRouter } from "#imports";
+import { useNavHistories } from "../composables";
 import type { FsNavHistory } from "../types";
 
 export default defineNuxtPlugin({
   async setup(nuxtApp) {
     const router = useRouter();
-    const { open } = useHistories();
-    const { refresh } = useRouteMetas();
-    const config = refAppConfig("fastNav");
+    const { open } = useNavHistories();
 
     router.afterEach(async (to) => {
-      const history: FsNavHistory = {
-        path: to.path,
-        query: to.query,
-      };
+      const history = ref<FsNavHistory>({
+        to: {
+          hash: to.hash,
+          name: to.name,
+          params: to.params,
+          path: to.path,
+          query: to.query,
+        },
+      });
       await nuxtApp.callHook("fast-nav:get-history", to, history);
-      open(history);
+      open(history.value);
     });
-
-    watchDeep(
-      () => config.value.page,
-      () => refresh()
-    );
   },
 });

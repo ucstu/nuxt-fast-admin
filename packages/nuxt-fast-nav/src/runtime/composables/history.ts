@@ -1,81 +1,96 @@
-import { computed, getRouteMeta, useRouter, useState } from "#imports";
-import type { LocationQuery } from "#vue-router";
 import {
-  createSharedComposable,
-  extendRef,
-} from "@ucstu/nuxt-fast-utils/exports";
+  computed,
+  getRouteMeta,
+  navigateTo,
+  override,
+  ref,
+  toRef,
+  useAppConfig,
+  useNuxtApp,
+  useRouter,
+  useState,
+} from "#imports";
+import { extendRef } from "@ucstu/nuxt-fast-utils/exports";
 import defu from "defu";
 import { isEqual } from "lodash-es";
-import type { BaseMeta, TabMeta } from "../types";
+import type { FsNavHistory, FsNavPageFilled } from "../types";
+import { historyEqual } from "../utils";
 
-interface History {
-  /**
-   * 页面路径
-   */
-  path: string;
-  /**
-   * 查询参数
-   */
-  query?: LocationQuery;
-  /**
-   * 元数据
-   */
-  meta?: BaseMeta & {
-    /**
-     * 标签配置
-     */
-    tab?: TabMeta;
-  };
+async function findAsync<T>(
+  array: Array<T>,
+  predicate: (item: T) => Promise<boolean>
+) {
+  const results = await Promise.all(array.map(predicate));
+  return array.find((_, index) => results[index]);
 }
 
-function historyEqual(a: History, b: History) {
-  return a.path === b.path && isEqual(a.query, b.query);
+async function findSameHistory(
+  array: Array<FsNavHistory>,
+  history: FsNavHistory,
+  nuxtApp = useNuxtApp()
+) {
+  return await findAsync(
+    array,
+    async (item) =>
+      await new Promise((resolve) => {
+        const result = ref(false);
+        nuxtApp
+          .callHook("fast-nav:history-equal", item, history, result)
+          .then(() => resolve(result.value));
+      })
+  );
 }
 
-export const useHistories = createSharedComposable(() => {
+export function useNavHistories(nuxtApp = useNuxtApp()) {
+  const config = toRef(useAppConfig(), "fastNav");
   const { currentRoute } = useRouter();
 
-  const histories = useState<Array<History>>("fast-nav:histories", () => []);
+  const histories = useState<Array<FsNavHistory>>(
+    "fast-nav:histories",
+    () => []
+  );
   const result = computed(() =>
     histories.value.map((item) => ({
       ...item,
-      meta: defu(item.meta ?? {}, getRouteMeta(item.path)) as Exclude<
-        History["meta"],
-        undefined
-      >,
+      meta: defu(item.meta ?? {}, getRouteMeta<FsNavPageFilled>(item.to)),
     }))
   );
   const current = computed(() =>
-    result.value.find((item) => historyEqual(item, currentRoute.value))
+    result.value.find((item) => historyEqual(item, { to: currentRoute.value }))
   );
 
   return extendRef(result, {
     current,
-    open(history = current.value) {
+    async open(history: FsNavHistory | undefined = current.value) {
       if (!history) return;
-      const index = histories.value.findIndex((item) =>
-        historyEqual(item, history)
-      );
-      if (index !== -1) {
-        if (!isEqual(histories.value[index].meta, history.meta)) {
-          histories.value[index].meta = history.meta;
+      const old = await findSameHistory(histories.value, history, nuxtApp);
+      if (old) {
+        if (!isEqual(old, history)) {
+          override(old, history);
         }
         return;
       }
       histories.value.push(history);
     },
-    close(history = current.value) {
+    async close(history: FsNavHistory | undefined = current.value) {
       if (!history) return;
-      const index = histories.value.findIndex((item) =>
-        historyEqual(item, history)
-      );
-      if (index === -1) return;
-      histories.value.splice(index, 1);
+      const old = await findSameHistory(histories.value, history, nuxtApp);
+      if (!old) {
+        return console.warn(`[fast-nav] 未找到历史 `, history, ` 的记录`);
+      }
+
+      histories.value.splice(histories.value.indexOf(old), 1);
+      if (histories.value.length === 0) {
+        await navigateTo(config.value.home);
+      } else {
+        await navigateBack();
+      }
     },
-    closeAll() {
+    async closeAll() {
       histories.value.splice(0, histories.value.length);
+      await navigateTo(config.value.home);
     },
-    closeOthers(history = current.value) {
+    async closeOthers(history: FsNavHistory | undefined = current.value) {
       if (!history) return;
       const index = histories.value.findIndex((item) =>
         historyEqual(item, history)
@@ -85,4 +100,4 @@ export const useHistories = createSharedComposable(() => {
       histories.value.splice(1, histories.value.length);
     },
   });
-});
+}

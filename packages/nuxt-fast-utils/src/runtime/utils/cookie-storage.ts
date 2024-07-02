@@ -17,7 +17,7 @@ export class H3CookieStorage extends CookieStorage {
   ): void {
     const event = useRequestEvent();
     if (event) {
-      // @ts-ignore
+      // @ts-expect-error
       return setCookie(event, key, data, defu(options, this._defaultOptions));
     }
     super.setItem(key, data, options);
@@ -40,7 +40,7 @@ export class H3CookieStorage extends CookieStorage {
       return deleteCookie(
         event,
         key,
-        // @ts-ignore
+        // @ts-expect-error
         defu(cookieOptions, this._defaultOptions)
       );
     }

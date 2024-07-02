@@ -1,20 +1,23 @@
-import { refAppConfig, useFuStorage, useRuntimeConfig } from "#imports";
 import {
-  computedEager,
-  useColorMode,
-  useMounted,
-} from "@ucstu/nuxt-fast-utils/exports";
+  computed,
+  toRef,
+  useAppConfig,
+  useRuntimeConfig,
+  useStorage,
+} from "#imports";
+import { useColorMode, useMounted } from "@ucstu/nuxt-fast-utils/exports";
 import {
   darkTheme,
   lightTheme,
   type GlobalTheme,
   type GlobalThemeOverrides,
 } from "naive-ui";
+import type { ThemeKey } from "../types";
 
-export function useNaiveUiTheme(theme?: string) {
-  const config = refAppConfig("naiveUi");
+export function useNaiveUiTheme(theme?: ThemeKey) {
+  const config = toRef(useAppConfig(), "naiveUi");
   const colorMode = useColorMode({
-    storageRef: useFuStorage(
+    storageRef: useStorage(
       "naive-ui-theme",
       () => config.value.defaultTheme ?? "auto"
     ),
@@ -24,8 +27,8 @@ export function useNaiveUiTheme(theme?: string) {
 }
 
 function getTheme(
-  theme: string,
-  themes?: Partial<Record<string, GlobalTheme>>
+  theme: ThemeKey,
+  themes?: Partial<Record<ThemeKey, GlobalTheme>>
 ) {
   switch (theme) {
     case "auto":
@@ -40,8 +43,8 @@ function getTheme(
 }
 
 function getThemeOverrides(
-  theme: string,
-  themesOverrides?: Partial<Record<string, GlobalThemeOverrides>>
+  theme: ThemeKey,
+  themesOverrides?: Partial<Record<ThemeKey, GlobalThemeOverrides>>
 ) {
   if (theme === "auto") return undefined;
   return themesOverrides?.[theme];
@@ -49,11 +52,11 @@ function getThemeOverrides(
 
 export function useNaiveUiThemeConfig() {
   const isMounted = useMounted();
-  const config = refAppConfig("naiveUi");
+  const config = toRef(useAppConfig(), "naiveUi");
   const runtimeConfig = useRuntimeConfig().public.fastUtils;
   const { store, system } = useNaiveUiTheme();
 
-  const theme = computedEager(() =>
+  const theme = computed(() =>
     store.value === "auto"
       ? runtimeConfig.ssr
         ? isMounted.value
@@ -63,7 +66,7 @@ export function useNaiveUiThemeConfig() {
       : store.value
   );
 
-  const customThemes = computedEager(
+  const customThemes = computed(
     () =>
       Object.fromEntries(
         Object.entries(config.value.customThemes ?? {}).map(([key, value]) => [
@@ -75,9 +78,9 @@ export function useNaiveUiThemeConfig() {
         ])
       ) as Record<string, GlobalTheme>
   );
-  const themesOverrides = computedEager(() => config.value.themesOverrides);
+  const themesOverrides = computed(() => config.value.themesOverrides);
 
-  return computedEager(() => ({
+  return computed(() => ({
     theme: getTheme(theme.value, customThemes.value),
     themeOverrides: getThemeOverrides(theme.value, themesOverrides.value),
   }));

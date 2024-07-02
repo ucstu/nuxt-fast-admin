@@ -123,7 +123,6 @@
 
 <script setup lang="ts">
 import type { FsAuthForm } from "@ucstu/nuxt-fast-auth/types";
-import { computedEager } from "@vueuse/core";
 import defu from "defu";
 import type { FormInst, FormRules } from "naive-ui";
 import { FetchError } from "ofetch";
@@ -133,7 +132,7 @@ const adminConfig = refAppConfig("fastAdmin");
 const authConfig = refAppConfig("fastAdmin.pages.auth");
 const { signIn, signUp, status } = useAuth();
 
-const background = computedEager(() =>
+const background = computed(() =>
   authConfig.value!.background
     ? `url(${authConfig.value!.background})`
     : "none",

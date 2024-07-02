@@ -17,3 +17,10 @@ function changeTheme() {
   naiveUiTheme.value = thems[(thems.indexOf(naiveUiTheme.value) + 1) % 3];
 }
 </script>
+
+<style>
+html.dark {
+  background: #111;
+  color-scheme: dark;
+}
+</style>

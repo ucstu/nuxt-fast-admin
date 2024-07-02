@@ -98,10 +98,10 @@ import { computedEager } from "@vueuse/core";
 import defu from "defu";
 import type { NResult } from "naive-ui";
 import {
-    ErrorIcon,
-    InfoIcon,
-    SuccessIcon,
-    WarningIcon,
+  ErrorIcon,
+  InfoIcon,
+  SuccessIcon,
+  WarningIcon,
 } from "naive-ui/es/_internal/icons/index";
 import { FetchError } from "ofetch";
 import type { ErrorLevel } from "../../../types/base";
@@ -166,7 +166,7 @@ const options = computedEager(() =>
     adminConfig.value.error,
   ),
 );
-const error = computedEager(() =>
+const error = computed(() =>
   isNuxtError(props.error)
     ? props.error.statusCode === 500
       ? props.error.cause &&
@@ -176,7 +176,7 @@ const error = computedEager(() =>
       : props.error
     : props.error,
 );
-const code = computedEager(() => {
+const code = computed(() => {
   return (typeof props.status === "number" ? props.status : undefined) ||
     isFetchError(error.value)
     ? Number.parseInt(
@@ -188,8 +188,8 @@ const code = computedEager(() => {
         0
     : (error.value as NuxtError).statusCode || 0;
 });
-const stack = computedEager(() => error.value.stack || props.error.stack);
-const status = computedEager<CanProcessStatus>(() => {
+const stack = computed(() => error.value.stack || props.error.stack);
+const status = computed<CanProcessStatus>(() => {
   return (
     props.status ||
     (error.value as NuxtError).data?.level ||
@@ -213,7 +213,7 @@ const MessageMap: Partial<Record<number, string>> = {
   418: "服务器忙",
   500: "服务器错误",
 };
-const message = computedEager(() => {
+const message = computed(() => {
   return (
     MessageMap[code.value] ||
     (error.value instanceof TypeError &&
@@ -234,7 +234,7 @@ const DescriptionMap: Partial<Record<number, string>> = {
   418: "服务器繁忙，请稍后再试",
   500: "服务器内部发生了错误",
 };
-const description = computedEager(() => {
+const description = computed(() => {
   return (
     DescriptionMap[code.value] ||
     (error.value instanceof TypeError &&
@@ -251,7 +251,7 @@ const description = computedEager(() => {
   );
 });
 
-const detiail = computedEager(() => {
+const detiail = computed(() => {
   return (
     (error.value as NuxtError).data?.detail ||
     (error.value as NuxtError).message ||

@@ -21,8 +21,8 @@
       "import": "./dist/runtime/exports/index.js"
     },
     "./utils": {
-      "types": "./dist/utils/index.d.ts",
-      "default": "./dist/utils/index.js"
+      "types": "./utils/index.d.ts",
+      "default": "./utils/index.js"
     }
   },
   "main": "./dist/module.cjs",

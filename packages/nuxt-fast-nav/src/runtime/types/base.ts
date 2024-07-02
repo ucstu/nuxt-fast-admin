@@ -1,14 +1,26 @@
 import type { ResolvedAppConfig } from "#build/types/app.config";
-import type { LocationQuery, RouteMeta, RouteRecordName } from "#vue-router";
+import type {
+  RouteLocationAsPathGeneric,
+  RouteLocationAsRelativeGeneric,
+} from "#vue-router";
 import type {
   LiteralUnion,
   RequiredDeep,
   SetFieldType,
+  SetOptional,
+  SetRequired,
 } from "@ucstu/nuxt-fast-utils/types";
 
 export interface FsNavOptions {}
 
 export interface FsNavMenuKeys {}
+
+export interface FsNavExtra {
+  to?: SetRequired<
+    RouteLocationAsRelativeGeneric | RouteLocationAsPathGeneric,
+    "path"
+  >;
+}
 
 type KeysDeep<
   M extends Array<FsNavMenu>,
@@ -129,50 +141,45 @@ export interface FsNavPage extends BaseMeta {
 }
 
 export type FsNavPageFilled = SetFieldType<
-  RequiredDeep<FsNavPage> &
-    RouteMeta & {
-      /**
-       * 页面名称
-       */
-      name: RouteRecordName | null | undefined;
-      /**
-       * 页面路径
-       */
-      path: string;
-    },
+  RequiredDeep<FsNavPage>,
   "menu",
   RequiredDeep<
     MenuMeta & {
       parent: string;
     }
   >
->;
+> &
+  Required<FsNavExtra>;
 
 /* eslint-disable-next-line @typescript-eslint/ban-types */
 export interface FsNavMenu<T extends object = {}, K extends keyof T = keyof T>
-  extends Omit<MenuMeta, "has"> {
+  extends Omit<MenuMeta, "has">,
+    FsNavExtra {
+  /**
+   * 唯一键名
+   */
   key: LiteralUnion<K, string>;
-  children?: Array<T[K] extends object ? FsNavMenu<T[K]> : FsNavMenu>;
-}
-
-export type FsNavMenuFilled = RequiredDeep<FsNavMenu>;
-export interface FsNavMenuWithPages extends Omit<FsNavMenuFilled, "children"> {
   /**
    * 子项目
    */
-  children?: Array<FsNavMenuOrPage>;
+  children?: Array<
+    | (T[K] extends object ? FsNavMenu<T[K]> : FsNavMenu)
+    | (FsNavPage & Required<FsNavExtra>)
+  >;
 }
-export type FsNavMenuOrPage = FsNavMenuWithPages | FsNavPageFilled;
 
-export interface FsNavHistory {
+export type FsNavMenuFilled = SetFieldType<
+  SetOptional<Required<FsNavMenu>, keyof FsNavExtra>,
+  "children",
+  Array<FsNavMenuFilled | FsNavPageFilled>
+> & {
   /**
-   * 页面路径
+   * 父级菜单
    */
-  path: string;
-  /**
-   * 查询参数
-   */
-  query?: LocationQuery;
+  parent: string;
+};
+
+export interface FsNavHistory extends Required<FsNavExtra> {
   /**
    * 元数据
    */

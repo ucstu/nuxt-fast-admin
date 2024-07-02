@@ -69,7 +69,6 @@
 
 <script setup lang="ts">
 import type { NTabs } from "#components";
-import { computedEager } from "@vueuse/core";
 import type { DropdownOption } from "naive-ui";
 import { useDefaultLayoutStore } from "./index.vue";
 
@@ -89,7 +88,7 @@ function openTab(name: string) {
   navigateTo({ name });
 }
 
-const closeable = computedEager(
+const closeable = computed(
   () => histories.value.length > 1 || currentPage.value?.name === "/",
 );
 

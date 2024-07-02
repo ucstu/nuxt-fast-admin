@@ -9,7 +9,6 @@ import iconifyCollections from "@iconify/collections/collections.json";
 </script>
 
 <script setup lang="ts">
-import { computedEager } from "@vueuse/core";
 import { iconProps } from "naive-ui";
 
 function resolveIconName(name = "") {
@@ -53,11 +52,11 @@ const props = defineProps({
 });
 
 const nuxtApp = useNuxtApp();
-const resolvedIcon = computedEager(() => resolveIconName(props.name));
-const iconComponentName = computedEager(() =>
+const resolvedIcon = computed(() => resolveIconName(props.name));
+const iconComponentName = computed(() =>
   pascalCase(`icons-${resolvedIcon.value.prefix}-${resolvedIcon.value.name}`),
 );
-const name = computedEager(() =>
+const name = computed(() =>
   nuxtApp.vueApp?.component(iconComponentName.value)
     ? iconComponentName.value
     : props.name,

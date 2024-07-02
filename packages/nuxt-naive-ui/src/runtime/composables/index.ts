@@ -1,2 +1,2 @@
-export * from "./composable";
 export * from "./naive";
+export * from "./theme";
