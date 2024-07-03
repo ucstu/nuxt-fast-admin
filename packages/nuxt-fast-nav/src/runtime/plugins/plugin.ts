@@ -1,17 +1,26 @@
-import { defineNuxtPlugin, ref, useRouter } from "#imports";
-import { isEqual } from "lodash-es";
+import {
+  defineNuxtPlugin,
+  ref,
+  toRef,
+  useAppConfig,
+  useRouter,
+  type Ref,
+} from "#imports";
+import { isEqual, pick } from "lodash-es";
 import { useNavHistories } from "../composables";
-import type { FsNavHistory } from "../types";
+import type { FsNavConfigDefaults, FsNavHistory } from "../types";
 
 export default defineNuxtPlugin({
-  hooks: {
-    "fast-nav:history-equal"(a, b, result) {
-      result.value = a && b && isEqual(a.to, b.to);
-    },
-  },
-  async setup(nuxtApp) {
+  setup(nuxtApp) {
     const router = useRouter();
     const { open } = useNavHistories();
+    const config = toRef(useAppConfig(), "fastNav") as Ref<FsNavConfigDefaults>;
+
+    nuxtApp.hook("fast-nav:history-equal", (a, b, result) => {
+      const keys = config.value.keys;
+      result.value =
+        a && b && isEqual(pick(a.to, ...keys), pick(b.to, ...keys));
+    });
 
     router.afterEach(async (to) => {
       const history = ref<FsNavHistory>({
@@ -24,7 +33,7 @@ export default defineNuxtPlugin({
         },
       });
       await nuxtApp.callHook("fast-nav:get-history", to, history);
-      await open(history.value);
+      open(history.value);
     });
   },
 });

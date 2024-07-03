@@ -4,6 +4,7 @@ import {
   useAppConfig,
   useRuntimeConfig,
   useStorage,
+  type Ref,
 } from "#imports";
 import { useColorMode, useMounted } from "@ucstu/nuxt-fast-utils/exports";
 import {
@@ -12,15 +13,12 @@ import {
   type GlobalTheme,
   type GlobalThemeOverrides,
 } from "naive-ui";
-import type { ThemeKey } from "../types";
+import type { NaiveUiConfigDefaults, ThemeKey } from "../types";
 
 export function useNaiveUiTheme(theme?: ThemeKey) {
-  const config = toRef(useAppConfig(), "naiveUi");
+  const config = toRef(useAppConfig(), "naiveUi") as Ref<NaiveUiConfigDefaults>;
   const colorMode = useColorMode({
-    storageRef: useStorage(
-      "naive-ui-theme",
-      () => config.value.defaultTheme ?? "auto"
-    ),
+    storageRef: useStorage("naive-ui:theme", () => config.value.defaultTheme),
   });
   if (theme) colorMode.value = theme;
   return colorMode;
@@ -28,7 +26,7 @@ export function useNaiveUiTheme(theme?: ThemeKey) {
 
 function getTheme(
   theme: ThemeKey,
-  themes?: Partial<Record<ThemeKey, GlobalTheme>>
+  themes?: Partial<Record<ThemeKey, GlobalTheme>>,
 ) {
   switch (theme) {
     case "auto":
@@ -44,7 +42,7 @@ function getTheme(
 
 function getThemeOverrides(
   theme: ThemeKey,
-  themesOverrides?: Partial<Record<ThemeKey, GlobalThemeOverrides>>
+  themesOverrides?: Partial<Record<ThemeKey, GlobalThemeOverrides>>,
 ) {
   if (theme === "auto") return undefined;
   return themesOverrides?.[theme];
@@ -52,7 +50,7 @@ function getThemeOverrides(
 
 export function useNaiveUiThemeConfig() {
   const isMounted = useMounted();
-  const config = toRef(useAppConfig(), "naiveUi");
+  const config = toRef(useAppConfig(), "naiveUi") as Ref<NaiveUiConfigDefaults>;
   const runtimeConfig = useRuntimeConfig().public.fastUtils;
   const { store, system } = useNaiveUiTheme();
 
@@ -63,20 +61,20 @@ export function useNaiveUiThemeConfig() {
           ? system.value
           : "light"
         : system.value
-      : store.value
+      : store.value,
   );
 
   const customThemes = computed(
     () =>
       Object.fromEntries(
-        Object.entries(config.value.customThemes ?? {}).map(([key, value]) => [
+        Object.entries(config.value.customThemes).map(([key, value]) => [
           key,
           {
             ...value,
             name: key,
           },
-        ])
-      ) as Record<string, GlobalTheme>
+        ]),
+      ) as Record<string, GlobalTheme>,
   );
   const themesOverrides = computed(() => config.value.themesOverrides);
 

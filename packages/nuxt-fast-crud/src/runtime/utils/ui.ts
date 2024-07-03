@@ -1,10 +1,11 @@
-import { getAppConfig, useNuxtApp } from "#imports";
+import { useAppConfig, useFsNuxtApp } from "#imports";
 import FastCrud from "@fast-crud/fast-crud";
 import defu from "defu";
+import type { FsCrudConfigDefaults } from "../types";
 
 export function installFsatCrud() {
-  const nuxtApp = useNuxtApp();
-  const config = getAppConfig("fastCrud");
+  const nuxtApp = useFsNuxtApp();
+  const config = useAppConfig().fastCrud as FsCrudConfigDefaults;
   if (typeof nuxtApp.$i18n === "object" && nuxtApp.$i18n !== null) {
     let hasZh = false;
     let hasEn = false;
@@ -42,7 +43,7 @@ export function installFsatCrud() {
       {
         i18n: nuxtApp.$i18n,
       },
-      config.fsSetupOptions ?? {}
-    )
+      config.fsSetupOptions,
+    ),
   );
 }

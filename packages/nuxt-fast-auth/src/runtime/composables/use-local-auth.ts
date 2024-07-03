@@ -1,6 +1,11 @@
-import { getAppConfig, navigateTo } from "#imports";
-import type { FsAuthForm, LocalAuthHooks } from "../types";
+import { navigateTo, ref, useAppConfig, useFsNuxtApp } from "#imports";
+import type {
+  FsAuthConfigDefaults,
+  FsAuthForm,
+  LocalSignInResult,
+} from "../types";
 import {
+  getUser,
   useAuth,
   useRemember,
   useStatus,
@@ -13,7 +18,7 @@ import {
  * 登录选项
  * @description 登录选项
  */
-interface LocalSignOptions extends NavigateOptions {
+export interface LocalSignOptions extends NavigateOptions {
   /**
    * 保持登录状态
    * @description 保持登录状态的时间，单位为毫秒
@@ -30,51 +35,47 @@ interface LocalSignOptions extends NavigateOptions {
  * @param form 登录表单
  * @param options 登录选项
  */
-async function localSignIn<F extends FsAuthForm = FsAuthForm>(
+export async function localSignIn<F extends FsAuthForm = FsAuthForm>(
   form: F,
-  options: LocalSignOptions = {}
+  options: LocalSignOptions = {},
 ) {
   const user = useUser();
   const token = useToken();
   const status = useStatus();
-  const config = getAppConfig("fastAuth");
-  const { getUser } = useAuth();
+  const config = useAppConfig().fastAuth as FsAuthConfigDefaults;
+  const nuxtApp = useFsNuxtApp();
   const rememberRef = useRemember();
 
   const { remember = false, navigate = false, navigateOptions } = options;
 
   status.value.signIn = true;
-  const authHooks = config.authHooks as LocalAuthHooks;
   try {
-    const result = (await authHooks.signIn?.(form)) || null;
-    if (typeof result === "string") {
+    const result = ref<string | LocalSignInResult | undefined>();
+    await nuxtApp.callHook("fast-auth:sign-in", form, result);
+    if (typeof result.value === "string") {
       if (remember === true) {
-        rememberRef.value = config.provider?.tokenExpires ?? 0;
+        rememberRef.value = config.provider.tokenExpires;
       } else {
         rememberRef.value = remember;
       }
-      token.value = result;
-      await getUser(result);
+      token.value = result.value;
+      await getUser(result.value);
       if (navigate) {
-        navigateTo(
-          navigate === true ? config.pages!.home! : navigate,
-          navigateOptions
-        );
+        navigateTo(navigate === true ? config.home : navigate, navigateOptions);
       }
-    } else if (result) {
+    } else if (result.value) {
       if (remember === true) {
         rememberRef.value =
-          result.tokenExpires ?? config.provider?.tokenExpires ?? 0;
+          result.value.tokenExpires ?? config.provider.tokenExpires;
       } else {
         rememberRef.value = remember;
       }
-      token.value = result.token;
-      await getUser(result.token);
+      token.value = result.value.token;
+      if (result.value.user) user.value = result.value.user;
+      else await getUser(result.value.token);
+
       if (navigate) {
-        navigateTo(
-          navigate === true ? config.pages!.home! : navigate,
-          navigateOptions
-        );
+        navigateTo(navigate === true ? config.home : navigate, navigateOptions);
       }
     } else {
       token.value = null;
@@ -92,7 +93,7 @@ async function localSignIn<F extends FsAuthForm = FsAuthForm>(
  * @description 注册选项
  * @description 注意：跳转配置仅针对自动登录成功后有效
  */
-interface LocalSignUpOptions extends LocalSignOptions {
+export interface LocalSignUpOptions extends LocalSignOptions {
   /**
    * 注册成功后是否自动登录
    * @default true
@@ -104,19 +105,18 @@ interface LocalSignUpOptions extends LocalSignOptions {
  * @param form 注册表单
  * @param options 注册选项
  */
-async function localSignUp<F extends FsAuthForm = FsAuthForm>(
+export async function localSignUp<F extends FsAuthForm = FsAuthForm>(
   form: F,
-  options: LocalSignUpOptions = {}
+  options: LocalSignUpOptions = {},
 ) {
   const status = useStatus();
-  const config = getAppConfig("fastAuth");
+  const nuxtApp = useFsNuxtApp();
 
   const { autoSignIn = true } = options;
 
   status.value.signUp = true;
-  const authHooks = config.authHooks as LocalAuthHooks;
   try {
-    await authHooks.signUp?.(form);
+    await nuxtApp.callHook("fast-auth:sign-up", form);
   } catch (e) {
     status.value.signUp = false;
     throw e;
@@ -126,17 +126,11 @@ async function localSignUp<F extends FsAuthForm = FsAuthForm>(
   if (autoSignIn) await localSignIn<F>(form, options);
 }
 
-export type UseLocalAuthRet<F extends FsAuthForm = FsAuthForm> = UseAuthRet & {
-  signUp: typeof localSignUp<F>;
-  signIn: typeof localSignIn<F>;
-};
 /**
  * 使用本地鉴权
  * @returns 本地鉴权
  */
-export function useLocalAuth<
-  F extends FsAuthForm = FsAuthForm
->(): UseLocalAuthRet<F> {
+export function useLocalAuth<F extends FsAuthForm = FsAuthForm>() {
   return {
     ...useAuth(),
     signUp: localSignUp<F>,

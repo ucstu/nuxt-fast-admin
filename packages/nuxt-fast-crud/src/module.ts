@@ -4,17 +4,17 @@ import {
   addImportsSources,
   addPlugin,
   addTemplate,
-  addTypeTemplate,
   createResolver,
   defineNuxtModule,
   extendViteConfig,
   installModule,
 } from "@nuxt/kit";
-import type { AppConfigInput } from "@nuxt/schema";
+import { addModuleTypeTemplate } from "@ucstu/nuxt-fast-utils/utils";
 import { camelCase, upperFirst } from "lodash-es";
 import { name, version } from "../package.json";
 import type {
   FsCrudConfig,
+  FsCrudConfigDefaults,
   ModuleOptions,
   ModuleOptionsDefaults,
 } from "./runtime/types";
@@ -34,12 +34,12 @@ export default defineNuxtModule<ModuleOptions>({
     installModule("@ucstu/nuxt-fast-utils");
 
     const options = _options as ModuleOptionsDefaults;
-    const { rootDir } = nuxt.options;
 
     const { resolve } = createResolver(import.meta.url);
     nuxt.options.runtimeConfig.public.fastCrud = options;
 
     nuxt.options.appConfig.fastCrud = {
+      uiSetupOptions: {},
       fsSetupOptions: {
         logger: {
           off: {
@@ -47,7 +47,7 @@ export default defineNuxtModule<ModuleOptions>({
           },
         },
       },
-    } satisfies AppConfigInput["fastCrud"];
+    } satisfies FsCrudConfigDefaults;
 
     if (options.framework === "naive") {
       if (process.env.NODE_ENV === "development") {
@@ -119,17 +119,16 @@ export default defineNuxtModule<ModuleOptions>({
         return `export interface _FsCrudOptions ${JSON.stringify(
           options,
           null,
-          2
+          2,
         )};`;
       },
     });
 
-    addTypeTemplate({
-      src: resolve("./runtime/templates/types.d.ts"),
-      filename: "types/ucstu/nuxt-fast-auth.d.ts",
-      options: {
-        self: getModuleName(__dirname.endsWith("src"), rootDir),
-      },
+    addModuleTypeTemplate({
+      nuxt,
+      name,
+      options,
+      __dirname,
     });
 
     addPlugin({
@@ -138,7 +137,7 @@ export default defineNuxtModule<ModuleOptions>({
     });
 
     const components = Object.keys(FastCrud).filter((name) =>
-      /^Fs[A-Z]|fs-[a-z]/.test(name)
+      /^Fs[A-Z]|fs-[a-z]/.test(name),
     );
 
     const clientOnlyComponents = ["FsCrud"];
@@ -155,7 +154,7 @@ export default defineNuxtModule<ModuleOptions>({
     });
 
     const composables = Object.keys(FastCrud).filter(
-      (name) => /^use[A-Z]/.test(name) || ["dict"].includes(name)
+      (name) => /^use[A-Z]/.test(name) || ["dict"].includes(name),
     );
 
     addImportsSources({
@@ -164,14 +163,6 @@ export default defineNuxtModule<ModuleOptions>({
     });
   },
 });
-
-function getModuleName(isDev: boolean, rootDir: string) {
-  return !isDev
-    ? `${name}/module`
-    : rootDir.endsWith("playground")
-    ? "../../../../src/module"
-    : "../../../src/module";
-}
 
 declare module "@nuxt/schema" {
   interface CustomAppConfig {

@@ -1,11 +1,11 @@
 import { defineNuxtPlugin } from "#app";
-import { override } from "#imports";
+import { assign } from "lodash-es";
 
 export default defineNuxtPlugin({
   enforce: "pre",
-  async setup(nuxtApp) {
-    nuxtApp.hook("fast-route:get-meta", async (route, result) => {
-      override(result.value, {
+  setup(nuxtApp) {
+    nuxtApp.hook("fast-route:get-meta", (route, result) => {
+      assign(result.value, {
         title: "test",
       });
     });

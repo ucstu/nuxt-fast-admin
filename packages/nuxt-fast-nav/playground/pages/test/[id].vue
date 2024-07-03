@@ -3,9 +3,9 @@ const route = useRoute();
 
 definePageMeta({
   menu: {
-    parent: "$root"
-  }
-})
+    parent: "$root",
+  },
+});
 </script>
 
 <template>

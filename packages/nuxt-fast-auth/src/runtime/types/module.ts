@@ -1,4 +1,5 @@
 import type { RequiredDeep } from "@ucstu/nuxt-fast-utils/types";
+import type { AuthHooks, PageHooks } from "./hooks";
 
 interface LocalProvider {
   /**
@@ -29,3 +30,5 @@ export type ModuleOptionsDefaults = RequiredDeep<ModuleOptions>;
 export interface ModulePublicRuntimeConfig {
   fastAuth: ModuleOptionsDefaults;
 }
+
+export interface ModuleRuntimeHooks extends AuthHooks, PageHooks {}

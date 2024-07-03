@@ -1,24 +1,18 @@
-import { defineNuxtPlugin, ref, useRouter } from "#imports";
+import { defineNuxtPlugin, useRouter } from "#imports";
 import { cloneDeep } from "lodash-es";
 import { useRouteMetas } from "../composables";
 
 export default defineNuxtPlugin({
-  async setup(nuxtApp) {
+  setup() {
     const router = useRouter();
-    const routeMetas = useRouteMetas();
-
-    await nuxtApp.callHook("fast-route:brfore");
+    const { origin } = useRouteMetas();
 
     for (const route of router.getRoutes()) {
-      if (!routeMetas.value[route.path]) {
-        const result = ref(cloneDeep(route.meta));
-        await nuxtApp.callHook("fast-route:get-meta", route, result);
-        routeMetas.value[route.path] = result.value;
+      if (!origin[route.path]) {
+        origin[route.path] = cloneDeep(route.meta);
         continue;
       }
-      route.meta = routeMetas.value[route.path];
+      route.meta = origin[route.path];
     }
-
-    await nuxtApp.callHook("fast-route:after");
   },
 });

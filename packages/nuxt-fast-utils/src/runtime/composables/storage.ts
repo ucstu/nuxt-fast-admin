@@ -12,37 +12,38 @@ export function useStorage(
   key: string,
   defaults: MaybeRefOrGetter<string>,
   storage?: MaybeRefOrGetter<StorageLike>,
-  options?: UseStorageOptions<string>
+  options?: UseStorageOptions<string>,
 ): RemovableRef<string>;
 export function useStorage(
   key: string,
   defaults: MaybeRefOrGetter<boolean>,
   storage?: MaybeRefOrGetter<StorageLike>,
-  options?: UseStorageOptions<boolean>
+  options?: UseStorageOptions<boolean>,
 ): RemovableRef<boolean>;
 export function useStorage(
   key: string,
   defaults: MaybeRefOrGetter<number>,
   storage?: MaybeRefOrGetter<StorageLike>,
-  options?: UseStorageOptions<number>
+  options?: UseStorageOptions<number>,
 ): RemovableRef<number>;
 export function useStorage<T>(
   key: string,
   defaults: MaybeRefOrGetter<T>,
   storage?: MaybeRefOrGetter<StorageLike>,
-  options?: UseStorageOptions<T>
+  options?: UseStorageOptions<T>,
 ): RemovableRef<T>;
 export function useStorage<T = unknown>(
   key: string,
+  // eslint-disable-next-line @typescript-eslint/unified-signatures
   defaults: MaybeRefOrGetter<null>,
   storage?: MaybeRefOrGetter<StorageLike>,
-  options?: UseStorageOptions<T>
+  options?: UseStorageOptions<T>,
 ): RemovableRef<T>;
 export function useStorage<T>(
   key: string,
   defaults: MaybeRefOrGetter<T>,
-  storage: MaybeRefOrGetter<StorageLike> | undefined,
-  options: UseStorageOptions<T> = {}
+  storage?: MaybeRefOrGetter<StorageLike>,
+  options: UseStorageOptions<T> = {},
 ): RemovableRef<T> {
   const storageRef = toRef(storage);
   if (!storageRef.value) {

@@ -28,28 +28,28 @@ type KeysDeep<
   I extends number = 30,
   IA extends number[] = [],
   D extends number = 10,
-  DA extends number[] = []
+  DA extends number[] = [],
 > = M["length"] extends IA["length"]
   ? never
   : I extends IA["length"]
-  ? never
-  : // 自身
-    | `${P}${Exclude<M[IA["length"]]["key"], symbol>}`
-      // 子级
-      | (M[IA["length"]]["children"] extends Array<FsNavMenu>
-          ? DA["length"] extends D
-            ? never
-            : KeysDeep<
-                M[IA["length"]]["children"],
-                `${P}${Exclude<M[IA["length"]]["key"], symbol>}.`,
-                I,
-                [],
-                D,
-                [0, ...DA]
-              >
-          : never)
-      // 下一个
-      | KeysDeep<M, P, I, [0, ...IA], D, []>;
+    ? never
+    : // 自身
+      | `${P}${Exclude<M[IA["length"]]["key"], symbol>}`
+        // 子级
+        | (M[IA["length"]]["children"] extends Array<FsNavMenu>
+            ? DA["length"] extends D
+              ? never
+              : KeysDeep<
+                  M[IA["length"]]["children"],
+                  `${P}${Exclude<M[IA["length"]]["key"], symbol>}.`,
+                  I,
+                  [],
+                  D,
+                  [0, ...DA]
+                >
+            : never)
+        // 下一个
+        | KeysDeep<M, P, I, [0, ...IA], D, []>;
 
 export interface BaseMeta {
   /**

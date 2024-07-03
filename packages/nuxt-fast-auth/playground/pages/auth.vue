@@ -42,7 +42,6 @@ function submit() {
   switch (type.value) {
     case "login":
       signIn(form.value, {
-        remember: remember.value,
         navigate: true,
       });
       break;

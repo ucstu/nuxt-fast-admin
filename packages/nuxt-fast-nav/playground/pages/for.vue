@@ -1,4 +1,6 @@
 <template>
-  <div>for</div>
-  <nuxt-page />
+  <div>
+    <div>for</div>
+    <nuxt-page />
+  </div>
 </template>

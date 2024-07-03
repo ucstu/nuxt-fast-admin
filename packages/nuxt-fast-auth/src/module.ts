@@ -6,12 +6,12 @@ import {
   defineNuxtModule,
   installModule,
 } from "@nuxt/kit";
-import type { AppConfigInput } from "@nuxt/schema";
 import { addModuleTypeTemplate } from "@ucstu/nuxt-fast-utils/utils";
 import { camelCase } from "lodash-es";
 import { name, version } from "../package.json";
 import type {
   FsAuthConfig,
+  FsAuthConfigDefaults,
   ModuleOptions,
   ModuleOptionsDefaults,
 } from "./runtime/types";
@@ -31,6 +31,7 @@ export default defineNuxtModule<ModuleOptions>({
   } satisfies ModuleOptionsDefaults,
   setup(_options, nuxt) {
     installModule("@ucstu/nuxt-fast-utils");
+    installModule("@ucstu/nuxt-fast-route");
 
     const options = _options as ModuleOptionsDefaults;
 
@@ -40,32 +41,36 @@ export default defineNuxtModule<ModuleOptions>({
     nuxt.options.appConfig.fastAuth = {
       provider: {
         tokenExpires: 365 * 24 * 60 * 60 * 1000,
+        refreshTokenExpires: 365 * 24 * 60 * 60 * 1000,
+        refreshOnWindowFocus: true,
       },
       session: {
         refreshPeriodically: 0,
         refreshOnWindowFocus: false,
       },
-      pages: {
-        home: "/",
-        signIn: "/auth",
-        signOut: "/auth",
-        authMeta: {
-          auth: false,
+      page: {
+        auth: {
           redirect: {
             unAuth: true,
             passed: false,
             failed: true,
           },
+          role: false,
+          per: false,
+          mix: "|",
         },
       },
-    } satisfies AppConfigInput["fastAuth"];
+      home: "/",
+      signIn: "/auth",
+      signOut: "/auth",
+    } satisfies FsAuthConfigDefaults;
 
     addModuleTypeTemplate({
       nuxt,
       name,
       options,
       __dirname,
-      getContents(data) {
+      getContents() {
         return `import type { FsAuthMeta, FsAuthPage } from "<%= options.self %>";
 declare module "<%= options.page %>" {
   interface PageMeta {
@@ -76,6 +81,11 @@ declare module "<%= options.page %>" {
   }
 }`;
       },
+    });
+
+    addPlugin({
+      name: `${name}:config`,
+      src: resolve(`./runtime/plugins/config`),
     });
 
     addPlugin({
@@ -90,8 +100,10 @@ declare module "<%= options.page %>" {
           name: camelCase(`use-${options.provider.type}-auth`),
           as: "useAuth",
         },
-        "auth",
-        "authDirect",
+        "role",
+        "$role",
+        "per",
+        "$per",
       ],
     });
 
@@ -107,14 +119,6 @@ declare module "<%= options.page %>" {
     });
   },
 });
-
-function getModuleName(isDev: boolean, rootDir: string) {
-  return !isDev
-    ? `${name}/module`
-    : rootDir.endsWith("playground")
-    ? "../../../../src/module"
-    : "../../../src/module";
-}
 
 declare module "@nuxt/schema" {
   interface CustomAppConfig {

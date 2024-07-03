@@ -1,11 +1,11 @@
 import { defineNuxtPlugin } from "#app";
-import { override } from "#imports";
+import { assign } from "lodash-es";
 
 export default defineNuxtPlugin({
   enforce: "pre",
-  async setup(nuxtApp) {
-    nuxtApp.hook("fast-nav:get-history", async (route, history) => {
-      override(history.value, {
+  setup(nuxtApp) {
+    nuxtApp.hook("fast-nav:get-history", (route, history) => {
+      assign(history.value, {
         meta: {},
       });
     });

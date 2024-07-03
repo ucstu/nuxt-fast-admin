@@ -1,9 +1,7 @@
 <template>
   <div style="position: relative; height: 100vh">
     <fs-page>
-      <fs-crud ref="crudRef" v-bind="crudBinding">
-        <fs-button @click="crudExpose.doRefresh"> Refresh </fs-button>
-      </fs-crud>
+      <fs-crud ref="crudRef" v-bind="crudBinding" />
     </fs-page>
   </div>
 </template>
@@ -28,7 +26,7 @@ interface Tag {
   name?: string;
 }
 
-const { crudRef, crudBinding, crudExpose } = useFs<Pet>({
+const { crudRef, crudBinding } = useFs<Pet>({
   createCrudOptions() {
     return {
       crudOptions: {

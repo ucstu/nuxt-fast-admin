@@ -1,6 +1,5 @@
 import type { RouteLocationRaw } from "#vue-router";
 import type { LiteralUnion } from "@ucstu/nuxt-fast-utils/types";
-import type { AuthHooks, PageHooks } from "./config";
 
 export interface FsAuthOptions {}
 
@@ -37,7 +36,7 @@ export type FsAuthPer = string | number | bigint | boolean;
  */
 export type FsAuthMeta<
   D extends number = 10,
-  A extends number[] = []
+  A extends number[] = [],
 > = A["length"] extends D
   ? never
   :
@@ -50,10 +49,20 @@ export type FsAuthMeta<
  */
 export interface FsAuthPage {
   /**
-   * 鉴权元数据
+   * 需要的角色
    * @default false
    */
-  auth: FsAuthMeta;
+  role?: FsAuthMeta;
+  /**
+   * 需要的权限
+   * @default false
+   */
+  per?: FsAuthMeta;
+  /**
+   * 角色权限混合逻辑
+   * @default "|"
+   */
+  mix?: "|" | "&";
   /**
    * 重定向配置
    */
@@ -93,8 +102,4 @@ export interface FsAuthForm {
  */
 export interface FsAuthUser {
   [key: string]: any;
-}
-
-declare module "@ucstu/nuxt-fast-utils/types" {
-  export interface FastUtilsHooks extends AuthHooks, PageHooks {}
 }

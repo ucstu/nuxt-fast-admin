@@ -20,3 +20,5 @@ export interface FsCrudConfig {
     | Antdv4UiSetupOptions
     | ElementUiSetupOptions;
 }
+
+export type FsCrudConfigDefaults = Required<FsCrudConfig>;

@@ -1,68 +1,56 @@
 import { defineNuxtPlugin } from "#app";
-import { useAuth, useRuntimeConfig } from "#imports";
+import { useAppConfig, useRuntimeConfig } from "#imports";
+import { watchImmediate } from "@ucstu/nuxt-fast-utils/exports";
 import {
-  authDirect,
-  useRefreshAuth,
-  type UseLocalAuthRet,
-  type UseRefreshAuthRet,
+  getUser,
+  refresh,
+  useRefreshToken,
+  useRemember,
+  useStatus,
+  useToken,
+  useUser,
 } from "../composables";
-import type { FsAuthMeta } from "../types";
-
-declare module "vue" {
-  interface ComponentCustomProperties {
-    /**
-     * 鉴权
-     * @param needs 需要的权限
-     * @returns 是否拥有权限
-     * @example $auth("admin") // 是否拥有 admin 权限
-     * @example $auth("admin", "user") // 是否拥有 admin 和 user 权限
-     * @example $auth("|", "user", "admin") // 是否拥有 user 或 admin 权限
-     * @example $auth("!", "user", "admin") // 是否没有 user 和 admin 权限
-     * @example $auth("|", ["user", "admin"], "all") // 是否 (同时拥有 user 和 admin 权限) 或 具有 all 权限
-     */
-    $auth: (
-      ...needs: FsAuthMeta[] | ["|", ...FsAuthMeta[]] | ["!", ...FsAuthMeta[]]
-    ) => boolean;
-  }
-}
+import type { FsAuthConfigDefaults } from "../types";
 
 export default defineNuxtPlugin({
-  async setup(nuxtApp) {
+  async setup() {
+    const user = useUser();
+    const token = useToken();
+    const status = useStatus();
+    const remember = useRemember();
+    const refreshToken = useRefreshToken();
     const runtimeConfig = useRuntimeConfig();
-    const config = getAppConfig("fastAuth");
-    const { token, refreshToken, user, remember, getUser, refresh } =
-      useAuth() as UseRefreshAuthRet & UseLocalAuthRet;
+    const config = useAppConfig().fastAuth as FsAuthConfigDefaults;
+
+    watchImmediate(token, (value) => (status.value.authed = Boolean(value)));
 
     if (runtimeConfig.public.fastAuth.provider.type === "refresh") {
-      if (!token.value && refreshToken.value) {
+      if (!status.value.authed && refreshToken.value) {
         await refresh();
       }
     }
-    if (!user.value && token.value) {
+    if (!user.value && status.value.authed) {
       await getUser();
     }
 
-    nuxtApp.vueApp.config.globalProperties.$auth = authDirect;
-
     if (import.meta.client) {
       // 如果配置了自动定时刷新用户
-      if (config.session!.refreshPeriodically) {
+      if (config.session.refreshPeriodically) {
         setInterval(() => {
           if (token.value) getUser();
-        }, config.session!.refreshPeriodically);
+        }, config.session.refreshPeriodically);
       }
       // 如果配置了窗口焦点时刷新用户
-      if (config.session!.refreshOnWindowFocus) {
+      if (config.session.refreshOnWindowFocus) {
         window.addEventListener("focus", () => {
           if (token.value) getUser();
         });
       }
       // 如果使用了刷新令牌
       if (runtimeConfig.public.fastAuth.provider.type === "refresh") {
-        const { refresh } = useRefreshAuth();
         if (typeof remember.value === "boolean") {
-          if (remember.value && config.provider!.refreshTokenExpires)
-            setTimeout(() => refresh, config.provider!.refreshTokenExpires / 2);
+          if (remember.value && config.provider.refreshTokenExpires)
+            setTimeout(() => refresh, config.provider.refreshTokenExpires / 2);
         } else {
           setTimeout(() => refresh, remember.value / 2);
         }

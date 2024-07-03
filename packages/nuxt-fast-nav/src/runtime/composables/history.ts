@@ -2,23 +2,27 @@ import {
   computed,
   getRouteMeta,
   navigateTo,
-  override,
   ref,
   toRef,
   useAppConfig,
-  useNuxtApp,
+  useFsNuxtApp,
   useRouter,
   useState,
+  type Ref,
 } from "#imports";
 import { extendRef } from "@ucstu/nuxt-fast-utils/exports";
 import defu from "defu";
-import { isEqual } from "lodash-es";
-import type { FsNavHistory, FsNavPageFilled } from "../types";
+import { assign, isEqual } from "lodash-es";
+import type {
+  FsNavConfigDefaults,
+  FsNavHistory,
+  FsNavPageFilled,
+} from "../types";
 
 function historyEqual(
   a: FsNavHistory,
   b: FsNavHistory,
-  nuxtApp = useNuxtApp()
+  nuxtApp = useFsNuxtApp(),
 ): boolean {
   const result = ref(false);
   nuxtApp.hooks.callHookWith(
@@ -28,41 +32,41 @@ function historyEqual(
     "fast-nav:history-equal",
     a,
     b,
-    result
+    result,
   );
   return result.value;
 }
 
-export function useNavHistories(nuxtApp = useNuxtApp()) {
-  const config = toRef(useAppConfig(), "fastNav");
+export function useNavHistories(nuxtApp = useFsNuxtApp()) {
+  const config = toRef(useAppConfig(), "fastNav") as Ref<FsNavConfigDefaults>;
   const { currentRoute } = useRouter();
 
   const histories = useState<Array<FsNavHistory>>(
     "fast-nav:histories",
-    () => []
+    () => [],
   );
   const result = computed(() =>
     histories.value.map((item) => ({
       ...item,
       meta: defu(item.meta ?? {}, getRouteMeta<FsNavPageFilled>(item.to)),
-    }))
+    })),
   );
   const current = computed(() =>
     result.value.find((item) =>
-      historyEqual(item, { to: currentRoute.value }, nuxtApp)
-    )
+      historyEqual(item, { to: currentRoute.value }, nuxtApp),
+    ),
   );
 
   return extendRef(result, {
     current,
-    async open(history: FsNavHistory | undefined = current.value) {
+    open(history: FsNavHistory | undefined = current.value) {
       if (!history) return;
       const old = histories.value.find((item) =>
-        historyEqual(item, history, nuxtApp)
+        historyEqual(item, history, nuxtApp),
       );
       if (old) {
         if (!isEqual(old, history)) {
-          override(old, history);
+          assign(old, history);
         }
         return;
       }
@@ -70,16 +74,23 @@ export function useNavHistories(nuxtApp = useNuxtApp()) {
     },
     async close(history: FsNavHistory | undefined = current.value) {
       if (!history) return;
-      const old = histories.value.find((item) => historyEqual(item, history));
+      const old = histories.value.find((item) =>
+        historyEqual(item, history, nuxtApp),
+      );
       if (!old) {
         return console.warn(`[fast-nav] 未找到历史 `, history, ` 的记录`);
       }
 
+      const isCurrent =
+        current.value && historyEqual(old, current.value, nuxtApp);
+
       const index = histories.value.indexOf(old);
       histories.value.splice(index, 1);
+
+      if (!isCurrent) return;
       await navigateTo(
         (histories.value[index] ?? histories.value[index - 1])?.to ??
-          config.value.home
+          config.value.home,
       );
     },
     async closeAll() {
@@ -88,7 +99,9 @@ export function useNavHistories(nuxtApp = useNuxtApp()) {
     },
     async closeOthers(history: FsNavHistory | undefined = current.value) {
       if (!history) return;
-      const old = histories.value.find((item) => historyEqual(item, history));
+      const old = histories.value.find((item) =>
+        historyEqual(item, history, nuxtApp),
+      );
       if (!old) {
         return console.warn(`[fast-nav] 未找到历史 `, history, ` 的记录`);
       }
@@ -96,6 +109,7 @@ export function useNavHistories(nuxtApp = useNuxtApp()) {
       const index = histories.value.indexOf(old);
       histories.value.splice(0, index);
       histories.value.splice(1, histories.value.length - 1);
+      await navigateTo(history.to);
     },
   });
 }

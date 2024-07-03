@@ -35,7 +35,7 @@ export interface ModuleRuntimeHooks {
    */
   "fast-nav:get-history": (
     to: RouteLocationNormalizedGeneric,
-    result: Ref<FsNavHistory>
+    result: Ref<FsNavHistory>,
   ) => void;
   /**
    * 历史记录是否相等
@@ -46,6 +46,6 @@ export interface ModuleRuntimeHooks {
   "fast-nav:history-equal": (
     a: FsNavHistory,
     b: FsNavHistory,
-    result: Ref<boolean>
+    result: Ref<boolean>,
   ) => void;
 }

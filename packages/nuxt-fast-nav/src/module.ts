@@ -7,12 +7,12 @@ import {
   installModule,
   updateTemplates,
 } from "@nuxt/kit";
-import type { AppConfigInput } from "@nuxt/schema";
 import { addModuleTypeTemplate } from "@ucstu/nuxt-fast-utils/utils";
 import { minimatch } from "minimatch";
 import { name, version } from "../package.json";
 import type {
   FsNavConfig,
+  FsNavConfigDefaults,
   ModuleOptions,
   ModuleOptionsDefaults,
 } from "./runtime/types";
@@ -41,6 +41,7 @@ export default defineNuxtModule<ModuleOptions>({
     nuxt.options.runtimeConfig.public.fastNav = options;
 
     nuxt.options.appConfig.fastNav = {
+      menus: [],
       menu: {
         icon: "material-symbols:lists",
         show: false,
@@ -61,12 +62,13 @@ export default defineNuxtModule<ModuleOptions>({
         },
       },
       home: "/",
-    } satisfies AppConfigInput["fastNav"];
+      keys: ["hash", "name", "params", "path", "query"],
+    } satisfies FsNavConfigDefaults;
 
     addTemplate({
       write: true,
       filename: "types/ucstu/nuxt-fast-nav/menu-key.ts",
-      async getContents({ app }) {
+      getContents({ app }) {
         const result: Record<string, any> = {};
         const pages = app.pages || [];
         for (const page of pages) {
@@ -87,7 +89,7 @@ export default defineNuxtModule<ModuleOptions>({
         }
         const _interface = JSON.stringify(result, null, 2).replaceAll(
           "{}",
-          "never"
+          "never",
         );
         return `export interface _FsNavMenuKeys ${
           _interface === "never" ? "{}" : _interface
@@ -109,7 +111,7 @@ declare module "${options.moduleName}" {
 import type { FsNavPage } from "${options.moduleName}";
 declare module "${resolve(
           nuxt.options.appDir,
-          "../pages/runtime/composables"
+          "../pages/runtime/composables",
         )}" {
   interface PageMeta extends FsNavPage {}
 }
@@ -118,7 +120,7 @@ declare module "${resolve(
     });
 
     const needUpdateTemplates = ["types/ucstu/nuxt-fast-nav/menu-key.ts"];
-    nuxt.hook("builder:watch", async (event, relativePath) => {
+    nuxt.hook("builder:watch", (event, relativePath) => {
       if (minimatch(relativePath, "pages/**/*")) {
         updateTemplates({
           filter(template) {

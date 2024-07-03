@@ -1,7 +1,17 @@
-import { computed, toRef, useAppConfig, useRouteMetas } from "#imports";
+import {
+  computed,
+  toRef,
+  useAppConfig,
+  useRouteMetas,
+  type Ref,
+} from "#imports";
 import { extendRef } from "@ucstu/nuxt-fast-utils/exports";
 import { cloneDeep } from "lodash-es";
-import type { FsNavMenuFilled, FsNavPageFilled } from "../types";
+import type {
+  FsNavConfigDefaults,
+  FsNavMenuFilled,
+  FsNavPageFilled,
+} from "../types";
 import {
   addPageToMenus,
   fillMenusRoute,
@@ -11,7 +21,7 @@ import {
 
 export function useNavMenus() {
   const pages = useRouteMetas<FsNavPageFilled>();
-  const config = toRef(useAppConfig(), "fastNav");
+  const config = toRef(useAppConfig(), "fastNav") as Ref<FsNavConfigDefaults>;
 
   const result = computed(() => {
     const result = getMenuFilled({
@@ -35,7 +45,7 @@ export function useNavMenus() {
       for (const path of paths) {
         if (!menu.children) break;
         const parent = menu.children.find(
-          (menu) => "key" in menu && menu.key === path
+          (menu) => "key" in menu && menu.key === path,
         ) as FsNavMenuFilled | undefined;
         if (!parent) break;
         parents.push(parent);

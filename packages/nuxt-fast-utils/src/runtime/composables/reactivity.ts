@@ -6,15 +6,15 @@ import type { WritableComputedRef } from "vue";
 export type ToRefDeep<
   T extends object,
   K extends LiteralUnion<Paths<T>, string>,
-  V extends Get<T, `${K}`> = Get<T, `${K}`>
+  V extends Get<T, `${K}`> = Get<T, `${K}`>,
 > = WritableComputedRef<V>;
 export function toRefDeep<
   T extends object = object,
-  K extends LiteralUnion<Paths<T>, string> = LiteralUnion<Paths<T>, string>
+  K extends LiteralUnion<Paths<T>, string> = LiteralUnion<Paths<T>, string>,
 >(object: T, key: K): ToRefDeep<T, K>;
 export function toRefDeep<
   T extends object = object,
-  K extends LiteralUnion<Paths<T>, string> = LiteralUnion<Paths<T>, string>
+  K extends LiteralUnion<Paths<T>, string> = LiteralUnion<Paths<T>, string>,
 >(object: T, key: K) {
   return computed({
     get() {

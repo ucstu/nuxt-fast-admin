@@ -1,22 +1,26 @@
 import {
   cookieStorage,
   navigateTo,
-  readonly,
-  useFuStorage,
+  ref,
+  useAppConfig,
+  useFsNuxtApp,
   useRuntimeConfig,
   useState,
-  type Ref,
+  useStorage,
 } from "#imports";
-import type { ReadonlyDeep } from "@ucstu/nuxt-fast-utils/types";
-import type { FsAuthForm, RefreshAuthHooks } from "../types";
+import type {
+  FsAuthConfigDefaults,
+  FsAuthForm,
+  RefreshSignInResult,
+} from "../types";
 import {
+  getUser,
   useAuth,
   useRemember,
   useToken,
   useUser,
   type AuthStatus,
   type NavigateOptions,
-  type UseAuthRet,
 } from "./use-auth";
 
 /**
@@ -33,7 +37,7 @@ export interface RefreshAuthStatus extends AuthStatus {
  * 使用认证状态
  * @returns 认证状态
  */
-function useStatus() {
+export function useRefreshStatus() {
   return useState<RefreshAuthStatus>("fast-auth:status", () => ({
     signIn: false,
     signUp: false,
@@ -48,18 +52,18 @@ function useStatus() {
  * 使用刷新令牌
  * @returns 刷新令牌
  */
-function useRefreshToken() {
+export function useRefreshToken() {
   const remenber = useRemember();
   const runtimeConfig = useRuntimeConfig().public.fastUtils;
-  return useFuStorage<string | undefined>(
-    "fast-auth-refresh-token",
+  return useStorage<string | undefined>(
+    "fast-auth:refresh-token",
     undefined,
     () =>
       runtimeConfig.ssr
         ? cookieStorage
         : remenber.value
-        ? localStorage
-        : sessionStorage
+          ? localStorage
+          : sessionStorage,
   );
 }
 
@@ -67,7 +71,7 @@ function useRefreshToken() {
  * 登录选项
  * @description 登录选项
  */
-interface RefreshSignOptions extends NavigateOptions {
+export interface RefreshSignOptions extends NavigateOptions {
   /**
    * 保持登录状态
    * @description 保持登录状态的时间，单位为毫秒
@@ -84,39 +88,38 @@ interface RefreshSignOptions extends NavigateOptions {
  * @param form 登录表单
  * @param options 登录选项
  */
-async function refreshSignIn<F extends FsAuthForm = FsAuthForm>(
+export async function refreshSignIn<F extends FsAuthForm = FsAuthForm>(
   form: F,
-  options: RefreshSignOptions = {}
+  options: RefreshSignOptions = {},
 ) {
   const user = useUser();
   const token = useToken();
-  const status = useStatus();
-  const { getUser } = useAuth();
+  const nuxtApp = useFsNuxtApp();
+  const status = useRefreshStatus();
   const rememberRef = useRemember();
   const refreshToken = useRefreshToken();
-  const config = getAppConfig("fastAuth");
+  const config = useAppConfig().fastAuth as FsAuthConfigDefaults;
 
   const { remember = false, navigate = false, navigateOptions } = options;
 
   status.value.signIn = true;
-  const authHooks = config.authHooks as RefreshAuthHooks;
   try {
-    const result = (await authHooks.signIn?.(form)) || null;
-    if (result) {
+    const result = ref<RefreshSignInResult | undefined>();
+    await nuxtApp.callHook("fast-auth:sign-in", form, result);
+    if (result.value) {
       if (remember === true) {
         rememberRef.value =
-          result.tokenExpires ?? config.provider?.tokenExpires ?? 0;
+          result.value.tokenExpires ?? config.provider.tokenExpires;
       } else {
         rememberRef.value = remember;
       }
-      token.value = result.token;
-      refreshToken.value = result.refreshToken;
-      await getUser(result.token);
+      token.value = result.value.token;
+      refreshToken.value = result.value.refreshToken;
+      if (result.value.user) user.value = result.value.user;
+      else await getUser(result.value.token);
+
       if (navigate) {
-        navigateTo(
-          navigate === true ? config.pages!.home! : navigate,
-          navigateOptions
-        );
+        navigateTo(navigate === true ? config.home : navigate, navigateOptions);
       }
     } else {
       token.value = null;
@@ -133,27 +136,27 @@ async function refreshSignIn<F extends FsAuthForm = FsAuthForm>(
 /**
  * 退出登录选项
  */
-interface RefreshSignOutOptions extends NavigateOptions {}
+export interface RefreshSignOutOptions extends NavigateOptions {}
 /**
  * 退出登录
  * @param options 退出登录选项
  */
-async function refreshSignOut(options: RefreshSignOutOptions = {}) {
+export async function refreshSignOut(options: RefreshSignOutOptions = {}) {
   const user = useUser();
   const token = useToken();
-  const status = useStatus();
+  const nuxtApp = useFsNuxtApp();
+  const status = useRefreshStatus();
   const refreshToken = useRefreshToken();
-  const config = getAppConfig("fastAuth");
+  const config = useAppConfig().fastAuth as FsAuthConfigDefaults;
 
   const { navigate = false } = options;
 
   status.value.signOut = true;
-  const authHooks = config.authHooks as RefreshAuthHooks;
   try {
     user.value = null;
     token.value = null;
     refreshToken.value = null;
-    await authHooks.signOut?.();
+    await nuxtApp.callHook("fast-auth:sign-out");
   } catch (e) {
     status.value.signOut = false;
     throw e;
@@ -162,8 +165,8 @@ async function refreshSignOut(options: RefreshSignOutOptions = {}) {
 
   if (navigate) {
     navigateTo(
-      navigate === true ? config.pages!.signIn! : navigate,
-      options.navigateOptions
+      navigate === true ? config.signIn : navigate,
+      options.navigateOptions,
     );
   }
 }
@@ -173,7 +176,7 @@ async function refreshSignOut(options: RefreshSignOutOptions = {}) {
  * @description 注册选项
  * @description 注意：跳转配置仅针对自动登录成功后有效
  */
-interface RefreshSignUpOptions extends RefreshSignOptions {
+export interface RefreshSignUpOptions extends RefreshSignOptions {
   /**
    * 注册成功后是否自动登录
    * @default true
@@ -185,19 +188,18 @@ interface RefreshSignUpOptions extends RefreshSignOptions {
  * @param form 注册表单
  * @param options 注册选项
  */
-async function refreshSignUp<F extends FsAuthForm = FsAuthForm>(
+export async function refreshSignUp<F extends FsAuthForm = FsAuthForm>(
   form: F,
-  options: RefreshSignUpOptions = {}
+  options: RefreshSignUpOptions = {},
 ) {
-  const status = useStatus();
-  const config = getAppConfig("fastAuth");
+  const status = useRefreshStatus();
+  const nuxtApp = useFsNuxtApp();
 
   const { autoSignIn = true } = options;
 
   status.value.signUp = true;
-  const authHooks = config.authHooks as RefreshAuthHooks;
   try {
-    await authHooks.signUp?.(form);
+    await nuxtApp.callHook("fast-auth:sign-up", form);
   } catch (e) {
     status.value.signUp = false;
     throw e;
@@ -211,28 +213,30 @@ async function refreshSignUp<F extends FsAuthForm = FsAuthForm>(
  * 刷新令牌
  * @description 刷新令牌
  */
-async function refresh(
+export async function refresh(
   refreshToken?: string | undefined | null,
-  token?: string | undefined | null
+  token?: string | undefined | null,
 ) {
+  const user = useUser();
   const _token = useToken();
-  const status = useStatus();
-  const config = getAppConfig("fastAuth");
-  const { getUser } = useAuth();
+  const status = useRefreshStatus();
+  const nuxtApp = useFsNuxtApp();
   const _refreshToken = useRefreshToken();
 
   status.value.refresh = true;
-  const authHooks = config.authHooks as RefreshAuthHooks;
   try {
-    const result =
-      (await authHooks.refresh?.(
-        refreshToken ?? _refreshToken.value,
-        token ?? _token.value
-      )) || null;
-    if (result) {
-      _token.value = result.token;
-      _refreshToken.value = result.refreshToken;
-      await getUser();
+    const result = ref<RefreshSignInResult | undefined>();
+    await nuxtApp.callHook(
+      "fast-auth:refresh-token" as any,
+      refreshToken,
+      token,
+      result,
+    );
+    if (result.value) {
+      _token.value = result.value.token;
+      _refreshToken.value = result.value.refreshToken;
+      if (result.value.user) user.value = result.value.user;
+      else await getUser();
     } else {
       _token.value = "";
       _refreshToken.value = "";
@@ -244,31 +248,21 @@ async function refresh(
   status.value.refresh = false;
 }
 
-export type UseRefreshAuthRet<F extends FsAuthForm = FsAuthForm> =
-  UseAuthRet & {
-    status: ReadonlyDeep<Ref<RefreshAuthStatus>>;
-    refreshToken: ReadonlyDeep<Ref<string | undefined | null>>;
-    signIn: typeof refreshSignIn<F>;
-    signUp: typeof refreshSignUp<F>;
-    refresh: typeof refresh;
-  };
 /**
  * 使用刷新认证
  * @returns 刷新认证
  */
-export function useRefreshAuth<
-  F extends FsAuthForm = FsAuthForm,
->(): UseRefreshAuthRet<F> {
-  const status = useStatus();
+export function useRefreshAuth<F extends FsAuthForm = FsAuthForm>() {
+  const status = useRefreshStatus();
   const refreshToken = useRefreshToken();
 
   return {
     ...useAuth(),
-    status: readonly(status),
-    refreshToken: readonly(refreshToken),
-    signOut: refreshSignOut,
+    status,
+    refreshToken,
     signIn: refreshSignIn<F>,
     signUp: refreshSignUp<F>,
+    signOut: refreshSignOut,
     refresh,
   };
 }

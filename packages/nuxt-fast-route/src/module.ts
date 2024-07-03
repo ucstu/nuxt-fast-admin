@@ -5,11 +5,11 @@ import {
   defineNuxtModule,
   installModule,
 } from "@nuxt/kit";
-import type { AppConfigInput } from "@nuxt/schema";
 import { addModuleTypeTemplate } from "@ucstu/nuxt-fast-utils/utils";
 import { name, version } from "../package.json";
 import type {
   FsRouteConfig,
+  FsRouteConfigDefaults,
   ModuleOptions,
   ModuleOptionsDefaults,
 } from "./runtime/types";
@@ -36,7 +36,7 @@ export default defineNuxtModule<ModuleOptions>({
       ssr,
     };
 
-    nuxt.options.appConfig.fastRoute = {} satisfies AppConfigInput["fastRoute"];
+    nuxt.options.appConfig.fastRoute = {} satisfies FsRouteConfigDefaults;
 
     addModuleTypeTemplate({
       nuxt,

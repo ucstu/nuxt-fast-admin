@@ -1,19 +1,19 @@
 import { defineNuxtPlugin } from "#app";
-import { override } from "#imports";
+import { useRouter } from "#imports";
+import { assign } from "lodash-es";
 import { getPageFilled } from "../utils";
 
 export default defineNuxtPlugin({
   enforce: "pre",
-  async setup(nuxtApp) {
-    nuxtApp.hook("fast-route:get-meta", (route, result) => {
-      override(
+  setup(nuxtApp) {
+    const router = useRouter();
+    nuxtApp.hook("fast-route:get-meta", (path, result) => {
+      const route = router.getRoutes().find((route) => route.path === path);
+      assign(
         result.value,
         getPageFilled({
-          to: {
-            name: route.name,
-            path: route.path,
-          },
-          children: route.children,
+          to: { path },
+          children: route?.children,
         })
       );
     });

@@ -1,16 +1,15 @@
 import {
   cookieStorage,
-  getAppConfig,
   navigateTo,
-  readonly,
   sessionCookieStorage,
-  useFuStorage,
+  useAppConfig,
+  useFsNuxtApp,
   useRuntimeConfig,
   useState,
+  useStorage,
 } from "#imports";
 import type { RouteLocationRaw } from "#vue-router";
-import { watchImmediate } from "@ucstu/nuxt-fast-utils/exports";
-import type { BaseAuthHooks, FsAuthUser } from "../types";
+import type { FsAuthConfigDefaults, FsAuthUser } from "../types";
 
 /**
  * 认证状态
@@ -44,7 +43,7 @@ export interface AuthStatus {
  * @returns 记住登录
  */
 export function useRemember() {
-  return useFuStorage<boolean>("fast-auth-remember", false);
+  return useStorage<number | boolean>("fast-auth:remember", false);
 }
 
 /**
@@ -54,8 +53,8 @@ export function useRemember() {
  */
 export function useUser() {
   return useState<FsAuthUser | undefined | null>(
-    "fast-auth-user",
-    () => undefined
+    "fast-auth:user",
+    () => undefined,
   );
 }
 
@@ -80,14 +79,14 @@ export function useStatus() {
 export function useToken() {
   const remenber = useRemember();
   const runtimeConfig = useRuntimeConfig().public.fastUtils;
-  return useFuStorage<string | undefined>("fast-auth-token", undefined, () =>
+  return useStorage<string | undefined>("fast-auth:token", undefined, () =>
     runtimeConfig.ssr
       ? remenber.value
         ? cookieStorage
         : sessionCookieStorage
       : remenber.value
-      ? localStorage
-      : sessionStorage
+        ? localStorage
+        : sessionStorage,
   );
 }
 
@@ -119,20 +118,20 @@ interface SignOutOptions extends NavigateOptions {}
  * 退出登录
  * @param options 退出登录选项
  */
-async function signOut(options: SignOutOptions = {}) {
+export async function signOut(options: SignOutOptions = {}) {
   const user = useUser();
   const token = useToken();
   const status = useStatus();
-  const config = getAppConfig("fastAuth");
+  const config = useAppConfig().fastAuth as FsAuthConfigDefaults;
+  const nuxtApp = useFsNuxtApp();
 
   const { navigate = false } = options;
 
   status.value.signOut = true;
-  const authHooks = config.authHooks as BaseAuthHooks;
   try {
     user.value = null;
     token.value = null;
-    await authHooks.signOut?.();
+    await nuxtApp.callHook("fast-auth:sign-out");
   } catch (e) {
     status.value.signOut = false;
     throw e;
@@ -141,8 +140,8 @@ async function signOut(options: SignOutOptions = {}) {
 
   if (navigate) {
     navigateTo(
-      navigate === true ? config.pages!.signIn! : navigate,
-      options.navigateOptions
+      navigate === true ? config.signIn : navigate,
+      options.navigateOptions,
     );
   }
 }
@@ -150,16 +149,14 @@ async function signOut(options: SignOutOptions = {}) {
  * 获取用户信息
  * @param token 令牌
  */
-async function getUser(token?: string | undefined | null) {
+export async function getUser(token = useToken().value) {
   const user = useUser();
-  const _token = useToken();
   const status = useStatus();
-  const config = getAppConfig("fastAuth");
+  const nuxtApp = useFsNuxtApp();
 
   status.value.getUser = true;
-  const authHooks = config.authHooks as BaseAuthHooks;
   try {
-    user.value = (await authHooks.getUser?.(token ?? _token.value)) || null;
+    await nuxtApp.callHook("fast-auth:get-user", token, user);
   } catch (e) {
     status.value.getUser = false;
     throw e;
@@ -177,14 +174,12 @@ export function useAuth() {
   const status = useStatus();
   const remember = useRemember();
 
-  watchImmediate(user, (value) => (status.value.authed = Boolean(value)));
-
   return {
-    user: readonly(user),
-    token: readonly(token),
-    status: readonly(status),
+    user,
+    token,
+    status,
     remember,
-    signOut: signOut,
-    getUser: getUser,
+    signOut,
+    getUser,
   };
 }

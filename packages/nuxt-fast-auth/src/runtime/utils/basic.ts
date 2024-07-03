@@ -8,7 +8,10 @@ import type { FsAuthMeta, FsAuthPage } from "../types";
 export function isFsAuthPage(
   pageOrMeta: FsAuthPage | FsAuthMeta,
 ): pageOrMeta is FsAuthPage {
-  return pageOrMeta instanceof Object && "auth" in pageOrMeta;
+  return (
+    pageOrMeta instanceof Object &&
+    ("role" in pageOrMeta || "per" in pageOrMeta)
+  );
 }
 
 /**

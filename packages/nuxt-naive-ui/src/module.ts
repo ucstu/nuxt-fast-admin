@@ -7,7 +7,6 @@ import {
   extendViteConfig,
   installModule,
 } from "@nuxt/kit";
-import type { AppConfigInput } from "@nuxt/schema";
 import { addModuleTypeTemplate } from "@ucstu/nuxt-fast-utils/utils";
 import { camelCase, upperFirst } from "lodash-es";
 import Naive from "naive-ui";
@@ -16,6 +15,7 @@ import type {
   ModuleOptions,
   ModuleOptionsDefaults,
   NaiveUiConfig,
+  NaiveUiConfigDefaults,
 } from "./runtime/types";
 
 export type * from "./runtime/types";
@@ -38,7 +38,9 @@ export default defineNuxtModule<ModuleOptions>({
 
     nuxt.options.appConfig.naiveUi = {
       defaultTheme: "auto",
-    } satisfies AppConfigInput["naiveUi"];
+      customThemes: {},
+      themesOverrides: {},
+    } satisfies NaiveUiConfigDefaults;
 
     if (process.env.NODE_ENV === "development") {
       const optimizeDeps = ["naive-ui"];
@@ -86,7 +88,7 @@ export default defineNuxtModule<ModuleOptions>({
     });
 
     const components = Object.keys(Naive).filter((name) =>
-      /^N[A-Z]|n-[a-z]/.test(name)
+      /^N[A-Z]|n-[a-z]/.test(name),
     );
 
     const clientOnlyComponents = ["NDrawer", "NDrawerContent", "NModal"];
@@ -103,7 +105,7 @@ export default defineNuxtModule<ModuleOptions>({
     });
 
     const composables = Object.keys(Naive).filter((name) =>
-      /^use[A-Z]/.test(name)
+      /^use[A-Z]/.test(name),
     );
 
     addImportsSources({

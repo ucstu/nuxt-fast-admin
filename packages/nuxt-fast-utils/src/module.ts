@@ -1,9 +1,14 @@
-import { addImportsSources, createResolver, defineNuxtModule } from "@nuxt/kit";
-import type { AppConfigInput } from "@nuxt/schema";
+import {
+  addImportsSources,
+  addPlugin,
+  createResolver,
+  defineNuxtModule,
+} from "@nuxt/kit";
 import { name, version } from "../package.json";
 import { addModuleTypeTemplate } from "../utils";
 import type {
   FsUtilsConfig,
+  FsUtilsConfigDefaults,
   ModuleOptions,
   ModuleOptionsDefaults,
 } from "./runtime/types";
@@ -28,7 +33,7 @@ export default defineNuxtModule<ModuleOptions>({
       ssr,
     };
 
-    nuxt.options.appConfig.fastUtils = {} satisfies AppConfigInput["fastUtils"];
+    nuxt.options.appConfig.fastUtils = {} satisfies FsUtilsConfigDefaults;
 
     addModuleTypeTemplate({
       nuxt,
@@ -37,14 +42,19 @@ export default defineNuxtModule<ModuleOptions>({
       __dirname,
     });
 
+    addPlugin({
+      name,
+      src: resolve("./runtime/plugins/plugin"),
+    });
+
     addImportsSources({
       from: resolve("./runtime/composables"),
-      imports: ["toRefDeep", "useStorage"],
+      imports: ["toRefDeep", "useStorage", "useFsNuxtApp"],
     });
 
     addImportsSources({
       from: resolve("./runtime/utils"),
-      imports: ["cookieStorage", "sessionCookieStorage", "override"],
+      imports: ["cookieStorage", "sessionCookieStorage"],
     });
   },
 });

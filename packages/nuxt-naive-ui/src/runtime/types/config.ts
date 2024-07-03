@@ -23,3 +23,5 @@ export interface NaiveUiConfig {
     >
   >;
 }
+
+export type NaiveUiConfigDefaults = Required<NaiveUiConfig>;

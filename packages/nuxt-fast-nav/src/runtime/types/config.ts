@@ -1,5 +1,12 @@
 import type { RouteLocationRaw } from "#vue-router";
-import type { FsNavMenu, FsNavMenuKeys, MenuMeta, TabMeta } from "./base";
+import type { LiteralUnion, RequiredDeep } from "@ucstu/nuxt-fast-utils/types";
+import type {
+  FsNavHistory,
+  FsNavMenu,
+  FsNavMenuKeys,
+  MenuMeta,
+  TabMeta,
+} from "./base";
 
 export interface FsNavConfig {
   /**
@@ -46,4 +53,12 @@ export interface FsNavConfig {
    * @default "/"
    */
   home?: RouteLocationRaw;
+  /**
+   * 历史比较字段
+   * @description 用于判断历史记录是否相等
+   * @default ["hash", "name", "params", "path", "query"]
+   */
+  keys?: Array<LiteralUnion<keyof FsNavHistory["to"], string>>;
 }
+
+export type FsNavConfigDefaults = RequiredDeep<FsNavConfig>;

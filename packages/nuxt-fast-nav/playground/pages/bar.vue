@@ -1,4 +1,6 @@
 <template>
-  <div>bar</div>
-  <nuxt-page />
+  <div>
+    <div>bar</div>
+    <nuxt-page />
+  </div>
 </template>
