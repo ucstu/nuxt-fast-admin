@@ -124,7 +124,7 @@ export default defineNuxtModule<ModuleOptions>({
     });
 
     const components = Object.keys(FastCrud).filter((name) =>
-      /^Fs[A-Z]|fs-[a-z]/.test(name)
+      /^Fs[A-Z]|fs-[a-z]/.test(name),
     );
 
     const clientOnlyComponents = ["FsCrud"];
@@ -141,7 +141,7 @@ export default defineNuxtModule<ModuleOptions>({
     });
 
     const composables = Object.keys(FastCrud).filter(
-      (name) => /^use[A-Z]/.test(name) || ["dict"].includes(name)
+      (name) => /^use[A-Z]/.test(name) || ["dict"].includes(name),
     );
 
     addImportsSources({

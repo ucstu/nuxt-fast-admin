@@ -18,13 +18,15 @@ import type {
   NaiveUiConfigDefaults,
 } from "./runtime/types";
 
+const configKey = "naiveUi";
+
 export type * from "./runtime/types";
 
 export default defineNuxtModule<ModuleOptions>({
   meta: {
     name,
     version,
-    configKey: "naiveUi",
+    configKey,
   },
   defaults: {} satisfies ModuleOptionsDefaults,
   setup(_options, nuxt) {
@@ -34,9 +36,9 @@ export default defineNuxtModule<ModuleOptions>({
 
     const { resolve } = createResolver(import.meta.url);
 
-    nuxt.options.runtimeConfig.public.naiveUi = options;
+    nuxt.options.runtimeConfig.public[configKey] = options;
 
-    nuxt.options.appConfig.naiveUi = {
+    nuxt.options.appConfig[configKey] = {
       defaultTheme: "auto",
       customThemes: {},
       themesOverrides: {},
@@ -88,7 +90,7 @@ export default defineNuxtModule<ModuleOptions>({
     });
 
     const components = Object.keys(Naive).filter((name) =>
-      /^N[A-Z]|n-[a-z]/.test(name)
+      /^N[A-Z]|n-[a-z]/.test(name),
     );
 
     const clientOnlyComponents = ["NDrawer", "NDrawerContent", "NModal"];
@@ -105,7 +107,7 @@ export default defineNuxtModule<ModuleOptions>({
     });
 
     const composables = Object.keys(Naive).filter((name) =>
-      /^use[A-Z]/.test(name)
+      /^use[A-Z]/.test(name),
     );
 
     addImportsSources({
@@ -117,6 +119,6 @@ export default defineNuxtModule<ModuleOptions>({
 
 declare module "@nuxt/schema" {
   interface CustomAppConfig {
-    naiveUi?: NaiveUiConfig;
+    [configKey]?: NaiveUiConfig;
   }
 }

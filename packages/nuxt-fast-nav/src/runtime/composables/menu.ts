@@ -1,5 +1,5 @@
 import {
-  computed,
+  computedEager,
   toRef,
   useAppConfig,
   useFsNuxtApp,
@@ -24,7 +24,7 @@ export function createNavMenus() {
   const pages = useRouteMetas<FsNavPageFilled>();
   const config = toRef(useAppConfig(), "fastNav") as Ref<FsNavConfigDefaults>;
 
-  const result = computed(() => {
+  const result = computedEager(() => {
     const result = getMenuFilled({
       key: "$root",
       children: cloneDeep(config.value.menus),
@@ -37,26 +37,31 @@ export function createNavMenus() {
     return result;
   });
 
+  function findParents(page: FsNavPageFilled) {
+    const parents: Array<FsNavMenuFilled> = [result.value];
+    if (!page || page.menu.parent === "$root") return parents;
+    const paths = page.menu.parent.split(".");
+    let menu = result.value;
+    for (const path of paths) {
+      if (!menu.children) break;
+      const parent = menu.children.find(
+        (menu) => "key" in menu && menu.key === path
+      ) as FsNavMenuFilled | undefined;
+      if (!parent) break;
+      parents.push(parent);
+      menu = parent;
+    }
+    return parents;
+  }
+
+  const current = computedEager(() => {});
+
   return extendRef(result, {
-    findParents(page: FsNavPageFilled) {
-      const parents: Array<FsNavMenuFilled> = [result.value];
-      if (!page || page.menu.parent === "$root") return parents;
-      const paths = page.menu.parent.split(".");
-      let menu = result.value;
-      for (const path of paths) {
-        if (!menu.children) break;
-        const parent = menu.children.find(
-          (menu) => "key" in menu && menu.key === path,
-        ) as FsNavMenuFilled | undefined;
-        if (!parent) break;
-        parents.push(parent);
-        menu = parent;
-      }
-      return parents;
-    },
+    current,
+    findParents,
   });
 }
 
 export function useNavMenus(nuxtApp = useFsNuxtApp()) {
-  return nuxtApp.$fastNav.menus;
+  return nuxtApp.$fastNav.menus as ReturnType<typeof createNavMenus>;
 }

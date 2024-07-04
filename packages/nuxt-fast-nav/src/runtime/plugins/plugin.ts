@@ -4,7 +4,6 @@ import {
   ref,
   toRef,
   useAppConfig,
-  useRouter,
   type Ref,
 } from "#imports";
 import { isEqual, pick } from "lodash-es";
@@ -24,8 +23,8 @@ export default defineNuxtPlugin({
         a && b && isEqual(pick(a.to, ...keys), pick(b.to, ...keys));
     });
 
-    addRouteMiddleware(async (to, from) => {
-    const history = ref<FsNavHistory>({
+    addRouteMiddleware(async (to) => {
+      const history = ref<FsNavHistory>({
         to: {
           hash: to.hash,
           name: to.name,
@@ -36,7 +35,7 @@ export default defineNuxtPlugin({
       });
       await nuxtApp.callHook("fast-nav:get-history", to, history);
       histories.open(history.value);
-  })
+    });
 
     return {
       provide: {

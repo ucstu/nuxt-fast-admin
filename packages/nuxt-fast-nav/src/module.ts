@@ -10,6 +10,7 @@ import {
 import { addModuleTypeTemplate } from "@ucstu/nuxt-fast-utils/utils";
 import { minimatch } from "minimatch";
 import { name, version } from "../package.json";
+import type { createNavHistories, createNavMenus } from "./runtime/composables";
 import type {
   FsNavConfig,
   FsNavConfigDefaults,
@@ -17,13 +18,15 @@ import type {
   ModuleOptionsDefaults,
 } from "./runtime/types";
 
+const configKey = "fastNav";
+
 export type * from "./runtime/types";
 
 export default defineNuxtModule<ModuleOptions>({
   meta: {
     name,
     version,
-    configKey: "fastNav",
+    configKey,
   },
   defaults: {
     check: {
@@ -38,9 +41,9 @@ export default defineNuxtModule<ModuleOptions>({
     const options = _options as ModuleOptionsDefaults;
 
     const { resolve } = createResolver(import.meta.url);
-    nuxt.options.runtimeConfig.public.fastNav = options;
+    nuxt.options.runtimeConfig.public[configKey] = options;
 
-    nuxt.options.appConfig.fastNav = {
+    nuxt.options.appConfig[configKey] = {
       menus: [],
       menu: {
         icon: "material-symbols:lists",
@@ -151,6 +154,15 @@ declare module "${resolve(
 
 declare module "@nuxt/schema" {
   interface CustomAppConfig {
-    fastNav?: FsNavConfig;
+    [configKey]?: FsNavConfig;
+  }
+}
+
+declare module "#app" {
+  interface NuxtApp {
+    $fastNav: {
+      menus: ReturnType<typeof createNavMenus>;
+      histories: ReturnType<typeof createNavHistories>;
+    };
   }
 }

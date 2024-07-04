@@ -16,13 +16,15 @@ import type {
   ModuleOptionsDefaults,
 } from "./runtime/types";
 
+const configKey = "fastAuth";
+
 export type * from "./runtime/types";
 
 export default defineNuxtModule<ModuleOptions>({
   meta: {
     name,
     version,
-    configKey: "fastAuth",
+    configKey,
   },
   defaults: {
     provider: {
@@ -36,9 +38,9 @@ export default defineNuxtModule<ModuleOptions>({
     const options = _options as ModuleOptionsDefaults;
 
     const { resolve } = createResolver(import.meta.url);
-    nuxt.options.runtimeConfig.public.fastAuth = options;
+    nuxt.options.runtimeConfig.public[configKey] = options;
 
-    nuxt.options.appConfig.fastAuth = {
+    nuxt.options.appConfig[configKey] = {
       provider: {
         tokenExpires: 365 * 24 * 60 * 60 * 1000,
         refreshTokenExpires: 365 * 24 * 60 * 60 * 1000,
@@ -122,6 +124,6 @@ declare module "<%= options.page %>" {
 
 declare module "@nuxt/schema" {
   interface CustomAppConfig {
-    fastAuth?: FsAuthConfig;
+    [configKey]?: FsAuthConfig;
   }
 }

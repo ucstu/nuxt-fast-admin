@@ -7,6 +7,7 @@ import {
 } from "@nuxt/kit";
 import { addModuleTypeTemplate } from "@ucstu/nuxt-fast-utils/utils";
 import { name, version } from "../package.json";
+import type { createRouteMetas } from "./runtime/composables";
 import type {
   FsRouteConfig,
   FsRouteConfigDefaults,
@@ -14,13 +15,15 @@ import type {
   ModuleOptionsDefaults,
 } from "./runtime/types";
 
+const configKey = "fastRoute";
+
 export type * from "./runtime/types";
 
 export default defineNuxtModule<ModuleOptions>({
   meta: {
     name,
     version,
-    configKey: "fastRoute",
+    configKey,
   },
   defaults: {} satisfies ModuleOptionsDefaults,
   setup(_options, nuxt) {
@@ -30,9 +33,9 @@ export default defineNuxtModule<ModuleOptions>({
 
     const { resolve } = createResolver(import.meta.url);
 
-    nuxt.options.runtimeConfig.public.fastRoute = options;
+    nuxt.options.runtimeConfig.public[configKey] = options;
 
-    nuxt.options.appConfig.fastRoute = {} satisfies FsRouteConfigDefaults;
+    nuxt.options.appConfig[configKey] = {} satisfies FsRouteConfigDefaults;
 
     addModuleTypeTemplate({
       nuxt,
@@ -55,6 +58,14 @@ export default defineNuxtModule<ModuleOptions>({
 
 declare module "@nuxt/schema" {
   interface CustomAppConfig {
-    fastRoute?: FsRouteConfig;
+    [configKey]?: FsRouteConfig;
+  }
+}
+
+declare module "#app" {
+  interface NuxtApp {
+    $fastRoute: {
+      routeMetas: ReturnType<typeof createRouteMetas>;
+    };
   }
 }
