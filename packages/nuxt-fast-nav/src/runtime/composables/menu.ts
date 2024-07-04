@@ -2,6 +2,7 @@ import {
   computed,
   toRef,
   useAppConfig,
+  useFsNuxtApp,
   useRouteMetas,
   type Ref,
 } from "#imports";
@@ -19,7 +20,7 @@ import {
   sortMenus,
 } from "../utils";
 
-export function useNavMenus() {
+export function createNavMenus() {
   const pages = useRouteMetas<FsNavPageFilled>();
   const config = toRef(useAppConfig(), "fastNav") as Ref<FsNavConfigDefaults>;
 
@@ -54,4 +55,8 @@ export function useNavMenus() {
       return parents;
     },
   });
+}
+
+export function useNavMenus(nuxtApp = useFsNuxtApp()) {
+  return nuxtApp.$fastNav.menus;
 }

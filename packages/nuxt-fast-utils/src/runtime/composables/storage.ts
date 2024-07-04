@@ -1,4 +1,4 @@
-import { cookieStorage, customRef, watch } from "#imports";
+import { cookieStorage, customRef, useRuntimeConfig, watch } from "#imports";
 import {
   useStorage as _useStorage,
   toRef,
@@ -47,12 +47,16 @@ export function useStorage<T>(
 ): RemovableRef<T> {
   const storageRef = toRef(storage);
   if (!storageRef.value) {
-    storageRef.value = cookieStorage;
+    const config = useRuntimeConfig().public.fastUtils;
+    storageRef.value = config.ssr ? cookieStorage : localStorage;
   }
   return customRef((track, trigger) => {
     let storageValue = _useStorage(key, defaults, storageRef.value, options);
     watch(storageRef, (newStorage) => {
+      const old = storageValue.value;
+      storageValue.value = null;
       storageValue = _useStorage(key, defaults, newStorage, options);
+      storageValue.value = old;
       trigger();
     });
     return {

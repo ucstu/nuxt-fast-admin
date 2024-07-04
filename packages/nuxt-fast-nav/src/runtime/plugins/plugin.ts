@@ -1,4 +1,5 @@
 import {
+  addRouteMiddleware,
   defineNuxtPlugin,
   ref,
   toRef,
@@ -7,13 +8,14 @@ import {
   type Ref,
 } from "#imports";
 import { isEqual, pick } from "lodash-es";
-import { useNavHistories } from "../composables";
+import { createNavHistories, createNavMenus } from "../composables";
 import type { FsNavConfigDefaults, FsNavHistory } from "../types";
 
 export default defineNuxtPlugin({
+  dependsOn: ["@ucstu/nuxt-fast-utils", "@ucstu/nuxt-fast-route"],
   setup(nuxtApp) {
-    const router = useRouter();
-    const { open } = useNavHistories();
+    const menus = createNavMenus();
+    const histories = createNavHistories();
     const config = toRef(useAppConfig(), "fastNav") as Ref<FsNavConfigDefaults>;
 
     nuxtApp.hook("fast-nav:history-equal", (a, b, result) => {
@@ -22,8 +24,8 @@ export default defineNuxtPlugin({
         a && b && isEqual(pick(a.to, ...keys), pick(b.to, ...keys));
     });
 
-    router.afterEach(async (to) => {
-      const history = ref<FsNavHistory>({
+    addRouteMiddleware(async (to, from) => {
+    const history = ref<FsNavHistory>({
         to: {
           hash: to.hash,
           name: to.name,
@@ -33,7 +35,16 @@ export default defineNuxtPlugin({
         },
       });
       await nuxtApp.callHook("fast-nav:get-history", to, history);
-      open(history.value);
-    });
+      histories.open(history.value);
+  })
+
+    return {
+      provide: {
+        fastNav: {
+          menus,
+          histories,
+        },
+      },
+    };
   },
 });

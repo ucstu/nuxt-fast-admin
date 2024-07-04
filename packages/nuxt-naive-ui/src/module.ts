@@ -49,7 +49,7 @@ export default defineNuxtModule<ModuleOptions>({
         config.optimizeDeps.include ||= [];
         for (const item of optimizeDeps) {
           if (!config.optimizeDeps.include.includes(item)) {
-            config.optimizeDeps.include.push(item);
+            config.optimizeDeps.include.push(`${name} > ${item}`);
           }
         }
       });
@@ -88,7 +88,7 @@ export default defineNuxtModule<ModuleOptions>({
     });
 
     const components = Object.keys(Naive).filter((name) =>
-      /^N[A-Z]|n-[a-z]/.test(name),
+      /^N[A-Z]|n-[a-z]/.test(name)
     );
 
     const clientOnlyComponents = ["NDrawer", "NDrawerContent", "NModal"];
@@ -105,7 +105,7 @@ export default defineNuxtModule<ModuleOptions>({
     });
 
     const composables = Object.keys(Naive).filter((name) =>
-      /^use[A-Z]/.test(name),
+      /^use[A-Z]/.test(name)
     );
 
     addImportsSources({
@@ -116,12 +116,6 @@ export default defineNuxtModule<ModuleOptions>({
 });
 
 declare module "@nuxt/schema" {
-  interface CustomAppConfig {
-    naiveUi?: NaiveUiConfig;
-  }
-}
-
-declare module "nuxt/schema" {
   interface CustomAppConfig {
     naiveUi?: NaiveUiConfig;
   }

@@ -13,6 +13,7 @@ import {
 import type { FsAuthConfigDefaults } from "../types";
 
 export default defineNuxtPlugin({
+  dependsOn: ["@ucstu/nuxt-fast-utils"],
   async setup() {
     const user = useUser();
     const token = useToken();

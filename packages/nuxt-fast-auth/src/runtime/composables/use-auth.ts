@@ -43,7 +43,7 @@ export interface AuthStatus {
  * @returns 记住登录
  */
 export function useRemember() {
-  return useStorage<number | boolean>("fast-auth:remember", false);
+  return useStorage<boolean>("fast-auth:remember", false);
 }
 
 /**
@@ -77,14 +77,14 @@ export function useStatus() {
  * @returns 令牌
  */
 export function useToken() {
-  const remenber = useRemember();
+  const remember = useRemember();
   const runtimeConfig = useRuntimeConfig().public.fastUtils;
   return useStorage<string | undefined>("fast-auth:token", undefined, () =>
     runtimeConfig.ssr
-      ? remenber.value
+      ? remember.value
         ? cookieStorage
         : sessionCookieStorage
-      : remenber.value
+      : remember.value
         ? localStorage
         : sessionStorage,
   );
@@ -111,9 +111,31 @@ export interface NavigateOptions {
 }
 
 /**
+ * 登录选项
+ */
+export interface SignInOptions extends NavigateOptions {
+  /**
+   * 保持登录状态
+   * @description 保持登录状态的时间，单位为毫秒
+   * - `false` 保持登录状态直到浏览器关闭
+   * - `true` 保持登录状态直到手动退出
+   */
+  remember?: boolean;
+}
+/**
+ * 注册选项
+ */
+export interface SignUpOptions extends SignInOptions {
+  /**
+   * 注册成功后是否自动登录
+   * @default true
+   */
+  autoSignIn?: boolean;
+}
+/**
  * 退出登录选项
  */
-interface SignOutOptions extends NavigateOptions {}
+export interface SignOutOptions extends NavigateOptions {}
 /**
  * 退出登录
  * @param options 退出登录选项

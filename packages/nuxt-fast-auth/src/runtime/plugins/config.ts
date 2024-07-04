@@ -8,7 +8,7 @@ export default defineNuxtPlugin({
   setup(nuxtApp) {
     const config = toRef(
       useAppConfig(),
-      "fastAuth"
+      "fastAuth",
     ) as Ref<FsAuthConfigDefaults>;
     nuxtApp.hook("fast-route:get-meta", (path, result) => {
       assign(result.value, config.value.page);

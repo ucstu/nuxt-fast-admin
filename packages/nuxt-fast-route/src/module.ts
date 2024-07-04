@@ -27,14 +27,10 @@ export default defineNuxtModule<ModuleOptions>({
     installModule("@ucstu/nuxt-fast-utils");
 
     const options = _options as ModuleOptionsDefaults;
-    const { ssr } = nuxt.options;
 
     const { resolve } = createResolver(import.meta.url);
 
-    nuxt.options.runtimeConfig.public.fastRoute = {
-      ...options,
-      ssr,
-    };
+    nuxt.options.runtimeConfig.public.fastRoute = options;
 
     nuxt.options.appConfig.fastRoute = {} satisfies FsRouteConfigDefaults;
 
@@ -58,12 +54,6 @@ export default defineNuxtModule<ModuleOptions>({
 });
 
 declare module "@nuxt/schema" {
-  interface CustomAppConfig {
-    fastRoute?: FsRouteConfig;
-  }
-}
-
-declare module "nuxt/schema" {
   interface CustomAppConfig {
     fastRoute?: FsRouteConfig;
   }

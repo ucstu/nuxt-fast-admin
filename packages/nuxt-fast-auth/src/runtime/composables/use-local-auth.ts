@@ -11,25 +11,10 @@ import {
   useStatus,
   useToken,
   useUser,
-  type NavigateOptions,
+  type SignInOptions,
+  type SignUpOptions,
 } from "./use-auth";
 
-/**
- * 登录选项
- * @description 登录选项
- */
-export interface LocalSignOptions extends NavigateOptions {
-  /**
-   * 保持登录状态
-   * @description 保持登录状态的时间，单位为毫秒
-   * - `false` 保持登录状态直到浏览器关闭
-   * - `true` 使用 singIn 钩子返回的 tokenExpires 字段 或者 模块默认配置
-   * - `0` 保持登录状态直到浏览器关闭
-   * - `number` 保持登录状态的时间 (单位: 毫秒)
-   * @default false
-   */
-  remember?: number | boolean;
-}
 /**
  * 登录
  * @param form 登录表单
@@ -37,7 +22,7 @@ export interface LocalSignOptions extends NavigateOptions {
  */
 export async function localSignIn<F extends FsAuthForm = FsAuthForm>(
   form: F,
-  options: LocalSignOptions = {},
+  options: SignInOptions = {},
 ) {
   const user = useUser();
   const token = useToken();
@@ -46,34 +31,24 @@ export async function localSignIn<F extends FsAuthForm = FsAuthForm>(
   const nuxtApp = useFsNuxtApp();
   const rememberRef = useRemember();
 
-  const { remember = false, navigate = false, navigateOptions } = options;
+  const { remember, navigate = false, navigateOptions } = options;
 
   status.value.signIn = true;
   try {
     const result = ref<string | LocalSignInResult | undefined>();
     await nuxtApp.callHook("fast-auth:sign-in", form, result);
-    if (typeof result.value === "string") {
-      if (remember === true) {
-        rememberRef.value = config.provider.tokenExpires;
+    if (result.value) {
+      if (typeof result.value === "string") {
+        token.value = result.value;
+        await getUser(result.value);
       } else {
+        token.value = result.value.token;
+        if (result.value.user) user.value = result.value.user;
+        else await getUser(result.value.token);
+      }
+      if (remember !== undefined) {
         rememberRef.value = remember;
       }
-      token.value = result.value;
-      await getUser(result.value);
-      if (navigate) {
-        navigateTo(navigate === true ? config.home : navigate, navigateOptions);
-      }
-    } else if (result.value) {
-      if (remember === true) {
-        rememberRef.value =
-          result.value.tokenExpires ?? config.provider.tokenExpires;
-      } else {
-        rememberRef.value = remember;
-      }
-      token.value = result.value.token;
-      if (result.value.user) user.value = result.value.user;
-      else await getUser(result.value.token);
-
       if (navigate) {
         navigateTo(navigate === true ? config.home : navigate, navigateOptions);
       }
@@ -89,25 +64,13 @@ export async function localSignIn<F extends FsAuthForm = FsAuthForm>(
 }
 
 /**
- * 注册选项
- * @description 注册选项
- * @description 注意：跳转配置仅针对自动登录成功后有效
- */
-export interface LocalSignUpOptions extends LocalSignOptions {
-  /**
-   * 注册成功后是否自动登录
-   * @default true
-   */
-  autoSignIn?: boolean;
-}
-/**
  * 注册
  * @param form 注册表单
  * @param options 注册选项
  */
 export async function localSignUp<F extends FsAuthForm = FsAuthForm>(
   form: F,
-  options: LocalSignUpOptions = {},
+  options: SignUpOptions = {},
 ) {
   const status = useStatus();
   const nuxtApp = useFsNuxtApp();

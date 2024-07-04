@@ -6,6 +6,10 @@ import type {
   FsNavPageFilled,
 } from "../types";
 
+interface Options extends RouteMeta, Required<FsNavExtra> {
+  children?: Array<RouteRecordRaw>;
+}
+
 function getPageParent(options: Options) {
   return (
     options.to.path.replace("/", "").split("/").slice(0, -1).join(".") ||
@@ -13,9 +17,6 @@ function getPageParent(options: Options) {
   );
 }
 
-interface Options extends RouteMeta, Required<FsNavExtra> {
-  children?: Array<RouteRecordRaw>;
-}
 export function getPageFilled(options: Options): FsNavPageFilled {
   const config = useAppConfig().fastNav as FsNavConfigDefaults;
 

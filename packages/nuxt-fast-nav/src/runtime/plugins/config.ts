@@ -14,7 +14,7 @@ export default defineNuxtPlugin({
         getPageFilled({
           to: { path },
           children: route?.children,
-        })
+        }),
       );
     });
   },

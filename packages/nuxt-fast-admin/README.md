@@ -1,73 +1,91 @@
-# Nuxt Layer Starter
+<!--
+Get your module up and running quickly.
 
-Create Nuxt extendable layer with this GitHub template.
+Find and replace all on all files (CMD+SHIFT+F):
+- Name: My Module
+- Package name: my-module
+- Description: My new Nuxt module
+-->
 
-## Setup
+# My Module
 
-Make sure to install the dependencies:
+[![npm version][npm-version-src]][npm-version-href]
+[![npm downloads][npm-downloads-src]][npm-downloads-href]
+[![License][license-src]][license-href]
+[![Nuxt][nuxt-src]][nuxt-href]
+
+My new Nuxt module for doing amazing things.
+
+- [✨ &nbsp;Release Notes](/CHANGELOG.md)
+  <!-- - [🏀 Online playground](https://stackblitz.com/github/your-org/my-module?file=playground%2Fapp.vue) -->
+  <!-- - [📖 &nbsp;Documentation](https://example.com) -->
+
+## Features
+
+<!-- Highlight some of the features your module provide here -->
+
+- ⛰ &nbsp;Foo
+- 🚠 &nbsp;Bar
+- 🌲 &nbsp;Baz
+
+## Quick Setup
+
+1. Add `my-module` dependency to your project
 
 ```bash
-pnpm install
+# Using pnpm
+pnpm add -D my-module
+
+# Using yarn
+yarn add --dev my-module
+
+# Using npm
+npm install --save-dev my-module
 ```
 
-## Working on your theme
+2. Add `my-module` to the `modules` section of `nuxt.config.ts`
 
-Your theme is at the root of this repository, it is exactly like a regular Nuxt project, except you can publish it on NPM.
-
-The `.playground` directory should help you on trying your theme during development.
-
-Running `pnpm dev` will prepare and boot `.playground` directory, which imports your theme itself.
-
-## Distributing your theme
-
-Your Nuxt layer is shaped exactly the same as any other Nuxt project, except you can publish it on NPM.
-
-To do so, you only have to check if `files` in `package.json` are valid, then run:
-
-```bash
-npm publish --access public
-```
-
-Once done, your users will only have to run:
-
-```bash
-npm install --save your-theme
-```
-
-Then add the dependency to their `extends` in `nuxt.config`:
-
-```ts
-defineNuxtConfig({
-  extends: "your-theme",
+```js
+export default defineNuxtConfig({
+  modules: ["my-module"],
 });
 ```
 
-## Development Server
+That's it! You can now use My Module in your Nuxt app ✨
 
-Start the development server on http://localhost:3000
-
-```bash
-pnpm dev
-```
-
-## Production
-
-Build the application for production:
+## Development
 
 ```bash
-pnpm build
+# Install dependencies
+npm install
+
+# Generate type stubs
+npm run dev:prepare
+
+# Develop with the playground
+npm run dev
+
+# Build the playground
+npm run dev:build
+
+# Run ESLint
+npm run lint
+
+# Run Vitest
+npm run test
+npm run test:watch
+
+# Release new version
+npm run release
 ```
 
-Or statically generate it with:
+<!-- Badges -->
 
-```bash
-pnpm generate
-```
-
-Locally preview production build:
-
-```bash
-pnpm preview
-```
-
-Checkout the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+[npm-version-src]: https://img.shields.io/npm/v/my-module/latest.svg?style=flat&colorA=020420&colorB=00DC82
+[npm-version-href]: https://npmjs.com/package/my-module
+[npm-downloads-src]: https://img.shields.io/npm/dm/my-module.svg?style=flat&colorA=020420&colorB=00DC82
+[npm-downloads-href]: https://npmjs.com/package/my-module
+[license-src]: https://img.shields.io/npm/l/my-module.svg?style=flat&colorA=020420&colorB=00DC82
+[license-href]: https://npmjs.com/package/my-module
+[nuxt-src]: https://img.shields.io/badge/Nuxt-020420?logo=nuxt.js
+[nuxt-href]: https://nuxt.com

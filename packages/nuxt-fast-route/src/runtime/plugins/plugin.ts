@@ -1,11 +1,13 @@
 import { defineNuxtPlugin, useRouter } from "#imports";
 import { cloneDeep } from "lodash-es";
-import { useRouteMetas } from "../composables";
+import { createRouteMetas } from "../composables";
 
 export default defineNuxtPlugin({
+  dependsOn: ["@ucstu/nuxt-fast-utils"],
   setup() {
     const router = useRouter();
-    const { origin } = useRouteMetas();
+    const routeMetas = createRouteMetas();
+    const { origin } = routeMetas;
 
     for (const route of router.getRoutes()) {
       if (!origin[route.path]) {
@@ -14,5 +16,13 @@ export default defineNuxtPlugin({
       }
       route.meta = origin[route.path];
     }
+
+    return {
+      provide: {
+        fastRoute: {
+          routeMetas,
+        },
+      },
+    };
   },
 });

@@ -125,9 +125,3 @@ declare module "@nuxt/schema" {
     fastAuth?: FsAuthConfig;
   }
 }
-
-declare module "nuxt/schema" {
-  interface CustomAppConfig {
-    fastAuth?: FsAuthConfig;
-  }
-}

@@ -64,9 +64,3 @@ declare module "@nuxt/schema" {
     fastUtils?: FsUtilsConfig;
   }
 }
-
-declare module "nuxt/schema" {
-  interface CustomAppConfig {
-    fastUtils?: FsUtilsConfig;
-  }
-}

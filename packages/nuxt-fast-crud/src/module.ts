@@ -112,18 +112,6 @@ export default defineNuxtModule<ModuleOptions>({
       }
     }
 
-    addTemplate({
-      write: true,
-      filename: "types/ucstu/nuxt-fast-crud/options.ts",
-      getContents() {
-        return `export interface _FsCrudOptions ${JSON.stringify(
-          options,
-          null,
-          2,
-        )};`;
-      },
-    });
-
     addModuleTypeTemplate({
       nuxt,
       name,
@@ -137,7 +125,7 @@ export default defineNuxtModule<ModuleOptions>({
     });
 
     const components = Object.keys(FastCrud).filter((name) =>
-      /^Fs[A-Z]|fs-[a-z]/.test(name),
+      /^Fs[A-Z]|fs-[a-z]/.test(name)
     );
 
     const clientOnlyComponents = ["FsCrud"];
@@ -154,7 +142,7 @@ export default defineNuxtModule<ModuleOptions>({
     });
 
     const composables = Object.keys(FastCrud).filter(
-      (name) => /^use[A-Z]/.test(name) || ["dict"].includes(name),
+      (name) => /^use[A-Z]/.test(name) || ["dict"].includes(name)
     );
 
     addImportsSources({
@@ -165,12 +153,6 @@ export default defineNuxtModule<ModuleOptions>({
 });
 
 declare module "@nuxt/schema" {
-  interface CustomAppConfig {
-    fastCrud?: FsCrudConfig;
-  }
-}
-
-declare module "nuxt/schema" {
   interface CustomAppConfig {
     fastCrud?: FsCrudConfig;
   }

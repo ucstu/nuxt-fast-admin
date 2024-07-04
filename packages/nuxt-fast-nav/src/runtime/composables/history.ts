@@ -37,7 +37,7 @@ function historyEqual(
   return result.value;
 }
 
-export function useNavHistories(nuxtApp = useFsNuxtApp()) {
+export function createNavHistories() {
   const config = toRef(useAppConfig(), "fastNav") as Ref<FsNavConfigDefaults>;
   const { currentRoute } = useRouter();
 
@@ -52,18 +52,14 @@ export function useNavHistories(nuxtApp = useFsNuxtApp()) {
     })),
   );
   const current = computed(() =>
-    result.value.find((item) =>
-      historyEqual(item, { to: currentRoute.value }, nuxtApp),
-    ),
+    result.value.find((item) => historyEqual(item, { to: currentRoute.value })),
   );
 
   return extendRef(result, {
     current,
     open(history: FsNavHistory | undefined = current.value) {
       if (!history) return;
-      const old = histories.value.find((item) =>
-        historyEqual(item, history, nuxtApp),
-      );
+      const old = histories.value.find((item) => historyEqual(item, history));
       if (old) {
         if (!isEqual(old, history)) {
           assign(old, history);
@@ -74,15 +70,12 @@ export function useNavHistories(nuxtApp = useFsNuxtApp()) {
     },
     async close(history: FsNavHistory | undefined = current.value) {
       if (!history) return;
-      const old = histories.value.find((item) =>
-        historyEqual(item, history, nuxtApp),
-      );
+      const old = histories.value.find((item) => historyEqual(item, history));
       if (!old) {
         return console.warn(`[fast-nav] 未找到历史 `, history, ` 的记录`);
       }
 
-      const isCurrent =
-        current.value && historyEqual(old, current.value, nuxtApp);
+      const isCurrent = current.value && historyEqual(old, current.value);
 
       const index = histories.value.indexOf(old);
       histories.value.splice(index, 1);
@@ -99,9 +92,7 @@ export function useNavHistories(nuxtApp = useFsNuxtApp()) {
     },
     async closeOthers(history: FsNavHistory | undefined = current.value) {
       if (!history) return;
-      const old = histories.value.find((item) =>
-        historyEqual(item, history, nuxtApp),
-      );
+      const old = histories.value.find((item) => historyEqual(item, history));
       if (!old) {
         return console.warn(`[fast-nav] 未找到历史 `, history, ` 的记录`);
       }
@@ -112,4 +103,8 @@ export function useNavHistories(nuxtApp = useFsNuxtApp()) {
       await navigateTo(history.to);
     },
   });
+}
+
+export function useNavHistories(nuxtApp = useFsNuxtApp()) {
+  return nuxtApp.$fastNav.histories;
 }

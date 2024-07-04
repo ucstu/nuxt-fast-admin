@@ -154,9 +154,3 @@ declare module "@nuxt/schema" {
     fastNav?: FsNavConfig;
   }
 }
-
-declare module "nuxt/schema" {
-  interface CustomAppConfig {
-    fastNav?: FsNavConfig;
-  }
-}

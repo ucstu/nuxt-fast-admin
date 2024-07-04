@@ -18,12 +18,12 @@ function _getRouteMeta(path: string, nuxtApp = useFsNuxtApp()) {
     (hooks, args) => hooks.forEach((hook) => hook(...args)),
     "fast-route:get-meta",
     path,
-    result
+    result,
   );
   return result.value;
 }
 
-export function useRouteMetas<T extends RouteMeta = RouteMeta>() {
+export function createRouteMetas<T extends RouteMeta = RouteMeta>() {
   const origin = useState<Record<string, T>>("fast-route:metas", () => ({}));
 
   const result = computed(
@@ -32,8 +32,8 @@ export function useRouteMetas<T extends RouteMeta = RouteMeta>() {
         Object.entries(origin.value).map(([path, meta]) => [
           path,
           defu(meta, _getRouteMeta(path)),
-        ])
-      ) as Record<string, T>
+        ]),
+      ) as Record<string, T>,
   );
 
   return extendRef(result, {
@@ -41,16 +41,24 @@ export function useRouteMetas<T extends RouteMeta = RouteMeta>() {
   });
 }
 
+export function useRouteMetas<T extends RouteMeta = RouteMeta>(
+  nuxtApp = useFsNuxtApp(),
+) {
+  return nuxtApp.$fastRoute.routeMetas as ReturnType<
+    typeof createRouteMetas<T>
+  >;
+}
+
 export function useRouteMeta<T extends RouteMeta = RouteMeta>(
-  origin?: MaybeRefOrGetter<boolean>
+  origin?: MaybeRefOrGetter<boolean>,
 ): ComputedRef<T>;
 export function useRouteMeta<T extends RouteMeta = RouteMeta>(
   path?: MaybeRefOrGetter<RouteLocationRaw>,
-  origin?: MaybeRefOrGetter<boolean>
+  origin?: MaybeRefOrGetter<boolean>,
 ): ComputedRef<T>;
 export function useRouteMeta<T extends RouteMeta = RouteMeta>(
   pathOrOrigin?: MaybeRefOrGetter<RouteLocationRaw> | MaybeRefOrGetter<boolean>,
-  origin: MaybeRefOrGetter<boolean> = false
+  origin: MaybeRefOrGetter<boolean> = false,
 ) {
   const routeMetas = useRouteMetas<T>();
   const { currentRoute } = useRouter();
@@ -70,15 +78,15 @@ export function useRouteMeta<T extends RouteMeta = RouteMeta>(
 }
 
 export function getRouteMeta<T extends RouteMeta = RouteMeta>(
-  origin?: MaybeRefOrGetter<boolean>
+  origin?: MaybeRefOrGetter<boolean>,
 ): T;
 export function getRouteMeta<T extends RouteMeta = RouteMeta>(
   path?: MaybeRefOrGetter<RouteLocationRaw>,
-  origin?: MaybeRefOrGetter<boolean>
+  origin?: MaybeRefOrGetter<boolean>,
 ): T;
 export function getRouteMeta<T extends RouteMeta = RouteMeta>(
   path?: MaybeRefOrGetter<RouteLocationRaw> | MaybeRefOrGetter<boolean>,
-  origin: MaybeRefOrGetter<boolean> = false
+  origin: MaybeRefOrGetter<boolean> = false,
 ) {
   const routeMetas = useRouteMetas<T>();
   const { currentRoute } = useRouter();

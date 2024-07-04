@@ -9,10 +9,10 @@
         })
       "
     >
-      user: {{ user }}<br />
-      token: {{ token }}<br />
-      remember: {{ remember }}<br />
-      authed: {{ status.authed }}<br />
+      user: {{ user }}<br >
+      token: {{ token }}<br >
+      remember: {{ remember }}<br >
+      authed: {{ status.authed }}<br >
       has per admin: {{ $per("admin") }}
     </button>
     <el-input :readonly="!$per('admin')" type="text" value="admin" />
@@ -34,13 +34,6 @@
 
 <script setup lang="tsx">
 const { user, token, status, remember, signIn, signOut } = useAuth();
-const routeMetas = useRouteMetas();
-
-watchEffect(() => {
-  console.log("routeMetas", routeMetas.value);
-});
-
-const meta = useRouteMeta(true);
 
 const ElInput = defineComponent({
   props: {
