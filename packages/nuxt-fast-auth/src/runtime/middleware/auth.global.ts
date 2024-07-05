@@ -4,7 +4,7 @@ import {
   navigateTo,
   ref,
   useAppConfig,
-  useFsNuxtApp,
+  useSafeNuxtApp,
   useRuntimeConfig,
 } from "#imports";
 import type { RequiredDeep } from "@ucstu/nuxt-fast-utils/types";
@@ -31,14 +31,14 @@ import { isFsAuthPage } from "../utils";
 function callHook(
   name: keyof PageHooks,
   options: GuardOptions,
-  nuxtApp = useFsNuxtApp(),
+  nuxtApp = useSafeNuxtApp()
 ) {
   const result = ref<ReturnType<typeof navigateTo>>();
   nuxtApp.hooks.callHookWith(
     (hooks, args) => hooks.forEach((hook) => hook(...args)),
     name,
     options,
-    result,
+    result
   );
   return result.value;
 }

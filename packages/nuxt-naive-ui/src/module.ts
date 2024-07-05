@@ -11,14 +11,13 @@ import { addModuleTypeTemplate } from "@ucstu/nuxt-fast-utils/utils";
 import { camelCase, upperFirst } from "lodash-es";
 import Naive from "naive-ui";
 import { name, version } from "../package.json";
-import type {
-  ModuleOptions,
-  ModuleOptionsDefaults,
-  NaiveUiConfig,
-  NaiveUiConfigDefaults,
+import {
+  configKey,
+  type ModuleConfig,
+  type ModuleConfigDefaults,
+  type ModuleOptions,
+  type ModuleOptionsDefaults,
 } from "./runtime/types";
-
-const configKey = "naiveUi";
 
 export type * from "./runtime/types";
 
@@ -42,7 +41,7 @@ export default defineNuxtModule<ModuleOptions>({
       defaultTheme: "auto",
       customThemes: {},
       themesOverrides: {},
-    } satisfies NaiveUiConfigDefaults;
+    } satisfies ModuleConfigDefaults;
 
     if (process.env.NODE_ENV === "development") {
       const optimizeDeps = ["naive-ui"];
@@ -90,7 +89,7 @@ export default defineNuxtModule<ModuleOptions>({
     });
 
     const components = Object.keys(Naive).filter((name) =>
-      /^N[A-Z]|n-[a-z]/.test(name),
+      /^N[A-Z]|n-[a-z]/.test(name)
     );
 
     const clientOnlyComponents = ["NDrawer", "NDrawerContent", "NModal"];
@@ -107,7 +106,7 @@ export default defineNuxtModule<ModuleOptions>({
     });
 
     const composables = Object.keys(Naive).filter((name) =>
-      /^use[A-Z]/.test(name),
+      /^use[A-Z]/.test(name)
     );
 
     addImportsSources({
@@ -119,6 +118,6 @@ export default defineNuxtModule<ModuleOptions>({
 
 declare module "@nuxt/schema" {
   interface CustomAppConfig {
-    [configKey]?: NaiveUiConfig;
+    [configKey]?: ModuleConfig;
   }
 }

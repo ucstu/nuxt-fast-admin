@@ -3,7 +3,7 @@ import {
   navigateTo,
   sessionCookieStorage,
   useAppConfig,
-  useFsNuxtApp,
+  useSafeNuxtApp,
   useRuntimeConfig,
   useState,
   useStorage,
@@ -54,7 +54,7 @@ export function useRemember() {
 export function useUser() {
   return useState<FsAuthUser | undefined | null>(
     "fast-auth:user",
-    () => undefined,
+    () => undefined
   );
 }
 
@@ -85,8 +85,8 @@ export function useToken() {
         ? cookieStorage
         : sessionCookieStorage
       : remember.value
-        ? localStorage
-        : sessionStorage,
+      ? localStorage
+      : sessionStorage
   );
 }
 
@@ -145,7 +145,7 @@ export async function signOut(options: SignOutOptions = {}) {
   const token = useToken();
   const status = useStatus();
   const config = useAppConfig().fastAuth as FsAuthConfigDefaults;
-  const nuxtApp = useFsNuxtApp();
+  const nuxtApp = useSafeNuxtApp();
 
   const { navigate = false } = options;
 
@@ -163,7 +163,7 @@ export async function signOut(options: SignOutOptions = {}) {
   if (navigate) {
     navigateTo(
       navigate === true ? config.signIn : navigate,
-      options.navigateOptions,
+      options.navigateOptions
     );
   }
 }
@@ -174,7 +174,7 @@ export async function signOut(options: SignOutOptions = {}) {
 export async function getUser(token = useToken().value) {
   const user = useUser();
   const status = useStatus();
-  const nuxtApp = useFsNuxtApp();
+  const nuxtApp = useSafeNuxtApp();
 
   status.value.getUser = true;
   try {

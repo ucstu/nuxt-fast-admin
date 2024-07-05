@@ -1,4 +1,4 @@
-import { navigateTo, ref, useAppConfig, useFsNuxtApp } from "#imports";
+import { navigateTo, ref, useAppConfig, useSafeNuxtApp } from "#imports";
 import type {
   FsAuthConfigDefaults,
   FsAuthForm,
@@ -22,13 +22,13 @@ import {
  */
 export async function localSignIn<F extends FsAuthForm = FsAuthForm>(
   form: F,
-  options: SignInOptions = {},
+  options: SignInOptions = {}
 ) {
   const user = useUser();
   const token = useToken();
   const status = useStatus();
   const config = useAppConfig().fastAuth as FsAuthConfigDefaults;
-  const nuxtApp = useFsNuxtApp();
+  const nuxtApp = useSafeNuxtApp();
   const rememberRef = useRemember();
 
   const { remember, navigate = false, navigateOptions } = options;
@@ -70,10 +70,10 @@ export async function localSignIn<F extends FsAuthForm = FsAuthForm>(
  */
 export async function localSignUp<F extends FsAuthForm = FsAuthForm>(
   form: F,
-  options: SignUpOptions = {},
+  options: SignUpOptions = {}
 ) {
   const status = useStatus();
-  const nuxtApp = useFsNuxtApp();
+  const nuxtApp = useSafeNuxtApp();
 
   const { autoSignIn = true } = options;
 

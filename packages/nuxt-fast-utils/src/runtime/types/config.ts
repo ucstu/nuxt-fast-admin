@@ -1,5 +1,5 @@
 import type { RequiredDeep } from "type-fest";
 
-export interface FsUtilsConfig {}
+export interface ModuleConfig {}
 
-export type FsUtilsConfigDefaults = RequiredDeep<FsUtilsConfig>;
+export type ModuleConfigDefaults = RequiredDeep<ModuleConfig>;

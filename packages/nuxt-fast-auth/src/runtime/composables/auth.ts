@@ -1,4 +1,4 @@
-import { computed, ref, useFsNuxtApp, type MaybeRefOrGetter } from "#imports";
+import { computed, ref, useSafeNuxtApp, type MaybeRefOrGetter } from "#imports";
 import { toRef } from "@ucstu/nuxt-fast-utils/exports";
 import type { LiteralUnion } from "@ucstu/nuxt-fast-utils/types";
 import { minimatch } from "minimatch";
@@ -20,7 +20,7 @@ function have(has: FsAuthPer[], needs: FsAuthMeta): boolean {
   }
   if (typeof needs === "string") {
     return has.some(
-      (item) => typeof item === "string" && minimatch(needs, item),
+      (item) => typeof item === "string" && minimatch(needs, item)
     );
   }
   if (Array.isArray(needs)) {
@@ -46,14 +46,14 @@ function have(has: FsAuthPer[], needs: FsAuthMeta): boolean {
 function get(
   user: FsAuthUser | null | undefined,
   type: "permissions" | "roles" = "permissions",
-  nuxtApp = useFsNuxtApp(),
+  nuxtApp = useSafeNuxtApp()
 ) {
   const result = ref<Exclude<FsAuthPer, boolean>[]>([]);
   nuxtApp.hooks.callHookWith(
     (hooks, args) => hooks.forEach((hook) => hook(...args)),
     `fast-auth:get-${type}`,
     user,
-    result,
+    result
   );
   return result.value;
 }
@@ -73,7 +73,7 @@ export function per(
     | MaybeRefOrGetter<FsAuthMeta>[]
     | [
         MaybeRefOrGetter<LiteralUnion<"!" | "|", FsAuthPer>>,
-        ...MaybeRefOrGetter<FsAuthMeta>[],
+        ...MaybeRefOrGetter<FsAuthMeta>[]
       ]
 ) {
   const user = useUser();
@@ -120,7 +120,7 @@ export function role(
     | MaybeRefOrGetter<FsAuthMeta>[]
     | [
         MaybeRefOrGetter<LiteralUnion<"!" | "|", FsAuthPer>>,
-        ...MaybeRefOrGetter<FsAuthMeta>[],
+        ...MaybeRefOrGetter<FsAuthMeta>[]
       ]
 ) {
   const user = useUser();

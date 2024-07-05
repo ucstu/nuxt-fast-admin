@@ -7,15 +7,13 @@ import {
 import { name, version } from "../package.json";
 import { addModuleTypeTemplate } from "../utils";
 import type {
-  FsUtilsConfig,
-  FsUtilsConfigDefaults,
+  ModuleConfig,
+  ModuleConfigDefaults,
   ModuleOptions,
   ModuleOptionsDefaults,
 } from "./runtime/types";
 
-const configKey = "fastUtils";
-
-export type * from "./runtime/types";
+export type * from "./runtime/types/module";
 
 export default defineNuxtModule<ModuleOptions>({
   meta: {
@@ -35,7 +33,7 @@ export default defineNuxtModule<ModuleOptions>({
       ssr,
     };
 
-    nuxt.options.appConfig[configKey] = {} satisfies FsUtilsConfigDefaults;
+    nuxt.options.appConfig[configKey] = {} satisfies ModuleConfigDefaults;
 
     addModuleTypeTemplate({
       nuxt,
@@ -51,7 +49,7 @@ export default defineNuxtModule<ModuleOptions>({
 
     addImportsSources({
       from: resolve("./runtime/composables"),
-      imports: ["useFsNuxtApp", "useStorage", "toRefDeep", "computedEager"],
+      imports: ["useSafeNuxtApp", "useStorage", "toRefDeep", "computedEager"],
     });
 
     addImportsSources({
@@ -63,6 +61,6 @@ export default defineNuxtModule<ModuleOptions>({
 
 declare module "@nuxt/schema" {
   interface CustomAppConfig {
-    [configKey]?: FsUtilsConfig;
+    [configKey]?: ModuleConfig;
   }
 }

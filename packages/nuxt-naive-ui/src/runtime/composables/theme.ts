@@ -4,29 +4,20 @@ import {
   useAppConfig,
   useRuntimeConfig,
   useStorage,
-  type Ref,
+  type Ref
 } from "#imports";
-import { useColorMode, useMounted } from "@ucstu/nuxt-fast-utils/exports";
+import { extendRef, useColorMode } from "@ucstu/nuxt-fast-utils/exports";
 import {
   darkTheme,
   lightTheme,
   type GlobalTheme,
   type GlobalThemeOverrides,
 } from "naive-ui";
-import type { NaiveUiConfigDefaults, ThemeKey } from "../types";
-
-export function useNaiveUiTheme(theme?: ThemeKey) {
-  const config = toRef(useAppConfig(), "naiveUi") as Ref<NaiveUiConfigDefaults>;
-  const colorMode = useColorMode({
-    storageRef: useStorage("naive-ui:theme", () => config.value.defaultTheme),
-  });
-  if (theme) colorMode.value = theme;
-  return colorMode;
-}
+import { configKey, type ModuleConfigDefaults, type ThemeKey } from "../types";
 
 function getTheme(
   theme: ThemeKey,
-  themes?: Partial<Record<ThemeKey, GlobalTheme>>,
+  themes?: Partial<Record<ThemeKey, GlobalTheme>>
 ) {
   switch (theme) {
     case "auto":
@@ -42,44 +33,60 @@ function getTheme(
 
 function getThemeOverrides(
   theme: ThemeKey,
-  themesOverrides?: Partial<Record<ThemeKey, GlobalThemeOverrides>>,
+  themesOverrides?: Partial<Record<ThemeKey, GlobalThemeOverrides>>
 ) {
   if (theme === "auto") return undefined;
   return themesOverrides?.[theme];
 }
 
-export function useNaiveUiThemeConfig() {
-  const isMounted = useMounted();
-  const config = toRef(useAppConfig(), "naiveUi") as Ref<NaiveUiConfigDefaults>;
-  const runtimeConfig = useRuntimeConfig().public.fastUtils;
-  const { store, system } = useNaiveUiTheme();
+function useTheme(theme?: ThemeKey) {
+  const config = toRef(useAppConfig(), "naiveUi") as Ref<ModuleConfigDefaults>;
+  const colorMode = useColorMode({
+    storageRef: useStorage("naive-ui:theme", () => config.value.defaultTheme),
+  });
+  if (theme) colorMode.value = theme;
+  return colorMode;
+}
 
-  const theme = computed(() =>
+export function useNaiveUiTheme(theme?: ThemeKey) {
+  const config = toRef(useAppConfig(), configKey) as Ref<ModuleConfigDefaults>;
+  const runtimeConfig = useRuntimeConfig().public.fastUtils;
+  const { store, system } = useTheme(theme);
+  const isReady = useNuxtReady();
+
+  const real = computed(() =>
     store.value === "auto"
       ? runtimeConfig.ssr
-        ? isMounted.value
+        ? isReady.value
           ? system.value
           : "light"
         : system.value
-      : store.value,
+      : store.value
   );
 
-  const customThemes = computed(
-    () =>
-      Object.fromEntries(
-        Object.entries(config.value.customThemes).map(([key, value]) => [
-          key,
-          {
-            ...value,
-            name: key,
-          },
-        ]),
-      ) as Record<string, GlobalTheme>,
+  return extendRef(
+    computed(() => ({
+      theme: getTheme(
+        real.value,
+        Object.fromEntries(
+          Object.entries(config.value.customThemes).map(([key, value]) => [
+            key,
+            {
+              ...value,
+              name: key,
+            },
+          ])
+        )
+      ),
+      themeOverrides: getThemeOverrides(
+        real.value,
+        config.value.themesOverrides
+      ),
+    })),
+    {
+      system,
+      store,
+      real,
+    }
   );
-  const themesOverrides = computed(() => config.value.themesOverrides);
-
-  return computed(() => ({
-    theme: getTheme(theme.value, customThemes.value),
-    themeOverrides: getThemeOverrides(theme.value, themesOverrides.value),
-  }));
 }

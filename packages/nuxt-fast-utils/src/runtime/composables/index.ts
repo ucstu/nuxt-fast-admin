@@ -1,3 +1,3 @@
-export * from "./nuxtApp";
+export * from "./nuxt";
 export * from "./reactivity";
 export * from "./storage";

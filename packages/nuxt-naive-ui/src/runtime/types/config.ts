@@ -1,12 +1,15 @@
 import type { LiteralUnion } from "@ucstu/nuxt-fast-utils/types";
 import type { GlobalTheme, GlobalThemeOverrides } from "naive-ui";
+import type { ThemeKey } from "./base";
 
-export interface NaiveUiConfig {
+export const configKey = "naiveUi";
+
+export interface ModuleConfig {
   /**
    * 默认主题
    * @default "auto"
    */
-  defaultTheme?: LiteralUnion<"auto" | "dark" | "light", string>;
+  defaultTheme?: ThemeKey;
   /**
    * 自定义主题
    */
@@ -24,4 +27,4 @@ export interface NaiveUiConfig {
   >;
 }
 
-export type NaiveUiConfigDefaults = Required<NaiveUiConfig>;
+export type ModuleConfigDefaults = Required<ModuleConfig>;

@@ -4,7 +4,7 @@ import {
   ref,
   sessionCookieStorage,
   useAppConfig,
-  useFsNuxtApp,
+  useSafeNuxtApp,
   useRuntimeConfig,
   useState,
   useStorage,
@@ -67,8 +67,8 @@ export function useRefreshToken() {
           ? cookieStorage
           : sessionCookieStorage
         : remember.value
-          ? localStorage
-          : sessionStorage,
+        ? localStorage
+        : sessionStorage
   );
 }
 
@@ -79,11 +79,11 @@ export function useRefreshToken() {
  */
 export async function refreshSignIn<F extends FsAuthForm = FsAuthForm>(
   form: F,
-  options: SignInOptions = {},
+  options: SignInOptions = {}
 ) {
   const user = useUser();
   const token = useToken();
-  const nuxtApp = useFsNuxtApp();
+  const nuxtApp = useSafeNuxtApp();
   const status = useRefreshStatus();
   const rememberRef = useRemember();
   const refreshToken = useRefreshToken();
@@ -126,7 +126,7 @@ export async function refreshSignIn<F extends FsAuthForm = FsAuthForm>(
 export async function refreshSignOut(options: SignOutOptions = {}) {
   const user = useUser();
   const token = useToken();
-  const nuxtApp = useFsNuxtApp();
+  const nuxtApp = useSafeNuxtApp();
   const status = useRefreshStatus();
   const refreshToken = useRefreshToken();
   const config = useAppConfig().fastAuth as FsAuthConfigDefaults;
@@ -148,7 +148,7 @@ export async function refreshSignOut(options: SignOutOptions = {}) {
   if (navigate) {
     navigateTo(
       navigate === true ? config.signIn : navigate,
-      options.navigateOptions,
+      options.navigateOptions
     );
   }
 }
@@ -160,10 +160,10 @@ export async function refreshSignOut(options: SignOutOptions = {}) {
  */
 export async function refreshSignUp<F extends FsAuthForm = FsAuthForm>(
   form: F,
-  options: SignUpOptions = {},
+  options: SignUpOptions = {}
 ) {
   const status = useRefreshStatus();
-  const nuxtApp = useFsNuxtApp();
+  const nuxtApp = useSafeNuxtApp();
 
   const { autoSignIn = true } = options;
 
@@ -190,7 +190,7 @@ export async function refresh(
   const user = useUser();
   const _token = useToken();
   const status = useRefreshStatus();
-  const nuxtApp = useFsNuxtApp();
+  const nuxtApp = useSafeNuxtApp();
   const _refreshToken = useRefreshToken();
 
   status.value.refresh = true;
