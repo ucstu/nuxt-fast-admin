@@ -1,4 +1,4 @@
-import { computed, ref, useSafeNuxtApp, type MaybeRefOrGetter } from "#imports";
+import { computed, ref, useNuxtAppBack, type MaybeRefOrGetter } from "#imports";
 import { toRef } from "@ucstu/nuxt-fast-utils/exports";
 import type { LiteralUnion } from "@ucstu/nuxt-fast-utils/types";
 import { minimatch } from "minimatch";
@@ -46,7 +46,7 @@ function have(has: FsAuthPer[], needs: FsAuthMeta): boolean {
 function get(
   user: FsAuthUser | null | undefined,
   type: "permissions" | "roles" = "permissions",
-  nuxtApp = useSafeNuxtApp()
+  nuxtApp = useNuxtAppBack()
 ) {
   const result = ref<Exclude<FsAuthPer, boolean>[]>([]);
   nuxtApp.hooks.callHookWith(

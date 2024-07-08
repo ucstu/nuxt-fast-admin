@@ -5,7 +5,7 @@ import {
   ref,
   toRef,
   useAppConfig,
-  useSafeNuxtApp,
+  useNuxtAppBack,
   useRouter,
   useState,
   type Ref,
@@ -22,7 +22,7 @@ import type {
 function historyEqual(
   a: FsNavHistory,
   b: FsNavHistory,
-  nuxtApp = useSafeNuxtApp()
+  nuxtApp = useNuxtAppBack()
 ): boolean {
   const result = ref(false);
   nuxtApp.hooks.callHookWith(
@@ -110,6 +110,6 @@ export function createNavHistories() {
   });
 }
 
-export function useNavHistories(nuxtApp = useSafeNuxtApp()) {
+export function useNavHistories(nuxtApp = useNuxtAppBack()) {
   return nuxtApp.$fastNav.histories as ReturnType<typeof createNavHistories>;
 }

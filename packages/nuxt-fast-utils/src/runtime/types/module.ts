@@ -1,11 +1,12 @@
 import type { RequiredDeep } from "type-fest";
+import type { configKey } from "../../module";
 
 export interface ModuleOptions {}
 
 export type ModuleOptionsDefaults = RequiredDeep<ModuleOptions>;
 
 export interface ModulePublicRuntimeConfig {
-  fastUtils: ModuleOptionsDefaults & {
+  [configKey]: ModuleOptionsDefaults & {
     /**
      * 服务端渲染
      */

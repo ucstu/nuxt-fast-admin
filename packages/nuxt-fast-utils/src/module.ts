@@ -1,9 +1,4 @@
-import {
-  addImportsSources,
-  addPlugin,
-  createResolver,
-  defineNuxtModule,
-} from "@nuxt/kit";
+import { addImportsSources, createResolver, defineNuxtModule } from "@nuxt/kit";
 import { name, version } from "../package.json";
 import { addModuleTypeTemplate } from "../utils";
 import type {
@@ -12,6 +7,8 @@ import type {
   ModuleOptions,
   ModuleOptionsDefaults,
 } from "./runtime/types";
+
+export const configKey = "fastUtils";
 
 export type * from "./runtime/types/module";
 
@@ -42,14 +39,17 @@ export default defineNuxtModule<ModuleOptions>({
       __dirname,
     });
 
-    addPlugin({
-      name,
-      src: resolve("./runtime/plugins/plugin"),
-    });
-
     addImportsSources({
       from: resolve("./runtime/composables"),
-      imports: ["useSafeNuxtApp", "useStorage", "toRefDeep", "computedEager"],
+      imports: [
+        "useNuxtReady",
+        "useNuxtConfig",
+        "computedEager",
+        "eagerComputed",
+        "createGlobalState",
+        "createSharedComposable",
+        "useStorage",
+      ],
     });
 
     addImportsSources({

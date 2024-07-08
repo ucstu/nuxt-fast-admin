@@ -4,7 +4,7 @@ import {
   ref,
   sessionCookieStorage,
   useAppConfig,
-  useSafeNuxtApp,
+  useNuxtAppBack,
   useRuntimeConfig,
   useState,
   useStorage,
@@ -83,7 +83,7 @@ export async function refreshSignIn<F extends FsAuthForm = FsAuthForm>(
 ) {
   const user = useUser();
   const token = useToken();
-  const nuxtApp = useSafeNuxtApp();
+  const nuxtApp = useNuxtAppBack();
   const status = useRefreshStatus();
   const rememberRef = useRemember();
   const refreshToken = useRefreshToken();
@@ -126,7 +126,7 @@ export async function refreshSignIn<F extends FsAuthForm = FsAuthForm>(
 export async function refreshSignOut(options: SignOutOptions = {}) {
   const user = useUser();
   const token = useToken();
-  const nuxtApp = useSafeNuxtApp();
+  const nuxtApp = useNuxtAppBack();
   const status = useRefreshStatus();
   const refreshToken = useRefreshToken();
   const config = useAppConfig().fastAuth as FsAuthConfigDefaults;
@@ -163,7 +163,7 @@ export async function refreshSignUp<F extends FsAuthForm = FsAuthForm>(
   options: SignUpOptions = {}
 ) {
   const status = useRefreshStatus();
-  const nuxtApp = useSafeNuxtApp();
+  const nuxtApp = useNuxtAppBack();
 
   const { autoSignIn = true } = options;
 
@@ -185,12 +185,12 @@ export async function refreshSignUp<F extends FsAuthForm = FsAuthForm>(
  */
 export async function refresh(
   refreshToken?: string | undefined | null,
-  token?: string | undefined | null,
+  token?: string | undefined | null
 ) {
   const user = useUser();
   const _token = useToken();
   const status = useRefreshStatus();
-  const nuxtApp = useSafeNuxtApp();
+  const nuxtApp = useNuxtAppBack();
   const _refreshToken = useRefreshToken();
 
   status.value.refresh = true;
@@ -200,7 +200,7 @@ export async function refresh(
       "fast-auth:refresh-token" as any,
       refreshToken,
       token,
-      result,
+      result
     );
     if (result.value) {
       _token.value = result.value.token;

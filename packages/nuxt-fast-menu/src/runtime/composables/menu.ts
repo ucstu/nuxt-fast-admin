@@ -2,7 +2,7 @@ import {
   computedEager,
   toRef,
   useAppConfig,
-  useSafeNuxtApp,
+  useNuxtAppBack,
   useRouteMetas,
   type Ref,
 } from "#imports";
@@ -62,6 +62,6 @@ export function createNavMenus() {
   });
 }
 
-export function useNavMenus(nuxtApp = useSafeNuxtApp()) {
+export function useNavMenus(nuxtApp = useNuxtAppBack()) {
   return nuxtApp.$fastNav.menus as ReturnType<typeof createNavMenus>;
 }

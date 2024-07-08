@@ -121,3 +121,9 @@ declare module "@nuxt/schema" {
     [configKey]?: ModuleConfig;
   }
 }
+
+declare module "@ucstu/nuxt-fast-utils/types" {
+  interface AppConfigOverrides {
+    [configKey]: ModuleConfigDefaults;
+  }
+}

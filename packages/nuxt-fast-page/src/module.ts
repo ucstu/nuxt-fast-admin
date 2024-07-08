@@ -7,10 +7,10 @@ import {
 } from "@nuxt/kit";
 import { addModuleTypeTemplate } from "@ucstu/nuxt-fast-utils/utils";
 import { name, version } from "../package.json";
-import type { createRouteMetas } from "./runtime/composables";
+import type { createPages } from "./runtime/composables";
 import type {
-  FsRouteConfig,
-  FsRouteConfigDefaults,
+  ModuleConfig,
+  ModuleConfigDefaults,
   ModuleOptions,
   ModuleOptionsDefaults,
 } from "./runtime/types";
@@ -35,7 +35,7 @@ export default defineNuxtModule<ModuleOptions>({
 
     nuxt.options.runtimeConfig.public[configKey] = options;
 
-    nuxt.options.appConfig[configKey] = {} satisfies FsRouteConfigDefaults;
+    nuxt.options.appConfig[configKey] = {} satisfies ModuleConfigDefaults;
 
     addModuleTypeTemplate({
       nuxt,
@@ -58,14 +58,20 @@ export default defineNuxtModule<ModuleOptions>({
 
 declare module "@nuxt/schema" {
   interface CustomAppConfig {
-    [configKey]?: FsRouteConfig;
+    [configKey]?: ModuleConfig;
+  }
+}
+
+declare module "@ucstu/nuxt-fast-utils/types" {
+  interface ModuleConfigOverrides {
+    [configKey]: ModuleConfigDefaults;
   }
 }
 
 declare module "#app" {
   interface NuxtApp {
     $fastRoute: {
-      routeMetas: ReturnType<typeof createRouteMetas>;
+      routeMetas: ReturnType<typeof createPages>;
     };
   }
 }

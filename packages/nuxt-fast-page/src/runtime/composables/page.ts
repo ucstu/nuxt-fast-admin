@@ -1,9 +1,9 @@
 import {
   computed,
-  computedEager,
   ref,
+  shallowComputedEager,
   toValue,
-  useSafeNuxtApp,
+  useNuxtAppBack,
   useRouter,
   useState,
   type ComputedRef,
@@ -13,27 +13,29 @@ import type { RouteLocationRaw, RouteMeta } from "#vue-router";
 import { extendRef } from "@ucstu/nuxt-fast-utils/exports";
 import defu from "defu";
 
-function _getRouteMeta(path: string, nuxtApp = useSafeNuxtApp()) {
+function _getPage(path: string) {
   const result = ref<RouteMeta>({});
   nuxtApp.hooks.callHookWith(
     (hooks, args) => hooks.forEach((hook) => hook(...args)),
-    "fast-route:get-meta",
+    "fast-page:complete",
     path,
     result
   );
   return result.value;
 }
 
-export function createRouteMetas<T extends RouteMeta = RouteMeta>() {
+export function createPages<T extends RouteMeta = RouteMeta>(
+  nuxtApp = useNuxtAppBack()
+) {
   const { currentRoute } = useRouter();
-  const origin = useState<Record<string, T>>("fast-route:metas", () => ({}));
+  const origin = useState<Record<string, T>>("fast-page:pages", () => ({}));
 
-  const result = computedEager(
+  const result = shallowComputedEager(
     () =>
       Object.fromEntries(
         Object.entries(origin.value).map(([path, meta]) => [
           path,
-          defu(meta, _getRouteMeta(path)),
+          defu(meta, _getPage(path, nuxtApp)),
         ])
       ) as Record<string, T>
   );
@@ -48,9 +50,9 @@ export function createRouteMetas<T extends RouteMeta = RouteMeta>() {
 }
 
 export function useRouteMetas<T extends RouteMeta = RouteMeta>(
-  nuxtApp = useSafeNuxtApp()
+  nuxtApp = useNuxtAppBack()
 ) {
-  return nuxtApp.$fastRoute?.routeMetas ?? createRouteMetas<T>();
+  return nuxtApp.$fastRoute?.routeMetas ?? createPages<T>();
 }
 
 export function useRouteMeta<T extends RouteMeta = RouteMeta>(

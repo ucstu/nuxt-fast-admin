@@ -1,10 +1,9 @@
 import {
   computed,
-  toRef,
-  useAppConfig,
+  useNuxtConfig,
+  useNuxtReady,
   useRuntimeConfig,
   useStorage,
-  type Ref
 } from "#imports";
 import { extendRef, useColorMode } from "@ucstu/nuxt-fast-utils/exports";
 import {
@@ -13,15 +12,13 @@ import {
   type GlobalTheme,
   type GlobalThemeOverrides,
 } from "naive-ui";
-import { configKey, type ModuleConfigDefaults, type ThemeKey } from "../types";
+import { configKey, type ThemeKey } from "../types";
 
 function getTheme(
   theme: ThemeKey,
   themes?: Partial<Record<ThemeKey, GlobalTheme>>
 ) {
   switch (theme) {
-    case "auto":
-      return undefined;
     case "dark":
       return darkTheme;
     case "light":
@@ -35,12 +32,11 @@ function getThemeOverrides(
   theme: ThemeKey,
   themesOverrides?: Partial<Record<ThemeKey, GlobalThemeOverrides>>
 ) {
-  if (theme === "auto") return undefined;
   return themesOverrides?.[theme];
 }
 
 function useTheme(theme?: ThemeKey) {
-  const config = toRef(useAppConfig(), "naiveUi") as Ref<ModuleConfigDefaults>;
+  const config = useNuxtConfig(configKey);
   const colorMode = useColorMode({
     storageRef: useStorage("naive-ui:theme", () => config.value.defaultTheme),
   });
@@ -49,7 +45,7 @@ function useTheme(theme?: ThemeKey) {
 }
 
 export function useNaiveUiTheme(theme?: ThemeKey) {
-  const config = toRef(useAppConfig(), configKey) as Ref<ModuleConfigDefaults>;
+  const config = useNuxtConfig(configKey);
   const runtimeConfig = useRuntimeConfig().public.fastUtils;
   const { store, system } = useTheme(theme);
   const isReady = useNuxtReady();

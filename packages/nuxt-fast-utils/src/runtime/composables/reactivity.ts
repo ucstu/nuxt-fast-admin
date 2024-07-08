@@ -1,43 +1,34 @@
-import {
-  computed,
-  shallowReadonly,
-  shallowRef,
-  watchEffect,
-  type Ref,
-} from "#imports";
-import { get, set } from "lodash-es";
-import type { LiteralUnion, Paths } from "type-fest";
-import type { WatchOptionsBase } from "vue";
-import type { ToRefDeep } from "../types";
+// ported from https://dev.to/linusborg/vue-when-a-computed-property-can-be-the-wrong-tool-195j
+// by @linusborg https://github.com/LinusBorg
 
-export function toRefDeep<
-  T extends object,
-  K extends LiteralUnion<Paths<T>, string>
->(object: T, key: K): ToRefDeep<T, K>;
-export function toRefDeep<
-  T extends object,
-  K extends LiteralUnion<Paths<T>, string>
->(object: T, key: K) {
-  return computed({
-    get() {
-      return get(object, key);
-    },
-    set(value) {
-      set(object, key, value);
-    },
-  });
-}
+import { shallowReadonly, shallowRef, watchEffect } from "#imports";
+import type { WatchOptionsBase } from "vue-demi";
 
-export function computedEagerShallow<T>(
-  fn: () => T,
-  options?: WatchOptionsBase
-): Readonly<Ref<T>> {
+/**
+ * Note: If you are using Vue 3.4+, you can straight use computed instead.
+ * Because in Vue 3.4+, if computed new value does not change,
+ * computed, effect, watch, watchEffect, render dependencies will not be triggered.
+ * refer: https://github.com/vuejs/core/pull/5912
+ *
+ * @param fn effect function
+ * @param options WatchOptionsBase
+ * @returns readonly ref
+ */
+export function computedEager<T>(fn: () => T, options?: WatchOptionsBase) {
   const result = shallowRef();
 
-  watchEffect(() => (result.value = fn()), {
-    ...options,
-    flush: options?.flush ?? "sync",
-  });
+  watchEffect(
+    () => {
+      result.value = fn();
+    },
+    {
+      ...options,
+      flush: options?.flush ?? "sync",
+    }
+  );
 
   return shallowReadonly(result);
 }
+
+// alias
+export { computedEager as eagerComputed };

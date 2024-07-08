@@ -3,7 +3,7 @@ import {
   navigateTo,
   sessionCookieStorage,
   useAppConfig,
-  useSafeNuxtApp,
+  useNuxtAppBack,
   useRuntimeConfig,
   useState,
   useStorage,
@@ -145,7 +145,7 @@ export async function signOut(options: SignOutOptions = {}) {
   const token = useToken();
   const status = useStatus();
   const config = useAppConfig().fastAuth as FsAuthConfigDefaults;
-  const nuxtApp = useSafeNuxtApp();
+  const nuxtApp = useNuxtAppBack();
 
   const { navigate = false } = options;
 
@@ -174,7 +174,7 @@ export async function signOut(options: SignOutOptions = {}) {
 export async function getUser(token = useToken().value) {
   const user = useUser();
   const status = useStatus();
-  const nuxtApp = useSafeNuxtApp();
+  const nuxtApp = useNuxtAppBack();
 
   status.value.getUser = true;
   try {

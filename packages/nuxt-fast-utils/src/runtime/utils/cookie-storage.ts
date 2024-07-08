@@ -4,7 +4,6 @@ import { CookieStorage } from "cookie-storage";
 import type { CookieOptions } from "cookie-storage/lib/cookie-options";
 import defu from "defu";
 import { deleteCookie, getCookie, setCookie } from "h3";
-import { useSafeNuxtApp } from "../composables";
 
 export class H3CookieStorage extends CookieStorage {
   override setItem(
@@ -26,7 +25,7 @@ export class H3CookieStorage extends CookieStorage {
   }
 
   override getItem(key: string): string | null {
-    const event = useRequestEvent(useSafeNuxtApp());
+    const event = useRequestEvent();
     if (event) {
       return getCookie(event, encodeURIComponent(key)) ?? null;
     }
@@ -37,7 +36,7 @@ export class H3CookieStorage extends CookieStorage {
     key: string,
     cookieOptions?: (CookieOptions & CookieSerializeOptions) | undefined
   ): void {
-    const event = useRequestEvent(useSafeNuxtApp());
+    const event = useRequestEvent();
     if (event) {
       return deleteCookie(
         event,
