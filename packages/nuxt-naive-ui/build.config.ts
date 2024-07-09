@@ -6,6 +6,7 @@ export default defineBuildConfig({
     "#imports",
     "#vue-router",
     "#build/types/app.config",
+    "defu",
     "lodash-es",
   ],
 });
