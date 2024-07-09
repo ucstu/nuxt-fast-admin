@@ -1,5 +1,5 @@
 import { addTemplate, addTypeTemplate } from "@nuxt/kit";
-import { camelCase, template, upperFirst } from "lodash-es";
+import { template, upperFirst } from "lodash-es";
 const getModuleOptions =
   template(`import type { _<%= options.optionsName %> } from "./<%= options.fileName %>/options";
 declare module "<%= options.moduleName %>" {
@@ -12,15 +12,14 @@ export function addModuleTypeTemplate(options) {
   const {
     name,
     nuxt,
+    configKey,
     options: _options,
     __dirname: __dirname_,
     getContents,
   } = options;
   const filePath = name.replace(/^@/, "");
   const fileName = filePath.split("/").pop() ?? filePath;
-  const optionsName = `${upperFirst(
-    camelCase(name.replace(/^@ucstu\/nuxt-/, "").replace("fast", "fs")),
-  )}Options`;
+  const optionsName = `${upperFirst(configKey)}Options`;
   if (__dirname_.endsWith("src")) {
     nuxt.hook("prepare:types", ({ references }) => {
       references.push({

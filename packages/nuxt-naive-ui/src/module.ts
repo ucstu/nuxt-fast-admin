@@ -11,15 +11,10 @@ import { addModuleTypeTemplate } from "@ucstu/nuxt-fast-utils/utils";
 import { camelCase, upperFirst } from "lodash-es";
 import Naive from "naive-ui";
 import { name, version } from "../package.json";
-import {
-  configKey,
-  type ModuleConfig,
-  type ModuleConfigDefaults,
-  type ModuleOptions,
-  type ModuleOptionsDefaults,
-} from "./runtime/types";
+import { configKey, defaults, initModule } from "./config";
+import type { ModuleOptions } from "./runtime/types";
 
-export type * from "./runtime/types";
+export type * from "./runtime/types/module";
 
 export default defineNuxtModule<ModuleOptions>({
   meta: {
@@ -27,21 +22,21 @@ export default defineNuxtModule<ModuleOptions>({
     version,
     configKey,
   },
-  defaults: {} satisfies ModuleOptionsDefaults,
+  defaults,
   setup(_options, nuxt) {
     installModule("@ucstu/nuxt-fast-utils");
 
-    const options = _options as ModuleOptionsDefaults;
+    const options = initModule(_options, nuxt);
+
+    addModuleTypeTemplate({
+      nuxt,
+      name,
+      options,
+      configKey,
+      __dirname,
+    });
 
     const { resolve } = createResolver(import.meta.url);
-
-    nuxt.options.runtimeConfig.public[configKey] = options;
-
-    nuxt.options.appConfig[configKey] = {
-      defaultTheme: "auto",
-      customThemes: {},
-      themesOverrides: {},
-    } satisfies ModuleConfigDefaults;
 
     if (process.env.NODE_ENV === "development") {
       const optimizeDeps = ["naive-ui"];
@@ -74,13 +69,6 @@ export default defineNuxtModule<ModuleOptions>({
         }
       }
     }
-
-    addModuleTypeTemplate({
-      nuxt,
-      name,
-      options,
-      __dirname,
-    });
 
     addPlugin({
       name,
@@ -115,15 +103,3 @@ export default defineNuxtModule<ModuleOptions>({
     });
   },
 });
-
-declare module "@nuxt/schema" {
-  interface CustomAppConfig {
-    [configKey]?: ModuleConfig;
-  }
-}
-
-declare module "@ucstu/nuxt-fast-utils/types" {
-  interface AppConfigOverrides {
-    [configKey]: ModuleConfigDefaults;
-  }
-}

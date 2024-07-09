@@ -10,15 +10,8 @@ import {
 } from "@nuxt/kit";
 import { addModuleTypeTemplate } from "@ucstu/nuxt-fast-utils/utils";
 import { camelCase, upperFirst } from "lodash-es";
-import { name, version } from "../package.json";
-import type {
-  FsCrudConfig,
-  FsCrudConfigDefaults,
-  ModuleOptions,
-  ModuleOptionsDefaults,
-} from "./runtime/types";
-
-const configKey = "fastCrud";
+import { configKey, defaults, initModule, name, version } from "./config";
+import type { ModuleOptions } from "./runtime/types";
 
 export type * from "./runtime/types";
 
@@ -28,27 +21,21 @@ export default defineNuxtModule<ModuleOptions>({
     version,
     configKey,
   },
-  defaults: {
-    framework: "naive",
-  } satisfies ModuleOptionsDefaults,
+  defaults,
   setup(_options, nuxt) {
     installModule("@ucstu/nuxt-fast-utils");
 
-    const options = _options as ModuleOptionsDefaults;
+    const options = initModule(_options, nuxt);
+
+    addModuleTypeTemplate({
+      nuxt,
+      name,
+      options,
+      configKey,
+      __dirname,
+    });
 
     const { resolve } = createResolver(import.meta.url);
-    nuxt.options.runtimeConfig.public[configKey] = options;
-
-    nuxt.options.appConfig[configKey] = {
-      uiSetupOptions: {},
-      fsSetupOptions: {
-        logger: {
-          off: {
-            tableColumns: false,
-          },
-        },
-      },
-    } satisfies FsCrudConfigDefaults;
 
     if (options.framework === "naive") {
       if (process.env.NODE_ENV === "development") {
@@ -113,20 +100,13 @@ export default defineNuxtModule<ModuleOptions>({
       }
     }
 
-    addModuleTypeTemplate({
-      nuxt,
-      name,
-      options,
-      __dirname,
-    });
-
     addPlugin({
       name,
       src: resolve(`./runtime/plugins/${options.framework}`),
     });
 
     const components = Object.keys(FastCrud).filter((name) =>
-      /^Fs[A-Z]|fs-[a-z]/.test(name),
+      /^Fs[A-Z]|fs-[a-z]/.test(name)
     );
 
     const clientOnlyComponents = ["FsCrud"];
@@ -143,7 +123,7 @@ export default defineNuxtModule<ModuleOptions>({
     });
 
     const composables = Object.keys(FastCrud).filter(
-      (name) => /^use[A-Z]/.test(name) || ["dict"].includes(name),
+      (name) => /^use[A-Z]/.test(name) || ["dict"].includes(name)
     );
 
     addImportsSources({
@@ -152,9 +132,3 @@ export default defineNuxtModule<ModuleOptions>({
     });
   },
 });
-
-declare module "@nuxt/schema" {
-  interface CustomAppConfig {
-    [configKey]?: FsCrudConfig;
-  }
-}

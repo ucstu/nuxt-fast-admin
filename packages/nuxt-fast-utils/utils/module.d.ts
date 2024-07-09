@@ -13,6 +13,10 @@ interface AddModuleTypeTemplateOptions {
    */
   options: any;
   /**
+   * 配置键
+   */
+  configKey: string;
+  /**
    * 文件夹名称
    */
   __dirname: string;
@@ -34,6 +38,6 @@ interface AddModuleTypeTemplateOptions {
  * @param options
  */
 export declare function addModuleTypeTemplate(
-  options: AddModuleTypeTemplateOptions,
+  options: AddModuleTypeTemplateOptions
 ): void;
 export {};

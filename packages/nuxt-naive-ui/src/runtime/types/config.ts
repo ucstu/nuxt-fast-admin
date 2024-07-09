@@ -2,8 +2,6 @@ import type { LiteralUnion } from "@ucstu/nuxt-fast-utils/exports";
 import type { GlobalTheme, GlobalThemeOverrides } from "naive-ui";
 import type { ThemeKey } from "./base";
 
-export const configKey = "naiveUi";
-
 export interface ModuleConfig {
   /**
    * 默认主题

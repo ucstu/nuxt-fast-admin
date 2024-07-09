@@ -3,21 +3,21 @@ import {
   customRef,
   effectScope,
   tryUseNuxtApp,
-  useId,
   useNuxtApp,
   useRuntimeConfig,
   watch,
 } from "#imports";
 import {
-  useStorage as _useStorage,
   toRef,
   tryOnScopeDispose,
+  useStorage,
   type AnyFn,
   type MaybeRefOrGetter,
   type RemovableRef,
   type StorageLike,
   type UseStorageOptions,
 } from "@vueuse/core";
+import { nanoid } from "nanoid";
 import type { EffectScope } from "vue-demi";
 
 /**
@@ -26,14 +26,13 @@ import type { EffectScope } from "vue-demi";
  * @see https://vueuse.org/createGlobalState
  * @param stateFactory A factory function to create the state
  */
-export function createGlobalState<Fn extends AnyFn>(
+export function createNuxtGlobalState<Fn extends AnyFn>(
   stateFactory: Fn,
-  name?: string
+  name: string = nanoid()
 ): Fn {
   let initialized = false;
   let nuxtApp = tryUseNuxtApp();
   const scope = effectScope(true);
-  name ??= useId();
 
   return ((...args: any[]) => {
     nuxtApp ??= useNuxtApp();
@@ -50,14 +49,13 @@ export function createGlobalState<Fn extends AnyFn>(
  *
  * @see https://vueuse.org/createSharedComposable
  */
-export function createSharedComposable<Fn extends AnyFn>(
+export function createNuxtSharedComposable<Fn extends AnyFn>(
   composable: Fn,
-  name?: string
+  name: string = nanoid()
 ): Fn {
   let subscribers = 0;
   let nuxtApp = tryUseNuxtApp();
   let scope: EffectScope | undefined;
-  name ??= useId();
 
   const dispose = () => {
     nuxtApp ??= useNuxtApp();
@@ -85,31 +83,31 @@ export function createSharedComposable<Fn extends AnyFn>(
   });
 }
 
-export function useStorage(
+export function useNuxtStorage(
   key: string,
   defaults: MaybeRefOrGetter<string>,
   storage?: MaybeRefOrGetter<StorageLike>,
   options?: UseStorageOptions<string>
 ): RemovableRef<string>;
-export function useStorage(
+export function useNuxtStorage(
   key: string,
   defaults: MaybeRefOrGetter<boolean>,
   storage?: MaybeRefOrGetter<StorageLike>,
   options?: UseStorageOptions<boolean>
 ): RemovableRef<boolean>;
-export function useStorage(
+export function useNuxtStorage(
   key: string,
   defaults: MaybeRefOrGetter<number>,
   storage?: MaybeRefOrGetter<StorageLike>,
   options?: UseStorageOptions<number>
 ): RemovableRef<number>;
-export function useStorage<T>(
+export function useNuxtStorage<T>(
   key: string,
   defaults: MaybeRefOrGetter<T>,
   storage?: MaybeRefOrGetter<StorageLike>,
   options?: UseStorageOptions<T>
 ): RemovableRef<T>;
-export function useStorage<T = unknown>(
+export function useNuxtStorage<T = unknown>(
   key: string,
   // eslint-disable-next-line @typescript-eslint/unified-signatures
   defaults: MaybeRefOrGetter<null>,
@@ -122,7 +120,7 @@ export function useStorage<T = unknown>(
  *
  * @see https://vueuse.org/useStorage
  */
-export function useStorage<T>(
+export function useNuxtStorage<T>(
   key: string,
   defaults: MaybeRefOrGetter<T>,
   storage?: MaybeRefOrGetter<StorageLike>,
@@ -134,11 +132,11 @@ export function useStorage<T>(
     storageRef.value = config.ssr ? cookieStorage : localStorage;
   }
   return customRef((track, trigger) => {
-    let storageValue = _useStorage(key, defaults, storageRef.value, options);
+    let storageValue = useStorage(key, defaults, storageRef.value, options);
     watch(storageRef, (newStorage) => {
       const old = storageValue.value;
       storageValue.value = null;
-      storageValue = _useStorage(key, defaults, newStorage, options);
+      storageValue = useStorage(key, defaults, newStorage, options);
       storageValue.value = old;
       trigger();
     });

@@ -4,7 +4,7 @@ import type { UiSetupOptions as Antdv4UiSetupOptions } from "@fast-crud/ui-antdv
 import type { UiSetupOptions as ElementUiSetupOptions } from "@fast-crud/ui-element";
 import type { UiSetupOptions as NaiveUiSetupOptions } from "@fast-crud/ui-naive";
 
-export interface FsCrudConfig {
+export interface ModuleConfig {
   /**
    * FS配置
    * @description 动态修改无效
@@ -21,4 +21,4 @@ export interface FsCrudConfig {
     | ElementUiSetupOptions;
 }
 
-export type FsCrudConfigDefaults = Required<FsCrudConfig>;
+export type ModuleConfigDefaults = Required<ModuleConfig>;

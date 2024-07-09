@@ -1,5 +1,4 @@
 import { useAppConfig as _useAppConfig } from "#app/config";
-import type { ResolvedAppConfig } from "#build/types/app.config";
 import {
   computed,
   onNuxtReady,
@@ -8,10 +7,16 @@ import {
   shallowRef,
   useRuntimeConfig,
 } from "#imports";
-import type { AppConfig, RuntimeConfig } from "@nuxt/schema";
+import type { AppConfig as _AppConfig, RuntimeConfig } from "@nuxt/schema";
 import { toRef } from "@vueuse/core";
 import { get, set } from "lodash-es";
-import type { Get, LiteralUnion, OverrideProperties, Paths } from "type-fest";
+import type {
+  Get,
+  LiteralToPrimitiveDeep,
+  LiteralUnion,
+  OverrideProperties,
+  Paths,
+} from "type-fest";
 import type { DeepReadonly, ToRef, WritableComputedRef } from "vue-demi";
 import type { AppConfigOverrides } from "../types";
 
@@ -24,7 +29,7 @@ export function useNuxtReady() {
   return isReady;
 }
 
-type AppConfigOverride = OverrideProperties<AppConfig, AppConfigOverrides>;
+type AppConfig = OverrideProperties<_AppConfig, AppConfigOverrides>;
 
 type ConfigType = "app" | "private" | "public";
 interface UseNuxtConfigOptions<T extends ConfigType, D> {
@@ -52,21 +57,21 @@ interface UseNuxtConfigOptions<T extends ConfigType, D> {
    */
   default?: D extends undefined ? never : () => D;
 }
-export function useNuxtConfig(): ToRef<AppConfigOverride>;
+export function useNuxtConfig(): ToRef<AppConfig>;
 export function useNuxtConfig<
-  K extends LiteralUnion<Paths<ResolvedAppConfig>, string>
->(key: K): WritableComputedRef<Get<AppConfigOverride, K>>;
+  K extends LiteralUnion<Paths<LiteralToPrimitiveDeep<AppConfig>>, string>
+>(key: K): WritableComputedRef<Get<AppConfig, K>>;
 export function useNuxtConfig<
   T extends "app",
-  K extends LiteralUnion<Paths<ResolvedAppConfig>, string>
+  K extends LiteralUnion<Paths<LiteralToPrimitiveDeep<AppConfig>>, string>
 >(
   key: K,
-  options: UseNuxtConfigOptions<T, Get<AppConfigOverride, K>>
-): WritableComputedRef<Get<AppConfigOverride, K>>;
+  options: UseNuxtConfigOptions<T, Get<AppConfig, K>>
+): WritableComputedRef<Get<AppConfig, K>>;
 export function useNuxtConfig<
   T extends Exclude<ConfigType, "app">,
   C extends T extends "private" ? RuntimeConfig : RuntimeConfig["public"],
-  K extends LiteralUnion<Paths<C>, string>
+  K extends LiteralUnion<Paths<LiteralToPrimitiveDeep<C>>, string>
 >(
   key: K,
   options: UseNuxtConfigOptions<T, Get<C, K>>
@@ -83,13 +88,9 @@ export function useNuxtConfig<
     : T extends "private"
     ? RuntimeConfig
     : RuntimeConfig["public"],
-  K extends LiteralUnion<Paths<C>, string>
->(key?: K, options?: UseNuxtConfigOptions<T, Get<C, K>>) {
-  const {
-    type = "app",
-    shallow = false,
-    default: defaultValue,
-  } = options || {};
+  K extends LiteralUnion<Paths<LiteralToPrimitiveDeep<C>>, string>
+>(key?: K, options: UseNuxtConfigOptions<T, Get<C, K>> = {}) {
+  const { type = "app", shallow = false, default: defaultValue } = options;
   const isReadonly = options?.readonly ?? type !== "app";
 
   const appConfig = _useAppConfig();
@@ -105,9 +106,8 @@ export function useNuxtConfig<
   const result = configRef(config, key);
 
   if (!isReadonly) {
-    if (result.value === undefined && defaultValue) {
-      result.value = defaultValue() as Get<C, K>;
-    }
+    // @ts-ignore
+    result.value ??= defaultValue?.();
     return result;
   }
 
@@ -115,7 +115,7 @@ export function useNuxtConfig<
 }
 
 function configRef<
-  C extends AppConfig | RuntimeConfig | RuntimeConfig["public"],
+  C extends _AppConfig | RuntimeConfig | RuntimeConfig["public"],
   K extends Paths<C>
 >(config: C, key?: K) {
   return key
@@ -128,4 +128,53 @@ function configRef<
         },
       })
     : toRef(config);
+}
+
+type GetNuxtConfigOptions<T extends ConfigType, D> = Omit<
+  UseNuxtConfigOptions<T, D>,
+  "readonly" | "shallow"
+>;
+export function getNuxtConfig(): AppConfig;
+export function getNuxtConfig<
+  K extends LiteralUnion<Paths<LiteralToPrimitiveDeep<AppConfig>>, string>
+>(key: K): Get<AppConfig, K>;
+export function getNuxtConfig<
+  T extends "app",
+  K extends LiteralUnion<Paths<LiteralToPrimitiveDeep<AppConfig>>, string>
+>(
+  key: K,
+  options: GetNuxtConfigOptions<T, Get<AppConfig, K>>
+): Get<AppConfig, K>;
+export function getNuxtConfig<
+  T extends Exclude<ConfigType, "app">,
+  C extends T extends "private" ? RuntimeConfig : RuntimeConfig["public"],
+  K extends LiteralUnion<Paths<LiteralToPrimitiveDeep<C>>, string>
+>(key: K, options: GetNuxtConfigOptions<T, Get<C, K>>): Get<C, K>;
+/**
+ * 获取 Nuxt 应用配置
+ * @param key 配置键
+ * @returns 配置值
+ */
+export function getNuxtConfig<
+  T extends ConfigType,
+  C extends T extends "app"
+    ? AppConfig
+    : T extends "private"
+    ? RuntimeConfig
+    : RuntimeConfig["public"],
+  K extends LiteralUnion<Paths<LiteralToPrimitiveDeep<C>>, string>
+>(key?: K, options: GetNuxtConfigOptions<T, Get<C, K>> = {}) {
+  const { type = "app", default: defaultValue } = options;
+
+  const appConfig = _useAppConfig();
+  const runtimeConfig = useRuntimeConfig();
+
+  const config =
+    type === "app"
+      ? appConfig
+      : type === "private"
+      ? runtimeConfig
+      : runtimeConfig.public;
+
+  return (key ? get(config, key) : config) ?? defaultValue?.();
 }

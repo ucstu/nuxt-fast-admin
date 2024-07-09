@@ -2,8 +2,8 @@ import {
   computed,
   useNuxtConfig,
   useNuxtReady,
+  useNuxtStorage,
   useRuntimeConfig,
-  useStorage,
 } from "#imports";
 import { extendRef, useColorMode } from "@ucstu/nuxt-fast-utils/exports";
 import {
@@ -12,7 +12,8 @@ import {
   type GlobalTheme,
   type GlobalThemeOverrides,
 } from "naive-ui";
-import { configKey, type ThemeKey } from "../types";
+import { configKey } from "../../config";
+import type { ThemeKey } from "../types";
 
 function getTheme(
   theme: ThemeKey,
@@ -35,20 +36,18 @@ function getThemeOverrides(
   return themesOverrides?.[theme];
 }
 
-function useTheme(theme?: ThemeKey) {
-  const config = useNuxtConfig(configKey);
-  const colorMode = useColorMode({
-    storageRef: useStorage("naive-ui:theme", () => config.value.defaultTheme),
-  });
-  if (theme) colorMode.value = theme;
-  return colorMode;
-}
-
 export function useNaiveUiTheme(theme?: ThemeKey) {
   const config = useNuxtConfig(configKey);
   const runtimeConfig = useRuntimeConfig().public.fastUtils;
-  const { store, system } = useTheme(theme);
+  const { store, system } = useColorMode({
+    storageRef: useNuxtStorage(
+      "naive-ui:theme",
+      () => config.value.defaultTheme
+    ),
+  });
   const isReady = useNuxtReady();
+
+  if (theme) store.value = theme;
 
   const real = computed(() =>
     store.value === "auto"

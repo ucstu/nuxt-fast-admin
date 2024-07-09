@@ -1,14 +1,7 @@
 import { addImportsSources, createResolver, defineNuxtModule } from "@nuxt/kit";
-import { name, version } from "../package.json";
 import { addModuleTypeTemplate } from "../utils";
-import type {
-  ModuleConfig,
-  ModuleConfigDefaults,
-  ModuleOptions,
-  ModuleOptionsDefaults,
-} from "./runtime/types";
-
-export const configKey = "fastUtils";
+import { configKey, defaults, initModule, name, version } from "./config";
+import type { ModuleOptions } from "./runtime/types";
 
 export type * from "./runtime/types/module";
 
@@ -18,37 +11,29 @@ export default defineNuxtModule<ModuleOptions>({
     version,
     configKey,
   },
-  defaults: {} satisfies ModuleOptionsDefaults,
+  defaults,
   setup(_options, nuxt) {
-    const options = _options as ModuleOptionsDefaults;
-    const { ssr } = nuxt.options;
-
-    const { resolve } = createResolver(import.meta.url);
-
-    nuxt.options.runtimeConfig.public[configKey] = {
-      ...options,
-      ssr,
-    };
-
-    nuxt.options.appConfig[configKey] = {} satisfies ModuleConfigDefaults;
+    const options = initModule(_options, nuxt);
 
     addModuleTypeTemplate({
       nuxt,
       name,
       options,
+      configKey,
       __dirname,
     });
+
+    const { resolve } = createResolver(import.meta.url);
 
     addImportsSources({
       from: resolve("./runtime/composables"),
       imports: [
         "useNuxtReady",
         "useNuxtConfig",
-        "computedEager",
-        "eagerComputed",
-        "createGlobalState",
-        "createSharedComposable",
-        "useStorage",
+        "getNuxtConfig",
+        "useNuxtStorage",
+        "createNuxtGlobalState",
+        "createNuxtSharedComposable",
       ],
     });
 
@@ -58,9 +43,3 @@ export default defineNuxtModule<ModuleOptions>({
     });
   },
 });
-
-declare module "@nuxt/schema" {
-  interface CustomAppConfig {
-    [configKey]?: ModuleConfig;
-  }
-}
