@@ -4,20 +4,20 @@ export default defineAppConfig({
   fastNav: {
     menus: [
       {
-        key: "for",
+        name: "for",
         title: "for",
         children: [
           {
-            key: "test",
+            name: "test",
           },
         ],
       },
       {
-        key: "bar",
+        name: "bar",
         title: "bar",
         children: [
           {
-            key: "test",
+            name: "test",
           },
         ],
       },

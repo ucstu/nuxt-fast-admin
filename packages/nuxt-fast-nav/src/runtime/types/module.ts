@@ -40,10 +40,12 @@ export interface ModuleRuntimeHooks {
   /**
    * 获取菜单信息
    * @param input 输入
+   * @param parent 父级
    * @param result 结果
    */
   "fast-nav:get-menu": (
-    input: FastNavMenu,
+    input: FastNavMenu | FastNavMenuFilled,
+    parent: string,
     result: ShallowRef<FastNavMenuFilled | undefined>
   ) => void;
   /**
@@ -59,7 +61,7 @@ export interface ModuleRuntimeHooks {
    * @param result 结果
    */
   "fast-nav:get-page": (
-    input: FastNavPage,
+    input: FastNavPage | FastNavPageFilled,
     result: ShallowRef<FastNavPageFilled | undefined>
   ) => void;
   /**

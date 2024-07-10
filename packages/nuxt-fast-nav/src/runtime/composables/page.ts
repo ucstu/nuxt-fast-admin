@@ -2,12 +2,10 @@ import {
   computed,
   createNuxtGlobalState,
   shallowRef,
-  toValue,
   useNuxtApp,
   useRouter,
-  type MaybeRefOrGetter,
 } from "#imports";
-import { extendRef } from "@ucstu/nuxt-fast-utils/exports";
+import { extendRef, reactify } from "@ucstu/nuxt-fast-utils/exports";
 import type { FastNavPage, FastNavPageFilled } from "../types";
 import { toEqual } from "../utils/basic";
 
@@ -46,15 +44,16 @@ export const useNavPages = createNuxtGlobalState(() => {
       .filter((page) => page !== undefined)
   );
 
-  function getPage(to?: FastNavPageFilled["to"]) {
-    return result.value.find((page) =>
-      toEqual(page.to, to ?? currentRoute.value)
-    );
+  /**
+   * 获取页面
+   * @param to 页面路由
+   * @returns 页面
+   */
+  function getPage(to: FastNavPageFilled["to"] = currentRoute.value) {
+    return result.value.find((page) => toEqual(page.to, to));
   }
 
-  function usePage(to?: MaybeRefOrGetter<FastNavPageFilled["to"]>) {
-    return computed(() => getPage(toValue(to)));
-  }
+  const usePage = reactify(getPage);
 
   return extendRef(result, {
     current: usePage(),

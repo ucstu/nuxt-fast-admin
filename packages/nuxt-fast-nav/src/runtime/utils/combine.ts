@@ -9,7 +9,7 @@ function addPageToMenu(menu: FastNavMenuFilled, page: FastNavPageFilled) {
   menu.children ??= [];
   menu.children.push(page);
   menu.show ||= menu.children.some((item) =>
-    "key" in item ? item.show : item.menu.show
+    "name" in item ? item.show : item.menu.show
   );
 }
 
@@ -40,7 +40,7 @@ export function addPageToMenus(
   }
   const parent = parents.shift();
   const menu = (current.children as Array<FastNavMenuFilled>).find(
-    (menu) => menu.key === parent
+    (menu) => menu.name === parent
   );
   if (!menu) {
     console.warn(`[fast-nav] 未找到页面 `, page, ` 的父级菜单`);
@@ -60,12 +60,12 @@ export function addPageToMenus(
  */
 export function sortMenus(menu: FastNavMenuFilled) {
   menu.children?.sort((a, b) => {
-    const ordera = "key" in a ? a.order : a.menu.order;
-    const orderb = "key" in b ? b.order : b.menu.order;
-    return ordera - orderb;
+    const oa = "name" in a ? a.order : a.menu.order;
+    const ob = "name" in b ? b.order : b.menu.order;
+    return oa - ob;
   });
   menu.children?.forEach((item) => {
-    if ("key" in item) sortMenus(item);
+    if ("name" in item) sortMenus(item);
   });
 }
 
@@ -81,10 +81,10 @@ export function fillMenusRoute(
   const page = pages.find(
     (page) =>
       menu.parent === page.menu.parent &&
-      menu.key === page.to.path.split("/").pop()
+      menu.name === page.to.path.split("/").pop()
   );
   menu.to = page?.to;
   menu.children?.forEach((item) => {
-    if ("key" in item) fillMenusRoute(item, pages);
+    if ("name" in item) fillMenusRoute(item, pages);
   });
 }

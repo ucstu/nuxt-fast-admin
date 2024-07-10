@@ -1,12 +1,9 @@
-import { useAppConfig } from "#imports";
-import type { RouteMeta, RouteRecordRaw } from "#vue-router";
-import type {
-  FastNavExtra,
-  FastNavPageFilled,
-  ModuleConfigDefaults,
-} from "../types";
+import { getNuxtConfig } from "#imports";
+import type { RouteRecordRaw } from "#vue-router";
+import { configKey } from "../../config";
+import type { FastNavExtra, FastNavPage, FastNavPageFilled } from "../types";
 
-interface Options extends RouteMeta, Required<FastNavExtra> {
+interface Options extends FastNavExtra {
   children?: Array<RouteRecordRaw>;
 }
 
@@ -17,41 +14,45 @@ function getPageParent(options: Options) {
   );
 }
 
-export function getPageFilled(options: Options): FastNavPageFilled {
-  const config = useAppConfig().fastNav as ModuleConfigDefaults;
+export function getPageFilled(
+  page: FastNavPage,
+  options: Options
+): FastNavPageFilled {
+  const config = getNuxtConfig(configKey);
 
   const { to, children } = options;
-  const title = options.title ?? to.path;
-  const icon = options.icon ?? config.page.icon;
-  const desc = options.desc ?? "";
+  const type = page.type ?? "static";
+  const title = page.title ?? to.path;
+  const icon = page.icon ?? config.page.icon;
+  const desc = page.desc ?? "";
 
   return {
-    type: "static",
+    type,
     title,
     icon,
     desc,
     menu: {
-      ...options.menu,
-      title: options.menu?.title ?? title,
-      icon: options.menu?.icon ?? icon,
-      desc: options.menu?.desc ?? desc,
-      has: options.menu?.has ?? config.page.menu.has,
+      ...page.menu,
+      title: page.menu?.title ?? title,
+      icon: page.menu?.icon ?? icon,
+      desc: page.menu?.desc ?? desc,
+      has: page.menu?.has ?? config.page.menu.has,
       show:
-        options.menu?.show ??
+        page.menu?.show ??
         ((children?.length ?? 0) === 0 && !/\/:.*?\(\)/.test(to.path))
           ? config.page.menu.show
           : false,
-      parent: encodeURI(options.menu?.parent ?? getPageParent(options)),
-      disabled: options.menu?.disabled ?? config.page.menu.disabled,
-      order: options.menu?.order ?? config.page.menu.order,
+      parent: encodeURI(page.menu?.parent ?? getPageParent(options)),
+      disabled: page.menu?.disabled ?? config.page.menu.disabled,
+      order: page.menu?.order ?? config.page.menu.order,
     },
     tab: {
-      ...options.tab,
-      title: options.tab?.title ?? title,
-      icon: options.tab?.icon ?? icon,
-      desc: options.tab?.desc ?? desc,
-      has: options.tab?.has ?? config.page.tab.has,
-      show: options.tab?.show ?? config.page.tab.show,
+      ...page.tab,
+      title: page.tab?.title ?? title,
+      icon: page.tab?.icon ?? icon,
+      desc: page.tab?.desc ?? desc,
+      has: page.tab?.has ?? config.page.tab.has,
+      show: page.tab?.show ?? config.page.tab.show,
     },
     to,
   };

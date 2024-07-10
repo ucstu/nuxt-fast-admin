@@ -5,8 +5,8 @@ import type {
 } from "#vue-router";
 import type {
   LiteralUnion,
+  OverrideProperties,
   RequiredDeep,
-  SetFieldType,
   SetOptional,
   SetRequired,
 } from "@ucstu/nuxt-fast-utils/exports";
@@ -16,7 +16,7 @@ export interface FastNavOptions {}
 export interface FastNavMenuKeys {}
 
 export interface FastNavExtra {
-  to?: SetRequired<
+  to: SetRequired<
     RouteLocationAsRelativeGeneric | RouteLocationAsPathGeneric,
     "path"
   >;
@@ -34,14 +34,14 @@ type KeysDeep<
   : I extends IA["length"]
   ? never
   : // 自身
-    | `${P}${Exclude<M[IA["length"]]["key"], symbol>}`
+    | `${P}${Exclude<M[IA["length"]]["name"], symbol>}`
       // 子级
       | (M[IA["length"]]["children"] extends Array<FastNavMenu>
           ? DA["length"] extends D
             ? never
             : KeysDeep<
                 M[IA["length"]]["children"],
-                `${P}${Exclude<M[IA["length"]]["key"], symbol>}.`,
+                `${P}${Exclude<M[IA["length"]]["name"], symbol>}.`,
                 I,
                 [],
                 D,
@@ -129,7 +129,12 @@ interface MenuMetaParent {
       >;
 }
 
-export interface FastNavPage extends BaseMeta {
+// #region 页面
+export interface FastNavPage extends BaseMeta, FastNavExtra {
+  /**
+   * 页面类型
+   */
+  type: LiteralUnion<"static", string>;
   /**
    * 菜单配置
    */
@@ -140,48 +145,47 @@ export interface FastNavPage extends BaseMeta {
   tab?: TabMeta;
 }
 
-export type FastNavPageFilled = SetFieldType<
-  RequiredDeep<FastNavPage>,
-  "menu",
-  RequiredDeep<
-    MenuMeta & {
-      parent: string;
-    }
-  >
+export type FastNavPageFilled = RequiredDeep<
+  Omit<FastNavPage, keyof FastNavExtra>
 > &
-  Required<FastNavExtra> & {
-    type: LiteralUnion<"static", string>;
-  };
+  FastNavExtra;
+// #endregion
 
-/* eslint-disable-next-line @typescript-eslint/ban-types */
-export interface FastNavMenu<T extends object = {}, K extends keyof T = keyof T>
+// #region 菜单
+export interface FastNavMenu<T extends object = object, N extends keyof T = keyof T>
   extends Omit<MenuMeta, "has">,
-    FastNavExtra {
+    SetOptional<FastNavExtra, "to"> {
   /**
-   * 唯一键名
+   * 唯一名称
    */
-  key: LiteralUnion<K, string>;
+  name: LiteralUnion<N, string>;
+  /**
+   * 菜单类型
+   */
+  type?: LiteralUnion<"menu", string>;
   /**
    * 子项目
    */
-  children?: Array<
-    | (T[K] extends object ? FastNavMenu<T[K]> : FastNavMenu)
-    | (FastNavPage & Required<FastNavExtra>)
-  >;
+  children?: Array<T[N] extends object ? FastNavMenu<T[N]> : FastNavMenu>;
 }
 
-export type FastNavMenuFilled = SetFieldType<
-  SetOptional<Required<FastNavMenu>, keyof FastNavExtra>,
-  "children",
-  Array<FastNavMenuFilled | FastNavPageFilled>
-> & {
-  /**
-   * 父级菜单
-   */
-  parent: string;
-};
+export type FastNavMenuFilled = OverrideProperties<
+  RequiredDeep<Omit<FastNavMenu, keyof FastNavExtra>>,
+  {
+    children: Array<FastNavMenuFilled | FastNavPageFilled>;
+  }
+> &
+  SetOptional<FastNavExtra, "to"> & {
+    /**
+     * 父级菜单
+     */
+    parent: string;
+  };
+// #endregion
 
-export interface FastNavHistory extends Required<FastNavExtra> {
+
+// #region 历史
+export interface FastNavHistory extends FastNavExtra {
   /**
    * 元数据
    */
@@ -192,3 +196,8 @@ export interface FastNavHistory extends Required<FastNavExtra> {
     tab?: TabMeta;
   };
 }
+
+export type FastNavHistoryFilled = RequiredDeep<
+  Omit<FastNavHistory, keyof FastNavExtra>
+> & FastNavExtra;
+// #endregion

@@ -2,11 +2,12 @@ import { shallowRef, useNuxtApp } from "#imports";
 import type { FastNavExtra } from "../types";
 
 export function toEqual(
-  a: FastNavExtra["to"],
-  b: FastNavExtra["to"],
+  a?: FastNavExtra["to"],
+  b?: FastNavExtra["to"],
   nuxtApp = useNuxtApp()
 ): boolean {
   const result = shallowRef(false);
+  if (!a || !b) return result.value;
   nuxtApp.hooks.callHookWith(
     (hooks, args) => {
       hooks.forEach((hook) => hook(...args));
