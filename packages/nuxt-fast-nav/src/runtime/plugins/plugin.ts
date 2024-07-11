@@ -4,14 +4,12 @@ import type { FastNavHistory } from "../types";
 
 export default defineNuxtPlugin({
   setup(nuxtApp) {
-    const histories = useNavHistories();
+    const histories = useNavHistories(nuxtApp);
 
     addRouteMiddleware(async (to) => {
       const history = ref<FastNavHistory>({
         to: {
           hash: to.hash,
-          name: to.name,
-          params: to.params,
           path: to.path,
           query: to.query,
         },

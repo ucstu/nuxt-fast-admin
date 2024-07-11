@@ -20,7 +20,7 @@
 
 <script setup lang="tsx">
 import { NuxtLink } from "#components";
-import type { FastNavMenuFilled } from "../../src/module";
+import type { FastNavMenuFilled } from "../../src/runtime/types";
 
 const menus = useNavMenus();
 const histories = useNavHistories();
@@ -45,11 +45,11 @@ const Menu = defineComponent({
         </h4>
         <ul>
           {this.menu.children.map((item) => {
-            if ("key" in item && !item.show) return;
-            if (!("key" in item) && !item.menu.show) return;
+            if ("name" in item && !item.show) return;
+            if (!("name" in item) && !item.menu.show) return;
             return (
               <li>
-                {"key" in item ? (
+                {"name" in item ? (
                   <Menu menu={item} />
                 ) : (
                   <NuxtLink to={item.to}>{item.title}</NuxtLink>

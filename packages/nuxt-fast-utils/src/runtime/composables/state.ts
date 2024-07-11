@@ -1,8 +1,6 @@
 import {
   cookieStorage,
   customRef,
-  effectScope,
-  tryUseNuxtApp,
   useNuxtApp,
   useRuntimeConfig,
   watch,
@@ -18,7 +16,6 @@ import {
   type UseStorageOptions,
 } from "@vueuse/core";
 import { nanoid } from "nanoid";
-import type { EffectScope } from "vue-demi";
 
 /**
  * Keep states in the global scope to be reusable across Nuxt instances.
@@ -30,15 +27,12 @@ export function createNuxtGlobalState<Fn extends AnyFn>(
   stateFactory: Fn,
   name: string = nanoid()
 ): Fn {
-  let initialized = false;
-  let nuxtApp = tryUseNuxtApp();
-  const scope = effectScope(true);
-
   return ((...args: any[]) => {
-    nuxtApp ??= useNuxtApp();
-    if (!initialized) {
-      nuxtApp.provide(name, scope.run(() => stateFactory(...args))!);
-      initialized = true;
+    const nuxtApp = useNuxtApp();
+    if (!nuxtApp[`$${name}`]) {
+      const result = stateFactory(...args);
+      nuxtApp.provide(name, result);
+      return result;
     }
     return nuxtApp[`$${name}`];
   }) as Fn;
@@ -54,29 +48,21 @@ export function createNuxtSharedComposable<Fn extends AnyFn>(
   name: string = nanoid()
 ): Fn {
   let subscribers = 0;
-  let nuxtApp = tryUseNuxtApp();
-  let scope: EffectScope | undefined;
 
   const dispose = () => {
-    nuxtApp ??= useNuxtApp();
+    const nuxtApp = useNuxtApp();
     subscribers -= 1;
-    if (scope && subscribers <= 0) {
-      scope.stop();
+    if (subscribers <= 0) {
       // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
       delete nuxtApp[`$${name}`];
-      scope = undefined;
     }
   };
 
   return <Fn>((...args) => {
-    nuxtApp ??= useNuxtApp();
+    const nuxtApp = useNuxtApp();
     subscribers += 1;
     if (!nuxtApp[`$${name}`]) {
-      scope = effectScope(true);
-      nuxtApp.provide(
-        name,
-        scope.run(() => composable(...args))
-      );
+      nuxtApp.provide(name, composable(...args));
     }
     tryOnScopeDispose(dispose);
     return nuxtApp[`$${name}`];

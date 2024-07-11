@@ -34,7 +34,6 @@
   },
   "dependencies": {
     "@nuxt/kit": "^3.12.3",
-    "@ucstu/nuxt-fast-route": "workspace:^",
     "@ucstu/nuxt-fast-utils": "workspace:^",
     "minimatch": "^9.0.5"
   },

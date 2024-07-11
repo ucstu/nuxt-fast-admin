@@ -1,9 +1,9 @@
-import { computed, ref, useNuxtAppBack, type MaybeRefOrGetter } from "#imports";
-import { toRef } from "@ucstu/nuxt-fast-utils/exports";
-import type { LiteralUnion } from "@ucstu/nuxt-fast-utils/types";
+import { computed, type MaybeRefOrGetter, toValue } from "#imports";
+import type { LiteralUnion } from "@ucstu/nuxt-fast-utils/exports";
+import { isEqual } from "lodash-es";
 import { minimatch } from "minimatch";
-import type { FsAuthMeta, FsAuthPer, FsAuthUser } from "../types";
-import { useUser } from "./use-auth";
+import { useAuth } from "~/dist/runtime/composables";
+import type { FastAuthBase, FastAuthPer, FastAuthPerWrapper } from "../types";
 
 /**
  * 是否具有
@@ -11,17 +11,35 @@ import { useUser } from "./use-auth";
  * @param needs 需要
  * @returns 是否有
  */
-function have(has: FsAuthPer[], needs: FsAuthMeta): boolean {
+function have(
+  has: Array<FastAuthPerWrapper | boolean>,
+  needs: FastAuthBase
+): boolean {
   if (typeof needs === "boolean") {
-    return needs === false ? true : has.includes(true);
+    return needs === false
+      ? true
+      : has.some((item) => typeof item === "boolean" && item === needs);
   }
   if (typeof needs === "number" || typeof needs === "bigint") {
-    return has.includes(needs);
+    return has.some(
+      (item) =>
+        typeof item === "object" &&
+        item.type === "per" &&
+        (typeof item.value === "number" || typeof item.value === "bigint") &&
+        item.value === needs
+    );
   }
   if (typeof needs === "string") {
     return has.some(
-      (item) => typeof item === "string" && minimatch(needs, item)
+      (item) =>
+        typeof item === "object" &&
+        item.type === "per" &&
+        typeof item.value === "string" &&
+        minimatch(needs, item.value)
     );
+  }
+  if (typeof needs === "object" && !Array.isArray(needs)) {
+    return has.some((item) => typeof item === "object" && isEqual(item, needs));
   }
   if (Array.isArray(needs)) {
     switch (needs[0]) {
@@ -37,114 +55,84 @@ function have(has: FsAuthPer[], needs: FsAuthMeta): boolean {
 }
 
 /**
- * 获取用户权限|角色列表
- * @param user 用户信息
- * @param type 类型
- * @param nuxtApp Nuxt 应用
- * @returns 用户权限|角色列表
+ * 权限包装
+ * @param per
+ * @returns 权限包装
  */
-function get(
-  user: FsAuthUser | null | undefined,
-  type: "permissions" | "roles" = "permissions",
-  nuxtApp = useNuxtAppBack()
-) {
-  const result = ref<Exclude<FsAuthPer, boolean>[]>([]);
-  nuxtApp.hooks.callHookWith(
-    (hooks, args) => hooks.forEach((hook) => hook(...args)),
-    `fast-auth:get-${type}`,
-    user,
-    result
-  );
-  return result.value;
+export function per(per: Exclude<FastAuthPer, boolean>): FastAuthPerWrapper {
+  return {
+    type: "per",
+    value: per,
+  };
+}
+
+/**
+ * 角色包装
+ * @param role
+ * @returns
+ */
+export function role(role: Exclude<FastAuthPer, boolean>): FastAuthPerWrapper {
+  return {
+    type: "role",
+    value: role,
+  };
 }
 
 /**
  * 鉴定权限
  * @param needs 需要的权限
  * @returns 是否拥有权限
- * @example per("admin") // 是否拥有 admin 权限
- * @example per("admin", "user") // 是否拥有 admin 和 user 权限
- * @example per("|", "user", "admin") // 是否拥有 user 或 admin 权限
- * @example per("!", "user", "admin") // 是否没有 user 和 admin 权限
- * @example per("|", ["user", "admin"], "all") // 是否 (同时拥有 user 和 admin 权限) 或 具有 all 权限
+ * @description 适用 minimatch 匹配字符串
+ * @example auth("admin") // 是否拥有 admin 权限
+ * @example auth("*") // 是否拥有 任意 权限
+ * @example auth("admin", "user") // 是否拥有 admin 和 user 权限
+ * @example auth(role("admin"), "user") // 是否拥有 admin 角色 和 user 权限
+ * @example auth("|", "user", "admin") // 是否拥有 user 或 admin 权限
+ * @example auth("!", "user", "admin") // 是否没有 user 和 admin 权限
+ * @example auth("|", ["user", "admin"], "all") // 是否 (同时拥有 user 和 admin 权限) 或 具有 all 权限
  */
-export function per(
+export function auth(
   ...needs:
-    | MaybeRefOrGetter<FsAuthMeta>[]
+    | MaybeRefOrGetter<FastAuthBase>[]
     | [
-        MaybeRefOrGetter<LiteralUnion<"!" | "|", FsAuthPer>>,
-        ...MaybeRefOrGetter<FsAuthMeta>[]
+        MaybeRefOrGetter<LiteralUnion<"!" | "|", FastAuthPer>>,
+        ...MaybeRefOrGetter<FastAuthBase>[]
       ]
 ) {
-  const user = useUser();
-  const hasRef = computed(() => [
-    !!user.value,
-    ...get(user.value, "permissions"),
+  const { status, roles, permissions } = useAuth();
+  const _has = computed(() => [
+    status.value.authed ?? false,
+    ...roles.value,
+    ...permissions.value,
   ]);
-  const needsRef = computed(() => needs.map((need) => toRef(need).value));
-  return computed(() => have(hasRef.value, needsRef.value as FsAuthMeta));
+  const _needs = computed(() => needs.map((need) => toValue(need)));
+  return computed(() => have(_has.value, _needs.value as FastAuthBase));
 }
 
 /**
  * 鉴定权限
  * @param needs 需要的权限
  * @returns 是否拥有权限
- * @example per("admin") // 是否拥有 admin 权限
- * @example per("admin", "user") // 是否拥有 admin 和 user 权限
- * @example per("|", "user", "admin") // 是否拥有 user 或 admin 权限
- * @example per("!", "user", "admin") // 是否没有 user 和 admin 权限
- * @example per("|", ["user", "admin"], "all") // 是否 (同时拥有 user 和 admin 权限) 或 具有 all 权限
+ * @description 适用 minimatch 匹配字符串
+ * @example auth("admin") // 是否拥有 admin 权限
+ * @example auth("*") // 是否拥有 任意 权限
+ * @example auth("admin", "user") // 是否拥有 admin 和 user 权限
+ * @example auth(role("admin"), "user") // 是否拥有 admin 角色 和 user 权限
+ * @example auth("|", "user", "admin") // 是否拥有 user 或 admin 权限
+ * @example auth("!", "user", "admin") // 是否没有 user 和 admin 权限
+ * @example auth("|", ["user", "admin"], "all") // 是否 (同时拥有 user 和 admin 权限) 或 具有 all 权限
  */
-export function $per(
+export function $auth(
   ...needs:
-    | FsAuthMeta[]
-    | [LiteralUnion<"!" | "|", FsAuthPer> | FsAuthMeta, ...FsAuthMeta[]]
+    | FastAuthBase[]
+    | [LiteralUnion<"!" | "|", FastAuthPer> | FastAuthBase, ...FastAuthBase[]]
 ): boolean {
-  const user = useUser();
-  const has = [Boolean(user.value), ...get(user.value, "permissions")];
-  return have(has, needs as FsAuthMeta);
-}
-
-/**
- * 鉴定角色
- * @param needs 需要的角色
- * @returns 是否拥有角色
- * @example per("admin") // 是否拥有 admin 角色
- * @example per("admin", "user") // 是否拥有 admin 和 user 角色
- * @example per("|", "user", "admin") // 是否拥有 user 或 admin 角色
- * @example per("!", "user", "admin") // 是否没有 user 和 admin 角色
- * @example per("|", ["user", "admin"], "all") // 是否 (同时拥有 user 和 admin 角色) 或 具有 all 角色
- */
-export function role(
-  ...needs:
-    | MaybeRefOrGetter<FsAuthMeta>[]
-    | [
-        MaybeRefOrGetter<LiteralUnion<"!" | "|", FsAuthPer>>,
-        ...MaybeRefOrGetter<FsAuthMeta>[]
-      ]
-) {
-  const user = useUser();
-  const hasRef = computed(() => [!!user.value, ...get(user.value, "roles")]);
-  const needsRef = computed(() => needs.map((need) => toRef(need).value));
-  return computed(() => have(hasRef.value, needsRef.value as FsAuthMeta));
-}
-
-/**
- * 鉴定角色
- * @param needs 需要的角色
- * @returns 是否拥有角色
- * @example per("admin") // 是否拥有 admin 角色
- * @example per("admin", "user") // 是否拥有 admin 和 user 角色
- * @example per("|", "user", "admin") // 是否拥有 user 或 admin 角色
- * @example per("!", "user", "admin") // 是否没有 user 和 admin 角色
- * @example per("|", ["user", "admin"], "all") // 是否 (同时拥有 user 和 admin 角色) 或 具有 all 角色
- */
-export function $role(
-  ...needs:
-    | FsAuthMeta[]
-    | [LiteralUnion<"!" | "|", FsAuthPer> | FsAuthMeta, ...FsAuthMeta[]]
-): boolean {
-  const user = useUser();
-  const has = [Boolean(user.value), ...get(user.value, "roles")];
-  return have(has, needs as FsAuthMeta);
+  const { status, roles, permissions } = useAuth();
+  const _has = [
+    status.value.authed ?? false,
+    ...roles.value,
+    ...permissions.value,
+  ];
+  const _needs = needs.map((need) => toValue(need));
+  return have(_has, _needs as FastAuthBase);
 }

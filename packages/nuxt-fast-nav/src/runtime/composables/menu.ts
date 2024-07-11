@@ -5,6 +5,7 @@ import {
   useNuxtApp,
 } from "#imports";
 import { extendRef, reactify } from "@ucstu/nuxt-fast-utils/exports";
+import { cloneDeep } from "lodash-es";
 import type {
   FastNavMenu,
   FastNavMenuFilled,
@@ -14,7 +15,8 @@ import { addPageToMenus, fillMenusRoute, sortMenus } from "../utils";
 import { useNavPages } from "./page";
 
 export function getNavMenus(nuxtApp = useNuxtApp()) {
-  const result = shallowRef(Array<FastNavMenu | FastNavMenuFilled>());
+  const result = shallowRef<Array<FastNavMenu | FastNavMenuFilled>>([]);
+
   nuxtApp.hooks.callHookWith(
     (hooks, args) => {
       hooks.forEach((hook) => hook(...args));
@@ -22,6 +24,7 @@ export function getNavMenus(nuxtApp = useNuxtApp()) {
     "fast-nav:get-menus",
     result
   );
+
   return result.value;
 }
 
@@ -30,38 +33,47 @@ export function getNavMenu(
   parent: string = "",
   nuxtApp = useNuxtApp()
 ): FastNavMenuFilled {
-  const result = shallowRef<FastNavMenuFilled>(menu as FastNavMenuFilled);
+  const result = shallowRef<FastNavMenuFilled>(
+    cloneDeep(menu) as FastNavMenuFilled
+  );
+
   nuxtApp.hooks.callHookWith(
     (hooks, args) => {
       hooks.forEach((hook) => hook(...args));
     },
     "fast-nav:get-menu",
     menu,
-    parent,
     result
   );
+
   return {
     ...result.value,
+    parent,
     children:
       menu.children?.map((item) =>
         "name" in item
           ? getNavMenu(
               item as FastNavMenu,
-              `${parent ? `${parent}.` : ""}${menu.name}`
+              `${parent ? `${parent}.` : ""}${menu.name}`,
+              nuxtApp
             )
           : item
       ) ?? [],
   };
 }
 
-export const useNavMenus = createNuxtGlobalState(() => {
-  const pages = useNavPages();
+export const useNavMenus = createNuxtGlobalState((nuxtApp = useNuxtApp()) => {
+  const pages = useNavPages(nuxtApp);
 
   const result = computed(() => {
-    const result = getNavMenu({
-      name: "$root",
-      children: getNavMenus(),
-    } as FastNavMenu);
+    const result = getNavMenu(
+      {
+        name: "$root",
+        children: getNavMenus(nuxtApp),
+      } as FastNavMenu,
+      "",
+      nuxtApp
+    );
     pages.value.forEach((page) => addPageToMenus(page, result));
     fillMenusRoute(result, pages.value);
     sortMenus(result);

@@ -13,7 +13,7 @@ import { camelCase, upperFirst } from "lodash-es";
 import { configKey, defaults, initModule, name, version } from "./config";
 import type { ModuleOptions } from "./runtime/types";
 
-export type * from "./runtime/types";
+export type * from "./runtime/types/module";
 
 export default defineNuxtModule<ModuleOptions>({
   meta: {

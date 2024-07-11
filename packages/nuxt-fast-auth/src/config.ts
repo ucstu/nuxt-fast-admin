@@ -1,5 +1,4 @@
 import type { Nuxt } from "@nuxt/schema";
-import { name, version } from "../package.json";
 import type {
   ModuleConfig,
   ModuleConfigDefaults,
@@ -7,39 +6,38 @@ import type {
   ModuleOptionsDefaults,
 } from "./runtime/types";
 
-export { name, version };
+export { name, version } from "../package.json";
 
-export const configKey = "fastNav";
+export const configKey = "fastAuth";
 
 export const defaults: ModuleOptionsDefaults = {
-  check: {
-    parent: true,
-  },
+  provider: "local",
 };
 
 export const configs: ModuleConfigDefaults = {
-  menus: [],
-  menu: {
-    icon: "material-symbols:lists",
-    show: false,
-    disabled: false,
-    order: 0,
+  provider: {
+    refreshOnWindowFocus: true,
+    refreshTokenExpires: 256 * 24 * 60 * 60 * 1000,
+    tokenExpires: 256 * 24 * 60 * 60 * 1000,
+    tokenRefresh: 5 * 60 * 1000,
+  },
+  session: {
+    refreshOnWindowFocus: false,
+    refreshPeriodically: 0,
   },
   page: {
-    icon: "material-symbols:pages",
-    menu: {
-      has: true,
-      show: true,
-      disabled: false,
-      order: 0,
-    },
-    tab: {
-      has: true,
-      show: true,
+    auth: {
+      auth: false,
+      redirect: {
+        unAuth: true,
+        passed: false,
+        failed: true,
+      },
     },
   },
   home: "/",
-  keys: ["path"],
+  signIn: "/auth",
+  signOut: "/auth",
 };
 
 export function initModule(_options: ModuleOptions, nuxt: Nuxt) {

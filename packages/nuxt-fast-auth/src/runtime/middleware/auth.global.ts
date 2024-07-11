@@ -1,37 +1,23 @@
-import { abortNavigation, defineNuxtRouteMiddleware } from "#app";
-import {
-  getRouteMeta,
-  navigateTo,
-  ref,
-  useAppConfig,
-  useNuxtAppBack,
-  useRuntimeConfig,
-} from "#imports";
-import type { RequiredDeep } from "@ucstu/nuxt-fast-utils/types";
-import {
-  $per,
-  $role,
-  getUser,
-  refresh,
-  useRefreshToken,
-  useStatus,
-  useToken,
-  useUser,
-} from "../composables";
+import { abortNavigation, defineNuxtRouteMiddleware, useNuxtApp } from "#app";
+import { getNuxtConfig, navigateTo, ref, shallowRef, useAuth } from "#imports";
+import type { RequiredDeep } from "@ucstu/nuxt-fast-utils/exports";
+import { cloneDeep } from "lodash-es";
+import { configKey } from "../../config";
+import type { useRefreshAuth } from "../composables";
 import type {
-  FsAuthConfigDefaults,
-  FsAuthMeta,
-  FsAuthPage,
-  FsAuthPer,
+  FastAuthBase,
+  FastAuthMeta,
+  FastAuthPage,
+  FastAuthPageFilled,
   GuardOptions,
   PageHooks,
 } from "../types";
-import { isFsAuthPage } from "../utils";
+import { isAuthMeta } from "../utils";
 
 function callHook(
   name: keyof PageHooks,
   options: GuardOptions,
-  nuxtApp = useNuxtAppBack()
+  nuxtApp = useNuxtApp()
 ) {
   const result = ref<ReturnType<typeof navigateTo>>();
   nuxtApp.hooks.callHookWith(
@@ -43,43 +29,60 @@ function callHook(
   return result.value;
 }
 
-export default defineNuxtRouteMiddleware(async (_to, _from) => {
-  const user = useUser();
-  const token = useToken();
-  const status = useStatus();
-  const refreshToken = useRefreshToken();
-  const runtimeConfig = useRuntimeConfig();
-  const config = useAppConfig().fastAuth as FsAuthConfigDefaults;
+export function getAuthPage(page: FastAuthPage, nuxtApp = useNuxtApp()) {
+  const result = shallowRef<FastAuthPageFilled>(
+    cloneDeep(page) as FastAuthPageFilled
+  );
 
-  if (runtimeConfig.public.fastAuth.provider.type === "refresh") {
-    if (!status.value.authed && refreshToken.value) {
+  nuxtApp.hooks.callHookWith(
+    (hooks, args) => {
+      hooks.forEach((hook) => hook(...args));
+    },
+    "fast-auth:get-page",
+    page,
+    result
+  );
+
+  return result.value;
+}
+
+export default defineNuxtRouteMiddleware(async (_to, _from) => {
+  const _auth = useAuth();
+  const nuxtApp = useNuxtApp();
+  const config = getNuxtConfig(configKey);
+  const runtimeConfig = getNuxtConfig(configKey, { type: "public" });
+
+  const { user, token, getUser } = _auth;
+
+  if (runtimeConfig.provider === "refresh") {
+    const { refreshToken, refresh } = _auth as ReturnType<
+      typeof useRefreshAuth
+    >;
+    if (!token.value && refreshToken.value) {
       await refresh();
     }
   }
-  if (!user.value && status.value.authed) {
+
+  if (!user.value && token.value) {
     await getUser();
   }
 
-  const to = { ..._to, meta: getRouteMeta(_to.path) };
-  const from = { ..._from, meta: getRouteMeta(_from.path) };
+  const to = getAuthPage({ to: _to }, nuxtApp);
+  const from = getAuthPage({ to: _from }, nuxtApp);
 
-  const raw = (to.meta.auth ?? config.page.auth) as
-    | RequiredDeep<FsAuthPage>
-    | FsAuthMeta;
-  const role: FsAuthMeta = isFsAuthPage(raw) ? raw.role : raw;
-  const per: FsAuthMeta = isFsAuthPage(raw) ? raw.per : raw;
-  const mix: "|" | "&" = isFsAuthPage(raw) ? raw.mix : "|";
-  const page: Omit<FsAuthPage, "redirect"> & {
-    redirect: Required<Exclude<FsAuthPage["redirect"], undefined>>;
+  const raw = (to.auth ?? config.page.auth) as
+    | RequiredDeep<FastAuthMeta>
+    | FastAuthBase;
+  const auth: FastAuthBase = isAuthMeta(raw) ? raw.auth : raw;
+  const page: Omit<FastAuthMeta, "redirect"> & {
+    redirect: Required<Exclude<FastAuthMeta["redirect"], undefined>>;
   } = {
+    auth,
     redirect: {
-      unAuth: isFsAuthPage(raw) ? raw.redirect.unAuth : true,
-      passed: isFsAuthPage(raw) ? raw.redirect.passed : false,
-      failed: isFsAuthPage(raw) ? raw.redirect.failed : true,
+      unAuth: isAuthMeta(raw) ? raw.redirect.unAuth : true,
+      passed: isAuthMeta(raw) ? raw.redirect.passed : false,
+      failed: isAuthMeta(raw) ? raw.redirect.failed : true,
     },
-    role,
-    per,
-    mix,
   };
 
   const options: GuardOptions = {
@@ -103,7 +106,7 @@ export default defineNuxtRouteMiddleware(async (_to, _from) => {
       // 如果有重定向
       if (page.redirect.unAuth) {
         return navigateTo(
-          page.redirect.unAuth === true ? config.signIn : page.redirect.unAuth,
+          page.redirect.unAuth === true ? config.signIn : page.redirect.unAuth
         );
       }
       // 如果已认证
@@ -121,7 +124,7 @@ export default defineNuxtRouteMiddleware(async (_to, _from) => {
         // 如果有重定向
         if (page.redirect.failed) {
           return navigateTo(
-            page.redirect.failed === true ? config.home : page.redirect.failed,
+            page.redirect.failed === true ? config.home : page.redirect.failed
           );
         }
         return abortNavigation();
@@ -136,7 +139,7 @@ export default defineNuxtRouteMiddleware(async (_to, _from) => {
         // 如果有重定向
         if (page.redirect.passed) {
           return navigateTo(
-            page.redirect.passed === true ? config.home : page.redirect.passed,
+            page.redirect.passed === true ? config.home : page.redirect.passed
           );
         }
       }

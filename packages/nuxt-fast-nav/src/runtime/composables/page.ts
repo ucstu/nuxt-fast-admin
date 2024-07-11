@@ -1,16 +1,21 @@
 import {
-  computed,
   createNuxtGlobalState,
   shallowRef,
   useNuxtApp,
   useRouter,
 } from "#imports";
-import { extendRef, reactify } from "@ucstu/nuxt-fast-utils/exports";
+import {
+  computedEager,
+  extendRef,
+  reactify,
+} from "@ucstu/nuxt-fast-utils/exports";
+import { cloneDeep } from "lodash-es";
 import type { FastNavPage, FastNavPageFilled } from "../types";
 import { toEqual } from "../utils/basic";
 
 export function getNavPages(nuxtApp = useNuxtApp()) {
-  const result = shallowRef(Array<FastNavPage | FastNavPageFilled>());
+  const result = shallowRef<Array<FastNavPage | FastNavPageFilled>>([]);
+
   nuxtApp.hooks.callHookWith(
     (hooks, args) => {
       hooks.forEach((hook) => hook(...args));
@@ -18,11 +23,15 @@ export function getNavPages(nuxtApp = useNuxtApp()) {
     "fast-nav:get-pages",
     result
   );
+
   return result.value;
 }
 
 export function getNavPage(page: FastNavPage, nuxtApp = useNuxtApp()) {
-  const result = shallowRef<FastNavPageFilled>(page as FastNavPageFilled);
+  const result = shallowRef<FastNavPageFilled>(
+    cloneDeep(page) as FastNavPageFilled
+  );
+
   nuxtApp.hooks.callHookWith(
     (hooks, args) => {
       hooks.forEach((hook) => hook(...args));
@@ -31,14 +40,14 @@ export function getNavPage(page: FastNavPage, nuxtApp = useNuxtApp()) {
     page,
     result
   );
+
   return result.value;
 }
 
-export const useNavPages = createNuxtGlobalState(() => {
-  const nuxtApp = useNuxtApp();
+export const useNavPages = createNuxtGlobalState((nuxtApp = useNuxtApp()) => {
   const { currentRoute } = useRouter();
 
-  const result = computed(() =>
+  const result = computedEager(() =>
     getNavPages(nuxtApp)
       .map((page) => getNavPage(page, nuxtApp))
       .filter((page) => page !== undefined)
@@ -50,7 +59,7 @@ export const useNavPages = createNuxtGlobalState(() => {
    * @returns 页面
    */
   function getPage(to: FastNavPageFilled["to"] = currentRoute.value) {
-    return result.value.find((page) => toEqual(page.to, to));
+    return result.value.find((page) => toEqual(page.to, to, nuxtApp));
   }
 
   const usePage = reactify(getPage);

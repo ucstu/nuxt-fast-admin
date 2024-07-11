@@ -1,14 +1,9 @@
 import type { ResolvedAppConfig } from "#build/types/app.config";
-import type {
-  RouteLocationAsPathGeneric,
-  RouteLocationAsRelativeGeneric,
-} from "#vue-router";
+import type { RouteLocationRaw } from "#vue-router";
 import type {
   LiteralUnion,
   OverrideProperties,
   RequiredDeep,
-  SetOptional,
-  SetRequired,
 } from "@ucstu/nuxt-fast-utils/exports";
 
 export interface FastNavOptions {}
@@ -16,10 +11,7 @@ export interface FastNavOptions {}
 export interface FastNavMenuKeys {}
 
 export interface FastNavExtra {
-  to: SetRequired<
-    RouteLocationAsRelativeGeneric | RouteLocationAsPathGeneric,
-    "path"
-  >;
+  to?: RouteLocationRaw;
 }
 
 type KeysDeep<
@@ -130,7 +122,10 @@ interface MenuMetaParent {
 }
 
 // #region 页面
-export interface FastNavPage extends BaseMeta, FastNavExtra {
+/**
+ * 导航页面
+ */
+export interface FastNavPage extends BaseMeta, Required<FastNavExtra> {
   /**
    * 页面类型
    */
@@ -145,37 +140,40 @@ export interface FastNavPage extends BaseMeta, FastNavExtra {
   tab?: TabMeta;
 }
 
-export type FastNavPageFilled = RequiredDeep<
-  Omit<FastNavPage, keyof FastNavExtra>
-> &
-  FastNavExtra;
+/**
+ * 导航页面（已填充）
+ */
+export type FastNavPageFilled = RequiredDeep<Omit<FastNavPage, keyof FastNavExtra>> &
+  Required<FastNavExtra>;
 // #endregion
 
 // #region 菜单
+/**
+ * 导航菜单
+ */
 export interface FastNavMenu<T extends object = object, N extends keyof T = keyof T>
   extends Omit<MenuMeta, "has">,
-    SetOptional<FastNavExtra, "to"> {
+    FastNavExtra {
   /**
    * 唯一名称
    */
   name: LiteralUnion<N, string>;
-  /**
-   * 菜单类型
-   */
-  type?: LiteralUnion<"menu", string>;
   /**
    * 子项目
    */
   children?: Array<T[N] extends object ? FastNavMenu<T[N]> : FastNavMenu>;
 }
 
+/**
+ * 导航菜单（已填充）
+ */
 export type FastNavMenuFilled = OverrideProperties<
   RequiredDeep<Omit<FastNavMenu, keyof FastNavExtra>>,
   {
     children: Array<FastNavMenuFilled | FastNavPageFilled>;
   }
 > &
-  SetOptional<FastNavExtra, "to"> & {
+  FastNavExtra & {
     /**
      * 父级菜单
      */
@@ -183,9 +181,11 @@ export type FastNavMenuFilled = OverrideProperties<
   };
 // #endregion
 
-
 // #region 历史
-export interface FastNavHistory extends FastNavExtra {
+/**
+ * 导航历史
+ */
+export interface FastNavHistory extends Required<FastNavExtra> {
   /**
    * 元数据
    */
@@ -197,7 +197,11 @@ export interface FastNavHistory extends FastNavExtra {
   };
 }
 
+/**
+ * 导航历史（已填充）
+ */
 export type FastNavHistoryFilled = RequiredDeep<
   Omit<FastNavHistory, keyof FastNavExtra>
-> & FastNavExtra;
+> &
+  Required<FastNavExtra>;
 // #endregion

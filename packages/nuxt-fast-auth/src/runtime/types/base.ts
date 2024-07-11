@@ -1,68 +1,94 @@
 import type { RouteLocationRaw } from "#vue-router";
-import type { LiteralUnion } from "@ucstu/nuxt-fast-utils/types";
+import type {
+  LiteralUnion,
+  RequiredDeep,
+} from "@ucstu/nuxt-fast-utils/exports";
 
-export interface FsAuthOptions {}
+export interface FastAuthOptions {}
+
+export interface FastAuthExtra {
+  to?: RouteLocationRaw;
+}
+
+/**
+ * 鉴权令牌
+ */
+export interface FastAuthToken {
+  /**
+   * 值
+   */
+  value: string;
+  /**
+   * 创建时间
+   */
+  create: number;
+  /**
+   * 过期时间
+   */
+  expires?: number;
+}
 
 /**
  * 鉴权权限
  */
-export type FsAuthPer = string | number | bigint | boolean;
+export type FastAuthPer = string | number | bigint | boolean;
 
 /**
- * 鉴权元数据
- * - `string` 权限
- * - `number` 权限
- * - `bigint` 权限
- * - `boolean` 权限
+ *  鉴权权限包装器
+ */
+export interface FastAuthPerWrapper {
+  type: "per" | "role";
+  value: Exclude<FastAuthPer, boolean>;
+}
+
+/**
+ * 鉴权元数据（基础）
+ * - `FastAuthPer` 权限
+ * - `FastAuthPerWrapper` 权限包装器
  * - `FsAuthMeta[]` 包含所有
  * - `["|", ...FsAuthMeta[]]` 包含任一
- * - `["!", FsAuthMeta]` 不包含
+ * - `["!", ...FsAuthMeta[]]` 不包含
  * @param D 递归深度 (默认为 10)
  * @param A 递归数组 (默认为 [])
  * @description
  * - 注意："|" 和 "!" 有特殊含义，不可作为权限名称
- * - 如不得已，可添加转义字符，如 "\|" 和 "\!"
  * @example
  * ```ts
  * // 权限
  * "admin"
  * // 包含所有
  * ["admin", "user"]
+ * // 包含所有(包装器)
+ * [role("admin"), "user"]
  * // 包含任一
  * ["|", "admin", "user"]
  * // 不包含
  * ["!", "admin", "user"]
  * ```
  */
-export type FsAuthMeta<
+export type FastAuthBase<
   D extends number = 10,
-  A extends number[] = [],
+  A extends number[] = []
 > = A["length"] extends D
   ? never
   :
-      | FsAuthPer
-      | FsAuthMeta<D, [0, ...A]>[]
-      | [LiteralUnion<"!" | "|", FsAuthPer>, ...FsAuthMeta<D, [0, ...A]>[]];
+      | FastAuthPer
+      | FastAuthPerWrapper
+      | FastAuthBase<D, [0, ...A]>[]
+      | [
+          LiteralUnion<"!" | "|", FastAuthPer> | FastAuthPerWrapper,
+          ...FastAuthBase<D, [0, ...A]>[]
+        ];
 
 /**
- * 页面鉴权元数据
+ * 鉴权元数据
  */
-export interface FsAuthPage {
-  /**
-   * 需要的角色
-   * @default false
-   */
-  role?: FsAuthMeta;
+export interface FastAuthMeta {
   /**
    * 需要的权限
    * @default false
    */
-  per?: FsAuthMeta;
-  /**
-   * 角色权限混合逻辑
-   * @default "|"
-   */
-  mix?: "|" | "&";
+  auth?: FastAuthBase;
   /**
    * 重定向配置
    */
@@ -91,7 +117,7 @@ export interface FsAuthPage {
 /**
  * 认证表单
  */
-export interface FsAuthForm {
+export interface FastAuthForm {
   username?: string;
   password?: string;
   [key: string]: any;
@@ -100,6 +126,21 @@ export interface FsAuthForm {
 /**
  * 认证用户
  */
-export interface FsAuthUser {
+export interface FastAuthUser {
   [key: string]: any;
 }
+
+/**
+ * 鉴权页面
+ */
+export interface FastAuthPage extends Required<FastAuthExtra> {
+  auth?: FastAuthMeta | FastAuthBase;
+}
+
+/**
+ * 鉴权页面（已填充）
+ */
+export type FastAuthPageFilled = RequiredDeep<
+  Omit<FastAuthPage, keyof FastAuthExtra>
+> &
+  Required<FastAuthExtra>;

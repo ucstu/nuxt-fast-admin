@@ -81,7 +81,8 @@ export function fillMenusRoute(
   const page = pages.find(
     (page) =>
       menu.parent === page.menu.parent &&
-      menu.name === page.to.path.split("/").pop()
+      menu.name ===
+        (typeof page.to === "string" ? page.to : page.to.path)?.split("/").pop()
   );
   menu.to = page?.to;
   menu.children?.forEach((item) => {

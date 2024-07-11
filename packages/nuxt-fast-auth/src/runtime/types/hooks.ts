@@ -1,13 +1,18 @@
-import type { Ref, navigateTo } from "#imports";
+import type { navigateTo } from "#imports";
 import type { RouteLocationNormalized } from "#vue-router";
 import type { HookResult } from "@nuxt/schema";
-import type { ReadonlyDeep } from "@ucstu/nuxt-fast-utils/types";
 import type {
-  FsAuthForm,
-  FsAuthOptions,
-  FsAuthPage,
-  FsAuthPer,
-  FsAuthUser,
+  ReadonlyDeep,
+  RemovableRef,
+} from "@ucstu/nuxt-fast-utils/exports";
+import type { Ref, ShallowRef } from "vue-demi";
+import type {
+  FastAuthForm,
+  FastAuthMeta,
+  FastAuthOptions,
+  FastAuthPer,
+  FastAuthToken,
+  FastAuthUser,
 } from "./base";
 
 export interface BaseAuthHooks {
@@ -15,11 +20,7 @@ export interface BaseAuthHooks {
    * 注册
    * @param form 注册表单
    */
-  "fast-auth:sign-up"(form: FsAuthForm): HookResult;
-  /**
-   * 注销
-   */
-  "fast-auth:sign-out"(): HookResult;
+  "fast-auth:sign-up"(form: FastAuthForm): HookResult;
   /**
    * 获取用户
    * @param token 令牌
@@ -27,7 +28,7 @@ export interface BaseAuthHooks {
    */
   "fast-auth:get-user"(
     token: string | undefined | null,
-    result: Ref<FsAuthUser | undefined | null>,
+    result: Ref<FastAuthUser | undefined>
   ): HookResult;
   /**
    * 获取角色列表
@@ -35,8 +36,8 @@ export interface BaseAuthHooks {
    * @param result 角色列表
    */
   "fast-auth:get-roles"(
-    user: ReadonlyDeep<FsAuthUser> | undefined | null,
-    result: Ref<Exclude<FsAuthPer, boolean>[]>,
+    user: ReadonlyDeep<FastAuthUser> | undefined | null,
+    result: ShallowRef<Array<FastAuthPer>>
   ): void;
   /**
    * 获取权限列表
@@ -44,8 +45,8 @@ export interface BaseAuthHooks {
    * @param result 权限列表
    */
   "fast-auth:get-permissions"(
-    user: ReadonlyDeep<FsAuthUser> | undefined | null,
-    result: Ref<Exclude<FsAuthPer, boolean>[]>,
+    user: ReadonlyDeep<FastAuthUser> | undefined | null,
+    result: ShallowRef<Array<FastAuthPer>>
   ): void;
 }
 
@@ -53,7 +54,7 @@ export interface SignInResult {
   /**
    * 用户信息
    */
-  user?: FsAuthUser;
+  user?: FastAuthUser;
 }
 
 export interface LocalSignInResult extends SignInResult {
@@ -77,8 +78,15 @@ export interface LocalAuthHooks extends BaseAuthHooks {
    * @param result 令牌 | 登录结果
    */
   "fast-auth:sign-in"(
-    form: FsAuthForm,
-    result: Ref<string | LocalSignInResult | undefined>,
+    form: FastAuthForm,
+    result: ShallowRef<string | LocalSignInResult | undefined>
+  ): HookResult;
+  /**
+   * 注销
+   */
+  "fast-auth:sign-out"(
+    user: Ref<FastAuthUser | undefined>,
+    token: RemovableRef<FastAuthToken | undefined>
   ): HookResult;
 }
 
@@ -103,8 +111,16 @@ export interface RefreshAuthHooks extends BaseAuthHooks {
    * @param result 登录结果
    */
   "fast-auth:sign-in"(
-    form: FsAuthForm,
-    result: Ref<RefreshSignInResult | undefined>,
+    form: FastAuthForm,
+    result: ShallowRef<RefreshSignInResult | undefined>
+  ): HookResult;
+  /**
+   * 注销
+   */
+  "fast-auth:sign-out"(
+    user: Ref<FastAuthUser | undefined>,
+    token: RemovableRef<FastAuthToken | undefined>,
+    refreshToken: RemovableRef<FastAuthToken | undefined>
   ): HookResult;
   /**
    * 刷新令牌
@@ -113,22 +129,22 @@ export interface RefreshAuthHooks extends BaseAuthHooks {
    * @param result 刷新结果
    */
   "fast-auth:refresh-token"?(
-    refreshToken: string | undefined | null,
     token: string | undefined | null,
-    result: Ref<RefreshSignInResult | undefined>,
+    refreshToken: string | undefined | null,
+    result: ShallowRef<RefreshSignInResult | undefined>
   ): HookResult;
 }
 
-export type AuthHooks = FsAuthOptions extends {
-  provider: { type: string };
+export type AuthHooks = FastAuthOptions extends {
+  provider: string;
 }
-  ? FsAuthOptions["provider"]["type"] extends "local"
+  ? FastAuthOptions["provider"] extends "local"
     ? LocalAuthHooks
-    : FsAuthOptions["provider"]["type"] extends "refresh"
-      ? RefreshAuthHooks
-      : FsAuthOptions["provider"]["type"] extends "base"
-        ? BaseAuthHooks
-        : BaseAuthHooks & LocalAuthHooks & RefreshAuthHooks
+    : FastAuthOptions["provider"] extends "refresh"
+    ? RefreshAuthHooks
+    : FastAuthOptions["provider"] extends "base"
+    ? BaseAuthHooks
+    : BaseAuthHooks & LocalAuthHooks & RefreshAuthHooks
   : BaseAuthHooks & LocalAuthHooks & RefreshAuthHooks;
 
 /**
@@ -146,11 +162,11 @@ export interface GuardOptions {
   /**
    * 用户信息
    */
-  user: FsAuthUser | undefined | null;
+  user: FastAuthUser | undefined | null;
   /**
    * 页面鉴权元数据
    */
-  page: FsAuthPage;
+  page: FastAuthMeta;
 }
 
 export interface PageHooks {
@@ -164,7 +180,7 @@ export interface PageHooks {
    */
   "fast-auth:before-auth"(
     options: GuardOptions,
-    result: Ref<ReturnType<typeof navigateTo> | undefined>,
+    result: ShallowRef<ReturnType<typeof navigateTo> | undefined>
   ): void;
   /**
    * 无需认证
@@ -176,7 +192,7 @@ export interface PageHooks {
    */
   "fast-auth:no-auth"(
     options: GuardOptions,
-    result: Ref<ReturnType<typeof navigateTo> | undefined>,
+    result: ShallowRef<ReturnType<typeof navigateTo> | undefined>
   ): void;
   /**
    * 需要认证但未认证
@@ -188,7 +204,7 @@ export interface PageHooks {
    */
   "fast-auth:un-auth"(
     options: GuardOptions,
-    result: Ref<ReturnType<typeof navigateTo> | undefined>,
+    result: ShallowRef<ReturnType<typeof navigateTo> | undefined>
   ): void;
   /**
    * 需要鉴权且已通过
@@ -200,7 +216,7 @@ export interface PageHooks {
    */
   "fast-auth:passed"(
     options: GuardOptions,
-    result: Ref<ReturnType<typeof navigateTo> | undefined>,
+    result: ShallowRef<ReturnType<typeof navigateTo> | undefined>
   ): void;
   /**
    * 需要鉴权但未通过
@@ -212,7 +228,7 @@ export interface PageHooks {
    */
   "fast-auth:failed"(
     options: GuardOptions,
-    result: Ref<ReturnType<typeof navigateTo> | undefined>,
+    result: ShallowRef<ReturnType<typeof navigateTo> | undefined>
   ): void;
   /**
    * 后置认证钩子
@@ -224,6 +240,6 @@ export interface PageHooks {
    */
   "fast-auth:after-auth"(
     options: GuardOptions,
-    result: Ref<ReturnType<typeof navigateTo> | undefined>,
+    result: ShallowRef<ReturnType<typeof navigateTo> | undefined>
   ): void;
 }

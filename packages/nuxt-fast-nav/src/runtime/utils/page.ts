@@ -1,28 +1,23 @@
 import { getNuxtConfig } from "#imports";
-import type { RouteRecordRaw } from "#vue-router";
+import type { RouteRecordNormalized } from "#vue-router";
 import { configKey } from "../../config";
-import type { FastNavExtra, FastNavPage, FastNavPageFilled } from "../types";
+import type { FastNavPage, FastNavPageFilled } from "../types";
 
-interface Options extends FastNavExtra {
-  children?: Array<RouteRecordRaw>;
-}
-
-function getPageParent(options: Options) {
+function getPageParent(route: RouteRecordNormalized) {
   return (
-    options.to.path.replace("/", "").split("/").slice(0, -1).join(".") ||
-    "$root"
+    route.path.replace("/", "").split("/").slice(0, -1).join(".") || "$root"
   );
 }
 
 export function getPageFilled(
   page: FastNavPage,
-  options: Options
+  route: RouteRecordNormalized
 ): FastNavPageFilled {
   const config = getNuxtConfig(configKey);
 
-  const { to, children } = options;
+  const { name, path, children } = route;
   const type = page.type ?? "static";
-  const title = page.title ?? to.path;
+  const title = page.title ?? name?.toString() ?? path;
   const icon = page.icon ?? config.page.icon;
   const desc = page.desc ?? "";
 
@@ -39,10 +34,10 @@ export function getPageFilled(
       has: page.menu?.has ?? config.page.menu.has,
       show:
         page.menu?.show ??
-        ((children?.length ?? 0) === 0 && !/\/:.*?\(\)/.test(to.path))
+        ((children?.length ?? 0) === 0 && !/\/:.*?\(\)/.test(path))
           ? config.page.menu.show
           : false,
-      parent: encodeURI(page.menu?.parent ?? getPageParent(options)),
+      parent: encodeURI(page.menu?.parent ?? getPageParent(route)),
       disabled: page.menu?.disabled ?? config.page.menu.disabled,
       order: page.menu?.order ?? config.page.menu.order,
     },
@@ -54,6 +49,8 @@ export function getPageFilled(
       has: page.tab?.has ?? config.page.tab.has,
       show: page.tab?.show ?? config.page.tab.show,
     },
-    to,
+    to: {
+      path: route.path,
+    },
   };
 }

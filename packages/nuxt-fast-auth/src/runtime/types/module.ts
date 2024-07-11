@@ -1,28 +1,14 @@
-import type { RequiredDeep } from "@ucstu/nuxt-fast-utils/types";
+import type { RequiredDeep } from "@ucstu/nuxt-fast-utils/exports";
+import type { ShallowRef } from "vue-demi";
+import type { FastAuthPage, FastAuthPageFilled } from "./base";
 import type { AuthHooks, PageHooks } from "./hooks";
-
-interface LocalProvider {
-  /**
-   * 认证提供者
-   * @description 本地认证提供者
-   * @default "local"
-   */
-  type: "local";
-}
-
-interface RefreshProvider {
-  /**
-   * 认证提供者
-   * @description 刷新令牌认证提供者
-   */
-  type: "refresh";
-}
 
 export interface ModuleOptions {
   /**
-   * 认证提供者配置
+   * 认证提供者
+   * @default "local"
    */
-  provider?: LocalProvider | RefreshProvider;
+  provider?: "local" | "refresh";
 }
 
 export type ModuleOptionsDefaults = RequiredDeep<ModuleOptions>;
@@ -31,4 +17,14 @@ export interface ModulePublicRuntimeConfig {
   fastAuth: ModuleOptionsDefaults;
 }
 
-export interface ModuleRuntimeHooks extends AuthHooks, PageHooks {}
+export interface ModuleRuntimeHooks extends AuthHooks, PageHooks {
+  /**
+   * 获取页面信息
+   * @param input 输入
+   * @param result 结果
+   */
+  "fast-auth:get-page": (
+    input: FastAuthPage | FastAuthPageFilled,
+    result: ShallowRef<FastAuthPageFilled | undefined>
+  ) => void;
+}

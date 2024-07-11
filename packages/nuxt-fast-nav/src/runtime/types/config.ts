@@ -59,7 +59,7 @@ export interface ModuleConfig {
   /**
    * 历史比较字段
    * @description 用于判断历史记录是否相等
-   * @default ["hash", "name", "params", "path", "query"]
+   * @default ["path"]
    */
   keys?: Array<LiteralUnion<keyof FastNavHistory["to"], string>>;
 }

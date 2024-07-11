@@ -1,15 +1,23 @@
 import {
+  computed,
   cookieStorage,
+  getNuxtConfig,
   navigateTo,
+  ref,
   sessionCookieStorage,
-  useAppConfig,
-  useNuxtAppBack,
-  useRuntimeConfig,
+  toValue,
+  useNuxtApp,
+  useNuxtConfig,
+  useNuxtStorage,
   useState,
-  useStorage,
+  type MaybeRefOrGetter,
 } from "#imports";
-import type { RouteLocationRaw } from "#vue-router";
-import type { FsAuthConfigDefaults, FsAuthUser } from "../types";
+import {
+  createGlobalState,
+  watchImmediate,
+} from "@ucstu/nuxt-fast-utils/exports";
+import { configKey } from "../../config";
+import type { FastAuthPer, FastAuthPerWrapper, FastAuthToken, FastAuthUser } from "../types";
 
 /**
  * 认证状态
@@ -37,59 +45,6 @@ export interface AuthStatus {
    */
   authed?: boolean;
 }
-
-/**
- * 使用记住登录
- * @returns 记住登录
- */
-export function useRemember() {
-  return useStorage<boolean>("fast-auth:remember", false);
-}
-
-/**
- * 使用用户
- * @description 使用用户信息
- * @returns 用户
- */
-export function useUser() {
-  return useState<FsAuthUser | undefined | null>(
-    "fast-auth:user",
-    () => undefined
-  );
-}
-
-/**
- * 使用认证状态
- * @returns 认证状态
- */
-export function useStatus() {
-  return useState<AuthStatus>("fast-auth:status", () => ({
-    signIn: false,
-    signUp: false,
-    signOut: false,
-    getUser: false,
-    authed: false,
-  }));
-}
-
-/**
- * 使用令牌
- * @returns 令牌
- */
-export function useToken() {
-  const remember = useRemember();
-  const runtimeConfig = useRuntimeConfig().public.fastUtils;
-  return useStorage<string | undefined>("fast-auth:token", undefined, () =>
-    runtimeConfig.ssr
-      ? remember.value
-        ? cookieStorage
-        : sessionCookieStorage
-      : remember.value
-      ? localStorage
-      : sessionStorage
-  );
-}
-
 /**
  * 跳转选项
  * @description 跳转选项
@@ -97,15 +52,14 @@ export function useToken() {
 export interface NavigateOptions {
   /**
    * 自动跳转
-   * @description 为 `string` 时，表示跳转到指定路由
+   * @description 为 `RouteLocationRaw` 时，表示跳转到指定路由
    * @description 为 `false` 时，表示不跳转到任何路由
    * @description 为 `true` 时，表示跳转默认路径
    * @default false
    */
-  navigate?: boolean | RouteLocationRaw;
+  navigate?: boolean | Parameters<typeof navigateTo>[0];
   /**
    * 跳转选项
-   * @default { replace: false }
    */
   navigateOptions?: Parameters<typeof navigateTo>[1];
 }
@@ -136,72 +90,124 @@ export interface SignUpOptions extends SignInOptions {
  * 退出登录选项
  */
 export interface SignOutOptions extends NavigateOptions {}
+
 /**
- * 退出登录
- * @param options 退出登录选项
+ * 获取用户权限|角色列表
+ * @param user 用户信息
+ * @param type 类型
+ * @param nuxtApp Nuxt 应用
+ * @returns 用户权限|角色列表
  */
-export async function signOut(options: SignOutOptions = {}) {
-  const user = useUser();
-  const token = useToken();
-  const status = useStatus();
-  const config = useAppConfig().fastAuth as FsAuthConfigDefaults;
-  const nuxtApp = useNuxtAppBack();
-
-  const { navigate = false } = options;
-
-  status.value.signOut = true;
-  try {
-    user.value = null;
-    token.value = null;
-    await nuxtApp.callHook("fast-auth:sign-out");
-  } catch (e) {
-    status.value.signOut = false;
-    throw e;
-  }
-  status.value.signOut = false;
-
-  if (navigate) {
-    navigateTo(
-      navigate === true ? config.signIn : navigate,
-      options.navigateOptions
-    );
-  }
-}
-/**
- * 获取用户信息
- * @param token 令牌
- */
-export async function getUser(token = useToken().value) {
-  const user = useUser();
-  const status = useStatus();
-  const nuxtApp = useNuxtAppBack();
-
-  status.value.getUser = true;
-  try {
-    await nuxtApp.callHook("fast-auth:get-user", token, user);
-  } catch (e) {
-    status.value.getUser = false;
-    throw e;
-  }
-  status.value.getUser = false;
+function getPers(
+  user: FastAuthUser | null | undefined,
+  type: "permissions" | "roles" = "permissions",
+  nuxtApp = useNuxtApp()
+) {
+  const result = ref<Array<FastAuthPer>>([]);
+  nuxtApp.hooks.callHookWith(
+    (hooks, args) => hooks.forEach((hook) => hook(...args)),
+    `fast-auth:get-${type}`,
+    user,
+    result
+  );
+  return result.value;
 }
 
 /**
  * 使用认证
  * @returns 认证
  */
-export function useAuth() {
-  const user = useUser();
-  const token = useToken();
-  const status = useStatus();
-  const remember = useRemember();
+export const useAuth = createGlobalState(
+  <S extends AuthStatus = AuthStatus>(nuxtApp = useNuxtApp()) => {
+    const config = useNuxtConfig(configKey);
+    const fastUtilsConfig = getNuxtConfig("fastUtils", { type: "public" });
 
-  return {
-    user,
-    token,
-    status,
-    remember,
-    signOut,
-    getUser,
-  };
-}
+    const _user = useState<FastAuthUser | undefined>("fast-auth:user");
+    const _remember = useNuxtStorage<boolean>("fast-auth:remember", false);
+    const _token = useNuxtStorage<FastAuthToken | undefined>(
+      "fast-auth:token",
+      undefined,
+      () =>
+        fastUtilsConfig.ssr
+          ? _remember.value
+            ? cookieStorage
+            : sessionCookieStorage
+          : _remember.value
+          ? localStorage
+          : sessionStorage
+    );
+    const _status = useState<S>(
+      "fast-auth:status",
+      () =>
+        ({
+          signIn: false,
+          signUp: false,
+          signOut: false,
+          getUser: false,
+          authed: false,
+        } as S)
+    );
+    const roles = computed(() =>
+      getPers(_user.value, "roles", nuxtApp).map(
+        (item) => ({ type: "role", value: item } as FastAuthPerWrapper)
+      )
+    );
+    const permissions = computed(() =>
+      getPers(_user.value, "permissions", nuxtApp)
+    );
+
+    watchImmediate(_user, (user) => (_status.value.authed = !!user));
+
+    /**
+     * 获取用户信息
+     * @param token 令牌
+     */
+    async function getUser(
+      token: MaybeRefOrGetter<string | undefined> = _token.value?.value
+    ) {
+      try {
+        _status.value.getUser = true;
+        await nuxtApp.callHook("fast-auth:get-user", toValue(token), _user);
+      } finally {
+        _status.value.getUser = false;
+      }
+    }
+
+    /**
+     * 退出登录
+     * @param options 退出登录选项
+     */
+    async function signOut(options: SignOutOptions = {}) {
+      const { navigate = false } = options;
+
+      try {
+        _status.value.signOut = true;
+        await nuxtApp.callHook(
+          "fast-auth:sign-out",
+          _user,
+          _token,
+          undefined as any
+        );
+        if (navigate) {
+          await navigateTo(
+            navigate === true ? config.value.signIn : navigate,
+            options.navigateOptions
+          );
+        }
+      } finally {
+        _status.value.signOut = false;
+      }
+    }
+
+    return {
+      user: _user,
+      token: _token,
+      status: _status,
+      remember: _remember,
+      signOut,
+      getUser,
+      permissions,
+      roles,
+    };
+  }
+);

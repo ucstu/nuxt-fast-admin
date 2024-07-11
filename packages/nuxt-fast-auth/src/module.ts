@@ -8,17 +8,10 @@ import {
 } from "@nuxt/kit";
 import { addModuleTypeTemplate } from "@ucstu/nuxt-fast-utils/utils";
 import { camelCase } from "lodash-es";
-import { name, version } from "../package.json";
-import type {
-  FsAuthConfig,
-  FsAuthConfigDefaults,
-  ModuleOptions,
-  ModuleOptionsDefaults,
-} from "./runtime/types";
+import { configKey, defaults, initModule, name, version } from "./config";
+import type { ModuleConfig, ModuleOptions } from "./runtime/types";
 
-const configKey = "fastAuth";
-
-export type * from "./runtime/types";
+export type * from "./runtime/types/module";
 
 export default defineNuxtModule<ModuleOptions>({
   meta: {
@@ -26,69 +19,30 @@ export default defineNuxtModule<ModuleOptions>({
     version,
     configKey,
   },
-  defaults: {
-    provider: {
-      type: "local",
-    },
-  } satisfies ModuleOptionsDefaults,
+  defaults,
   setup(_options, nuxt) {
     installModule("@ucstu/nuxt-fast-utils");
-    installModule("@ucstu/nuxt-fast-route");
 
-    const options = _options as ModuleOptionsDefaults;
-
-    const { resolve } = createResolver(import.meta.url);
-    nuxt.options.runtimeConfig.public[configKey] = options;
-
-    nuxt.options.appConfig[configKey] = {
-      provider: {
-        tokenExpires: 365 * 24 * 60 * 60 * 1000,
-        refreshTokenExpires: 365 * 24 * 60 * 60 * 1000,
-        refreshOnWindowFocus: true,
-      },
-      session: {
-        refreshPeriodically: 0,
-        refreshOnWindowFocus: false,
-      },
-      page: {
-        auth: {
-          redirect: {
-            unAuth: true,
-            passed: false,
-            failed: true,
-          },
-          role: false,
-          per: false,
-          mix: "|",
-        },
-      },
-      home: "/",
-      signIn: "/auth",
-      signOut: "/auth",
-    } satisfies FsAuthConfigDefaults;
+    const options = initModule(_options, nuxt);
 
     addModuleTypeTemplate({
       nuxt,
       name,
       options,
+      configKey,
       __dirname,
-      getContents() {
-        return `import type { FsAuthMeta, FsAuthPage } from "<%= options.self %>";
-declare module "<%= options.page %>" {
-  interface PageMeta {
-    /**
-     * 页面鉴权配置
-     */
-    auth?: FsAuthPage | FsAuthMeta;
-  }
+      getContents({ options: { moduleName } }) {
+        return `import type { FastAuthPage } from "${moduleName}";
+declare module "${resolve(
+          nuxt.options.appDir,
+          "../pages/runtime/composables"
+        )}" {
+  interface PageMeta extends Omit<FastAuthPage, "to"> {}
 }`;
       },
     });
 
-    addPlugin({
-      name: `${name}:config`,
-      src: resolve(`./runtime/plugins/config`),
-    });
+    const { resolve } = createResolver(import.meta.url);
 
     addPlugin({
       name,
@@ -99,19 +53,14 @@ declare module "<%= options.page %>" {
       from: resolve(`./runtime/composables`),
       imports: [
         {
-          name: camelCase(`use-${options.provider.type}-auth`),
+          name: camelCase(`use-${options.provider}-auth`),
           as: "useAuth",
         },
+        "$auth",
+        "auth",
         "role",
-        "$role",
         "per",
-        "$per",
       ],
-    });
-
-    addImportsSources({
-      from: resolve(`./runtime/utils`),
-      imports: ["isFsAuthPage", "isFsAuthMeta"],
     });
 
     addRouteMiddleware({
@@ -124,6 +73,6 @@ declare module "<%= options.page %>" {
 
 declare module "@nuxt/schema" {
   interface CustomAppConfig {
-    [configKey]?: FsAuthConfig;
+    [configKey]?: ModuleConfig;
   }
 }

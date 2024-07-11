@@ -1,36 +1,59 @@
 import type { RouteLocationRaw } from "#vue-router";
-import type { RequiredDeep, UnknownRecord } from "@ucstu/nuxt-fast-utils/types";
-import type { FsAuthMeta, FsAuthPage } from "./base";
+import type { RequiredDeep } from "@ucstu/nuxt-fast-utils/exports";
+import type { FastAuthBase, FastAuthMeta, FastAuthOptions } from "./base";
 
-export interface FsAuthConfig {
+interface BaseAuthProvider {
+  /**
+   * 默认令牌有效时间
+   * @description 令牌有效时间，单位为毫秒
+   * @default 256 * 24 * 60 * 60 * 1000
+   */
+  tokenExpires?: number;
+}
+
+interface LocalAuthProvider extends BaseAuthProvider {}
+
+interface RefreshAuthProvider extends BaseAuthProvider {
+  /**
+   * 刷新令牌有效时间
+   * @description 刷新令牌有效时间，单位为毫秒
+   * @default 256 * 24 * 60 * 60 * 1000
+   */
+  refreshTokenExpires?: number;
+  /**
+   * 页面聚焦时刷新令牌
+   * @description 当窗口重新获得焦点时刷新令牌
+   * @default true
+   */
+  refreshOnWindowFocus?: boolean;
+  /**
+   * 令牌刷新时间
+   * @description 在令牌过期前多久刷新令牌，单位为毫秒
+   * @default 5 * 60 * 1000
+   */
+  tokenRefresh?: number;
+}
+
+export interface ModuleConfig {
   /**
    * 认证提供者配置
    */
-  provider?: UnknownRecord & {
-    /**
-     * 默认令牌有效时间
-     * @description 令牌有效时间，单位为毫秒
-     * @default 256 * 24 * 60 * 60 * 1000
-     */
-    tokenExpires?: number;
-    /**
-     * 刷新令牌有效时间
-     * @description 刷新令牌有效时间，单位为毫秒
-     * @default 256 * 24 * 60 * 60 * 1000
-     */
-    refreshTokenExpires?: number;
-    /**
-     * 页面聚焦时刷新令牌
-     * @description 当窗口重新获得焦点时刷新令牌
-     * @default true
-     */
-    refreshOnWindowFocus?: boolean;
-  };
+  provider?: FastAuthOptions extends {
+    provider: string;
+  }
+    ? FastAuthOptions["provider"] extends "local"
+      ? LocalAuthProvider
+      : FastAuthOptions["provider"] extends "refresh"
+      ? RefreshAuthProvider
+      : FastAuthOptions["provider"] extends "base"
+      ? BaseAuthProvider
+      : BaseAuthProvider & LocalAuthProvider & RefreshAuthProvider
+    : BaseAuthProvider & LocalAuthProvider & RefreshAuthProvider;
   /**
    * 会话（用户信息）配置
    * @description 会话配置
    */
-  session?: UnknownRecord & {
+  session?: {
     /**
      * 定时刷新会话的时间间隔，单位为毫秒
      * - `0` 表示禁用定时刷新
@@ -48,15 +71,13 @@ export interface FsAuthConfig {
    * 页面配置
    * @description 页面配置
    */
-  page?: UnknownRecord & {
+  page?: {
     /**
      * 默认页面鉴权元数据
      * @default
      * ```json
      * {
-     *  "role": false,
-     *  "per": false,
-     *  "mix": "|",
+     *  "auth": false,
      *  "redirect": {
      *   "unAuth": true,
      *   "passed": false,
@@ -65,7 +86,7 @@ export interface FsAuthConfig {
      * }
      * ```
      */
-    auth?: FsAuthPage | FsAuthMeta;
+    auth?: FastAuthMeta | FastAuthBase;
   };
   /**
    * 首页路径
@@ -85,4 +106,4 @@ export interface FsAuthConfig {
   signOut?: RouteLocationRaw;
 }
 
-export type FsAuthConfigDefaults = RequiredDeep<FsAuthConfig>;
+export type ModuleConfigDefaults = RequiredDeep<ModuleConfig>;

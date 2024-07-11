@@ -1,8 +1,10 @@
-import type { RouteLocationNormalizedGeneric } from "#vue-router";
+import type {
+  RouteLocationNormalizedGeneric,
+  RouteLocationRaw,
+} from "#vue-router";
 import type { RequiredDeep } from "@ucstu/nuxt-fast-utils/exports";
 import type { ShallowRef } from "vue-demi";
 import type {
-  FastNavExtra,
   FastNavHistory,
   FastNavMenu,
   FastNavMenuFilled,
@@ -45,8 +47,9 @@ export interface ModuleRuntimeHooks {
    */
   "fast-nav:get-menu": (
     input: FastNavMenu | FastNavMenuFilled,
-    parent: string,
-    result: ShallowRef<FastNavMenuFilled | undefined>
+    result: ShallowRef<
+      Omit<FastNavMenuFilled, "children" | "parent"> | undefined
+    >
   ) => void;
   /**
    * 获取页面列表
@@ -75,13 +78,13 @@ export interface ModuleRuntimeHooks {
   ) => void;
   /**
    * 路径是否相等
-   * @param a a
-   * @param b b
+   * @param a RouteLocationRaw
+   * @param b RouteLocationRaw
    * @param result 结果
    */
   "fast-nav:to-equal": (
-    a: FastNavExtra["to"],
-    b: FastNavExtra["to"],
+    a: RouteLocationRaw | undefined,
+    b: RouteLocationRaw | undefined,
     result: ShallowRef<boolean | undefined>
   ) => void;
 }

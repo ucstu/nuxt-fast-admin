@@ -4,7 +4,7 @@ export default defineAppConfig({
   fastAuth: {
     page: {
       auth: {
-        per: true,
+        auth: true,
       },
     },
   },

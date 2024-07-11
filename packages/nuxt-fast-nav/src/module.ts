@@ -12,7 +12,7 @@ import { minimatch } from "minimatch";
 import { configKey, defaults, initModule, name, version } from "./config";
 import type { ModuleOptions } from "./runtime/types";
 
-export type * from "./runtime/types";
+export type * from "./runtime/types/module";
 
 export default defineNuxtModule<ModuleOptions>({
   meta: {
@@ -43,7 +43,7 @@ declare module "${resolve(
           nuxt.options.appDir,
           "../pages/runtime/composables"
         )}" {
-  interface PageMeta extends FastNavPage {}
+  interface PageMeta extends Omit<FastNavPage, "type" | "to"> {}
 }
 `;
       },
@@ -107,6 +107,11 @@ declare module "${resolve(
     addImportsSources({
       from: resolve("./runtime/composables"),
       imports: ["useNavMenus", "useNavPages", "useNavHistories"],
+    });
+
+    addImportsSources({
+      from: resolve("./runtime/utils"),
+      imports: ["toEqual"],
     });
   },
 });

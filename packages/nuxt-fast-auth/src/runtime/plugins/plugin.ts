@@ -1,61 +1,130 @@
-import { defineNuxtPlugin } from "#app";
-import { useAppConfig, useRuntimeConfig } from "#imports";
-import { watchImmediate } from "@ucstu/nuxt-fast-utils/exports";
-import {
-  getUser,
-  refresh,
-  useRefreshToken,
-  useRemember,
-  useStatus,
-  useToken,
-  useUser,
-} from "../composables";
-import type { FsAuthConfigDefaults } from "../types";
+import { defineNuxtPlugin, onNuxtReady } from "#app";
+import { getNuxtConfig, useAuth, useNuxtConfig, watchEffect } from "#imports";
+import { useIntervalFn, watchImmediate } from "@ucstu/nuxt-fast-utils/exports";
+import { configKey } from "../../config";
+import type { useRefreshAuth } from "../composables";
+
+function setTimeArrive(fn: () => void, time: number | string | Date) {
+  let timer: NodeJS.Timeout | undefined;
+  function start() {
+    timer = setTimeout(() => {
+      if (new Date().getTime() >= new Date(time).getTime()) {
+        clearTimeout(timer);
+        fn();
+      } else {
+        clearTimeout(timer);
+        start();
+      }
+    }, Math.min(new Date(time).getTime() - new Date().getTime(), 2147483647));
+  }
+  start();
+  return () => clearTimeout(timer);
+}
 
 export default defineNuxtPlugin({
-  dependsOn: ["@ucstu/nuxt-fast-utils"],
   async setup() {
-    const user = useUser();
-    const token = useToken();
-    const status = useStatus();
-    const remember = useRemember();
-    const refreshToken = useRefreshToken();
-    const runtimeConfig = useRuntimeConfig();
-    const config = useAppConfig().fastAuth as FsAuthConfigDefaults;
+    const auth = useAuth();
+    const config = useNuxtConfig(configKey);
+    const runtimeConfig = getNuxtConfig(configKey, { type: "public" });
 
-    watchImmediate(token, (value) => (status.value.authed = Boolean(value)));
+    const { user, token, getUser, signOut } = auth;
 
-    if (runtimeConfig.public.fastAuth.provider.type === "refresh") {
-      if (!status.value.authed && refreshToken.value) {
+    if (runtimeConfig.provider === "refresh") {
+      const { refreshToken, refresh } = auth as ReturnType<
+        typeof useRefreshAuth
+      >;
+      if (!token.value && refreshToken.value) {
         await refresh();
       }
     }
-    if (!user.value && status.value.authed) {
+
+    if (!user.value && token.value) {
       await getUser();
     }
 
-    if (import.meta.client) {
-      // 如果配置了自动定时刷新用户
-      if (config.session.refreshPeriodically) {
-        setInterval(() => {
-          if (token.value) getUser();
-        }, config.session.refreshPeriodically);
-      }
-      // 如果配置了窗口焦点时刷新用户
-      if (config.session.refreshOnWindowFocus) {
-        window.addEventListener("focus", () => {
-          if (token.value) getUser();
+    onNuxtReady(() => {
+      // #region 刷新 token
+      // 如果使用了本地模式
+      if (runtimeConfig.provider === "local") {
+        // token 过期退出登录
+        let clearTimeArrive: (() => void) | undefined;
+        watchEffect(() => {
+          clearTimeArrive?.();
+          if (!token.value) return;
+          clearTimeArrive = setTimeArrive(
+            signOut,
+            token.value.create +
+              (token.value.expires ?? config.value.provider.tokenExpires)
+          );
         });
       }
-      // 如果使用了刷新令牌
-      if (runtimeConfig.public.fastAuth.provider.type === "refresh") {
-        if (typeof remember.value === "boolean") {
-          if (remember.value && config.provider.refreshTokenExpires)
-            setTimeout(() => refresh, config.provider.refreshTokenExpires / 2);
-        } else {
-          setTimeout(() => refresh, remember.value / 2);
-        }
+
+      // 如果使用了刷新令牌模式
+      if (runtimeConfig.provider === "refresh") {
+        const { refreshToken, refresh } = auth as ReturnType<
+          typeof useRefreshAuth
+        >;
+        // refreshToken 过期退出登录
+        let clearTimeArrive: (() => void) | undefined;
+        watchEffect(() => {
+          clearTimeArrive?.();
+          if (!refreshToken.value) return;
+          clearTimeArrive = setTimeArrive(
+            signOut,
+            refreshToken.value.create +
+              (refreshToken.value.expires ??
+                config.value.provider.refreshTokenExpires)
+          );
+        });
+
+        // token 过期前刷新 token
+        let clearTimeArriveToken: (() => void) | undefined;
+        watchEffect(() => {
+          clearTimeArriveToken?.();
+          if (!token.value) return;
+          clearTimeArriveToken = setTimeArrive(
+            refresh,
+            token.value.create +
+              (token.value.expires ?? config.value.provider.tokenExpires) -
+              config.value.provider.tokenRefresh
+          );
+        });
+
+        // 窗口焦点刷新 token
+        watchEffect(() => {
+          if (config.value.provider.refreshOnWindowFocus) {
+            window.addEventListener("focus", () => refresh());
+          } else {
+            window.removeEventListener("focus", () => refresh());
+          }
+        });
       }
-    }
+      // #endregion
+
+      // #region 刷新用户
+      function refreshUser() {
+        if (token.value) getUser();
+      }
+
+      // 定时刷新用户
+      const { pause, resume } = useIntervalFn(
+        refreshUser,
+        () => config.value.session.refreshPeriodically
+      );
+      watchImmediate(
+        () => config.value.session.refreshPeriodically,
+        (period) => (period === 0 ? pause() : resume())
+      );
+
+      // 窗口焦点刷新用户
+      watchEffect(() => {
+        if (config.value.session.refreshOnWindowFocus) {
+          window.addEventListener("focus", refreshUser);
+        } else {
+          window.removeEventListener("focus", refreshUser);
+        }
+      });
+      // #endregion
+    });
   },
 });
