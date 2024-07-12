@@ -9,8 +9,12 @@ import {
   useNuxtStorage,
 } from "#imports";
 import { createGlobalState } from "@ucstu/nuxt-fast-utils/exports";
-import { configKey } from "../../config";
-import type { FastAuthForm, FastAuthToken, RefreshSignInResult } from "../types";
+import { configKey } from "../config";
+import type {
+  FastAuthForm,
+  FastAuthToken,
+  RefreshSignInResult,
+} from "../types";
 import {
   useAuth,
   type AuthStatus,
@@ -56,8 +60,8 @@ export const useRefreshAuth = createGlobalState(
             ? cookieStorage
             : sessionCookieStorage
           : _remember.value
-          ? localStorage
-          : sessionStorage
+            ? localStorage
+            : sessionStorage,
     );
 
     /**
@@ -67,7 +71,7 @@ export const useRefreshAuth = createGlobalState(
      */
     async function signIn<F extends FastAuthForm = FastAuthForm>(
       form: F,
-      options: SignInOptions = {}
+      options: SignInOptions = {},
     ) {
       const { remember, navigate = false, navigateOptions } = options;
 
@@ -95,7 +99,7 @@ export const useRefreshAuth = createGlobalState(
           if (navigate) {
             await navigateTo(
               navigate === true ? config.value.home : navigate,
-              navigateOptions
+              navigateOptions,
             );
           }
         }
@@ -117,12 +121,12 @@ export const useRefreshAuth = createGlobalState(
           "fast-auth:sign-out",
           _user,
           _token,
-          _refreshToken
+          _refreshToken,
         );
         if (navigate) {
           await navigateTo(
             navigate === true ? config.value.signIn : navigate,
-            options.navigateOptions
+            options.navigateOptions,
           );
         }
       } finally {
@@ -156,7 +160,7 @@ export const useRefreshAuth = createGlobalState(
      */
     async function refresh(
       token?: string | undefined | null,
-      refreshToken?: string | undefined | null
+      refreshToken?: string | undefined | null,
     ) {
       try {
         _status.value.refresh = true;
@@ -165,7 +169,7 @@ export const useRefreshAuth = createGlobalState(
           "fast-auth:refresh-token" as any,
           token,
           refreshToken,
-          result
+          result,
         );
         if (result.value) {
           _token.value = {
@@ -177,7 +181,7 @@ export const useRefreshAuth = createGlobalState(
             value: result.value.refreshToken,
             create: new Date().getTime(),
             expires: result.value.refreshTokenExpires,
-          }
+          };
           if (result.value.user) _user.value = result.value.user;
           else await getUser();
         }
@@ -194,5 +198,5 @@ export const useRefreshAuth = createGlobalState(
       refresh,
       refreshToken: _refreshToken,
     };
-  }
+  },
 );

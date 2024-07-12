@@ -1,8 +1,7 @@
-import { computed, type MaybeRefOrGetter, toValue } from "#imports";
+import { computed, type MaybeRefOrGetter, toValue, useAuth } from "#imports";
 import type { LiteralUnion } from "@ucstu/nuxt-fast-utils/exports";
 import { isEqual } from "lodash-es";
 import { minimatch } from "minimatch";
-import { useAuth } from "~/dist/runtime/composables";
 import type { FastAuthBase, FastAuthPer, FastAuthPerWrapper } from "../types";
 
 /**
@@ -68,8 +67,7 @@ export function per(per: Exclude<FastAuthPer, boolean>): FastAuthPerWrapper {
 
 /**
  * 角色包装
- * @param role
- * @returns
+ * @param role 角色
  */
 export function role(role: Exclude<FastAuthPer, boolean>): FastAuthPerWrapper {
   return {

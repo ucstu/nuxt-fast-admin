@@ -11,7 +11,7 @@ import { addModuleTypeTemplate } from "@ucstu/nuxt-fast-utils/utils";
 import { camelCase, upperFirst } from "lodash-es";
 import Naive from "naive-ui";
 import { name, version } from "../package.json";
-import { configKey, defaults, initModule } from "./config";
+import { configKey, defaults, initModule } from "./runtime/config";
 import type { ModuleOptions } from "./runtime/types";
 
 export type * from "./runtime/types/module";
@@ -77,7 +77,7 @@ export default defineNuxtModule<ModuleOptions>({
     });
 
     const components = Object.keys(Naive).filter((name) =>
-      /^N[A-Z]|n-[a-z]/.test(name)
+      /^N[A-Z]|n-[a-z]/.test(name),
     );
 
     const clientOnlyComponents = ["NDrawer", "NDrawerContent", "NModal"];
@@ -94,7 +94,7 @@ export default defineNuxtModule<ModuleOptions>({
     });
 
     const composables = Object.keys(Naive).filter((name) =>
-      /^use[A-Z]/.test(name)
+      /^use[A-Z]/.test(name),
     );
 
     addImportsSources({

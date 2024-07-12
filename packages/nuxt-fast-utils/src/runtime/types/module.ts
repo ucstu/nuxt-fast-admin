@@ -1,5 +1,5 @@
 import type { RequiredDeep } from "type-fest";
-import type { configKey } from "../../config";
+import type { configKey } from "../config";
 
 export interface ModuleOptions {}
 

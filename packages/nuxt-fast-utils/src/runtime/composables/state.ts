@@ -25,7 +25,7 @@ import { nanoid } from "nanoid";
  */
 export function createNuxtGlobalState<Fn extends AnyFn>(
   stateFactory: Fn,
-  name: string = nanoid()
+  name: string = nanoid(),
 ): Fn {
   return ((...args: any[]) => {
     const nuxtApp = useNuxtApp();
@@ -45,7 +45,7 @@ export function createNuxtGlobalState<Fn extends AnyFn>(
  */
 export function createNuxtSharedComposable<Fn extends AnyFn>(
   composable: Fn,
-  name: string = nanoid()
+  name: string = nanoid(),
 ): Fn {
   let subscribers = 0;
 
@@ -73,32 +73,32 @@ export function useNuxtStorage(
   key: string,
   defaults: MaybeRefOrGetter<string>,
   storage?: MaybeRefOrGetter<StorageLike>,
-  options?: UseStorageOptions<string>
+  options?: UseStorageOptions<string>,
 ): RemovableRef<string>;
 export function useNuxtStorage(
   key: string,
   defaults: MaybeRefOrGetter<boolean>,
   storage?: MaybeRefOrGetter<StorageLike>,
-  options?: UseStorageOptions<boolean>
+  options?: UseStorageOptions<boolean>,
 ): RemovableRef<boolean>;
 export function useNuxtStorage(
   key: string,
   defaults: MaybeRefOrGetter<number>,
   storage?: MaybeRefOrGetter<StorageLike>,
-  options?: UseStorageOptions<number>
+  options?: UseStorageOptions<number>,
 ): RemovableRef<number>;
 export function useNuxtStorage<T>(
   key: string,
   defaults: MaybeRefOrGetter<T>,
   storage?: MaybeRefOrGetter<StorageLike>,
-  options?: UseStorageOptions<T>
+  options?: UseStorageOptions<T>,
 ): RemovableRef<T>;
 export function useNuxtStorage<T = unknown>(
   key: string,
   // eslint-disable-next-line @typescript-eslint/unified-signatures
   defaults: MaybeRefOrGetter<null>,
   storage?: MaybeRefOrGetter<StorageLike>,
-  options?: UseStorageOptions<T>
+  options?: UseStorageOptions<T>,
 ): RemovableRef<T>;
 
 /**
@@ -110,7 +110,7 @@ export function useNuxtStorage<T>(
   key: string,
   defaults: MaybeRefOrGetter<T>,
   storage?: MaybeRefOrGetter<StorageLike>,
-  options: UseStorageOptions<T> = {}
+  options: UseStorageOptions<T> = {},
 ) {
   const storageRef = toRef(storage);
   if (!storageRef.value) {

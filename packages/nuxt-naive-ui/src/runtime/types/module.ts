@@ -1,5 +1,5 @@
 import type { RequiredDeep } from "@ucstu/nuxt-fast-utils/exports";
-import type { configKey } from "../../config";
+import type { configKey } from "../config";
 
 export interface ModuleOptions {}
 

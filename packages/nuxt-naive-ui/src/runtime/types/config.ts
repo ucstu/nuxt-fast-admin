@@ -1,13 +1,13 @@
 import type { LiteralUnion } from "@ucstu/nuxt-fast-utils/exports";
 import type { GlobalTheme, GlobalThemeOverrides } from "naive-ui";
-import type { ThemeKey } from "./base";
+import type { NaiveUiThemeKey } from "./base";
 
 export interface ModuleConfig {
   /**
    * 默认主题
    * @default "auto"
    */
-  defaultTheme?: ThemeKey;
+  defaultTheme?: NaiveUiThemeKey;
   /**
    * 自定义主题
    */

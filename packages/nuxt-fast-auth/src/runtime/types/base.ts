@@ -1,6 +1,7 @@
 import type { RouteLocationRaw } from "#vue-router";
 import type {
   LiteralUnion,
+  OverrideProperties,
   RequiredDeep,
 } from "@ucstu/nuxt-fast-utils/exports";
 
@@ -68,7 +69,7 @@ export interface FastAuthPerWrapper {
  */
 export type FastAuthBase<
   D extends number = 10,
-  A extends number[] = []
+  A extends number[] = [],
 > = A["length"] extends D
   ? never
   :
@@ -77,7 +78,7 @@ export type FastAuthBase<
       | FastAuthBase<D, [0, ...A]>[]
       | [
           LiteralUnion<"!" | "|", FastAuthPer> | FastAuthPerWrapper,
-          ...FastAuthBase<D, [0, ...A]>[]
+          ...FastAuthBase<D, [0, ...A]>[],
         ];
 
 /**
@@ -141,6 +142,14 @@ export interface FastAuthPage extends Required<FastAuthExtra> {
  * 鉴权页面（已填充）
  */
 export type FastAuthPageFilled = RequiredDeep<
-  Omit<FastAuthPage, keyof FastAuthExtra>
+  Omit<
+    OverrideProperties<
+      FastAuthPage,
+      {
+        auth?: FastAuthMeta;
+      }
+    >,
+    keyof FastAuthExtra
+  >
 > &
   Required<FastAuthExtra>;

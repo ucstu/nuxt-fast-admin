@@ -4,7 +4,7 @@ import type { RouteLocationRaw } from "#vue-router";
 export function toEqual(
   a?: RouteLocationRaw,
   b?: RouteLocationRaw,
-  nuxtApp = useNuxtApp()
+  nuxtApp = useNuxtApp(),
 ): boolean {
   const result = shallowRef(false);
   if (!a || !b) return result.value;
@@ -16,7 +16,7 @@ export function toEqual(
     "fast-nav:to-equal",
     a,
     b,
-    result
+    result,
   );
 
   return result.value;

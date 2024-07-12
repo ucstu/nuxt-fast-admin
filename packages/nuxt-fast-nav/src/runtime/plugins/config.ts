@@ -1,7 +1,7 @@
 import { defineNuxtPlugin } from "#app";
 import { useNuxtConfig, useRouter } from "#imports";
 import { assign, isEqual, pick } from "lodash-es";
-import { configKey } from "../../config";
+import { configKey } from "../config";
 import { getMenuFilled, getPageFilled, toEqual } from "../utils";
 
 export default defineNuxtPlugin({

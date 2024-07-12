@@ -1,7 +1,7 @@
 import { getNuxtConfig, useNuxtApp } from "#imports";
 import FastCrud from "@fast-crud/fast-crud";
 import defu from "defu";
-import { configKey } from "../../config";
+import { configKey } from "../config";
 
 export function installFsatCrud(nuxtApp = useNuxtApp()) {
   const config = getNuxtConfig(configKey);

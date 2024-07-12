@@ -1,12 +1,12 @@
 <template>
   <div>
-    <input v-model="foo" type="text" />
-    <input v-model="foo1" type="text" />
-    <input v-model="test" type="text" />
-    <input v-model="test1" type="text" />
-    <input v-model="config.bar" type="text" />
-    <input v-model="bar" type="text" />
-    <input v-model="bar1" type="text" />
+    <input v-model="foo" type="text" >
+    <input v-model="foo1" type="text" >
+    <input v-model="test" type="text" >
+    <input v-model="test1" type="text" >
+    <input v-model="config.bar" type="text" >
+    <input v-model="bar" type="text" >
+    <input v-model="bar1" type="text" >
     <input v-model="count" type="number" >
   </div>
 </template>

@@ -10,7 +10,13 @@ import {
 } from "@nuxt/kit";
 import { addModuleTypeTemplate } from "@ucstu/nuxt-fast-utils/utils";
 import { camelCase, upperFirst } from "lodash-es";
-import { configKey, defaults, initModule, name, version } from "./config";
+import {
+  configKey,
+  defaults,
+  initModule,
+  name,
+  version,
+} from "./runtime/config";
 import type { ModuleOptions } from "./runtime/types";
 
 export type * from "./runtime/types/module";
@@ -106,7 +112,7 @@ export default defineNuxtModule<ModuleOptions>({
     });
 
     const components = Object.keys(FastCrud).filter((name) =>
-      /^Fs[A-Z]|fs-[a-z]/.test(name)
+      /^Fs[A-Z]|fs-[a-z]/.test(name),
     );
 
     const clientOnlyComponents = ["FsCrud"];
@@ -123,7 +129,7 @@ export default defineNuxtModule<ModuleOptions>({
     });
 
     const composables = Object.keys(FastCrud).filter(
-      (name) => /^use[A-Z]/.test(name) || ["dict"].includes(name)
+      (name) => /^use[A-Z]/.test(name) || ["dict"].includes(name),
     );
 
     addImportsSources({

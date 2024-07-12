@@ -44,10 +44,10 @@ export interface ModuleConfig {
     ? FastAuthOptions["provider"] extends "local"
       ? LocalAuthProvider
       : FastAuthOptions["provider"] extends "refresh"
-      ? RefreshAuthProvider
-      : FastAuthOptions["provider"] extends "base"
-      ? BaseAuthProvider
-      : BaseAuthProvider & LocalAuthProvider & RefreshAuthProvider
+        ? RefreshAuthProvider
+        : FastAuthOptions["provider"] extends "base"
+          ? BaseAuthProvider
+          : BaseAuthProvider & LocalAuthProvider & RefreshAuthProvider
     : BaseAuthProvider & LocalAuthProvider & RefreshAuthProvider;
   /**
    * 会话（用户信息）配置

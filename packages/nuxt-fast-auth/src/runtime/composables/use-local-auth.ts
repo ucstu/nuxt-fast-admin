@@ -1,6 +1,6 @@
 import { navigateTo, shallowRef, useNuxtApp, useNuxtConfig } from "#imports";
 import { createGlobalState } from "@ucstu/nuxt-fast-utils/exports";
-import { configKey } from "../../config";
+import { configKey } from "../config";
 import type { FastAuthForm, LocalSignInResult } from "../types";
 import { useAuth, type SignInOptions, type SignUpOptions } from "./use-auth";
 
@@ -56,7 +56,7 @@ export const useLocalAuth = createGlobalState(
           if (navigate) {
             await navigateTo(
               navigate === true ? config.value.home : navigate,
-              navigateOptions
+              navigateOptions,
             );
           }
         }
@@ -84,5 +84,5 @@ export const useLocalAuth = createGlobalState(
     }
 
     return { ...auth, signIn, signUp };
-  }
+  },
 );

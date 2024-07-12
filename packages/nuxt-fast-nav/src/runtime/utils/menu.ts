@@ -1,9 +1,9 @@
 import { getNuxtConfig } from "#imports";
-import { configKey } from "../../config";
+import { configKey } from "../config";
 import type { FastNavMenu, FastNavMenuFilled } from "../types";
 
 export function getMenuFilled(
-  menu: FastNavMenu | FastNavMenuFilled
+  menu: FastNavMenu | FastNavMenuFilled,
 ): Omit<FastNavMenuFilled, "children" | "parent"> {
   const config = getNuxtConfig(configKey);
 

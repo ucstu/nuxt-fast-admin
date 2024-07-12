@@ -6,7 +6,7 @@ import type { FastAuthBase, FastAuthMeta } from "../types";
  * @returns 是否为 FsAuthPage
  */
 export function isAuthMeta(
-  pageOrMeta: FastAuthMeta | FastAuthBase
+  pageOrMeta: FastAuthMeta | FastAuthBase,
 ): pageOrMeta is FastAuthMeta {
   return (
     pageOrMeta instanceof Object &&
@@ -20,7 +20,7 @@ export function isAuthMeta(
  * @returns 是否为 FsAuthMeta
  */
 export function isAuthBase(
-  pageOrMeta: FastAuthMeta | FastAuthBase
+  pageOrMeta: FastAuthMeta | FastAuthBase,
 ): pageOrMeta is FastAuthBase {
   return typeof pageOrMeta === "object" ? Array.isArray(pageOrMeta) : true;
 }

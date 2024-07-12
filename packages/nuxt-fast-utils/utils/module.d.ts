@@ -38,6 +38,6 @@ interface AddModuleTypeTemplateOptions {
  * @param options
  */
 export declare function addModuleTypeTemplate(
-  options: AddModuleTypeTemplateOptions
+  options: AddModuleTypeTemplateOptions,
 ): void;
 export {};

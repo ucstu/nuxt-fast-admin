@@ -59,22 +59,22 @@ interface UseNuxtConfigOptions<T extends ConfigType, D> {
 }
 export function useNuxtConfig(): ToRef<AppConfig>;
 export function useNuxtConfig<
-  K extends LiteralUnion<Paths<LiteralToPrimitiveDeep<AppConfig>>, string>
+  K extends LiteralUnion<Paths<LiteralToPrimitiveDeep<AppConfig>>, string>,
 >(key: K): WritableComputedRef<Get<AppConfig, K>>;
 export function useNuxtConfig<
   T extends "app",
-  K extends LiteralUnion<Paths<LiteralToPrimitiveDeep<AppConfig>>, string>
+  K extends LiteralUnion<Paths<LiteralToPrimitiveDeep<AppConfig>>, string>,
 >(
   key: K,
-  options: UseNuxtConfigOptions<T, Get<AppConfig, K>>
+  options: UseNuxtConfigOptions<T, Get<AppConfig, K>>,
 ): WritableComputedRef<Get<AppConfig, K>>;
 export function useNuxtConfig<
   T extends Exclude<ConfigType, "app">,
   C extends T extends "private" ? RuntimeConfig : RuntimeConfig["public"],
-  K extends LiteralUnion<Paths<LiteralToPrimitiveDeep<C>>, string>
+  K extends LiteralUnion<Paths<LiteralToPrimitiveDeep<C>>, string>,
 >(
   key: K,
-  options: UseNuxtConfigOptions<T, Get<C, K>>
+  options: UseNuxtConfigOptions<T, Get<C, K>>,
 ): DeepReadonly<WritableComputedRef<Get<C, K>>>;
 /**
  * 使用 Nuxt 应用配置
@@ -86,9 +86,9 @@ export function useNuxtConfig<
   C extends T extends "app"
     ? AppConfig
     : T extends "private"
-    ? RuntimeConfig
-    : RuntimeConfig["public"],
-  K extends LiteralUnion<Paths<LiteralToPrimitiveDeep<C>>, string>
+      ? RuntimeConfig
+      : RuntimeConfig["public"],
+  K extends LiteralUnion<Paths<LiteralToPrimitiveDeep<C>>, string>,
 >(key?: K, options: UseNuxtConfigOptions<T, Get<C, K>> = {}) {
   const { type = "app", shallow = false, default: defaultValue } = options;
   const isReadonly = options?.readonly ?? type !== "app";
@@ -100,8 +100,8 @@ export function useNuxtConfig<
     type === "app"
       ? appConfig
       : type === "private"
-      ? runtimeConfig
-      : runtimeConfig.public;
+        ? runtimeConfig
+        : runtimeConfig.public;
 
   const result = configRef(config, key);
 
@@ -116,7 +116,7 @@ export function useNuxtConfig<
 
 function configRef<
   C extends _AppConfig | RuntimeConfig | RuntimeConfig["public"],
-  K extends Paths<C>
+  K extends Paths<C>,
 >(config: C, key?: K) {
   return key
     ? computed({
@@ -136,19 +136,19 @@ type GetNuxtConfigOptions<T extends ConfigType, D> = Omit<
 >;
 export function getNuxtConfig(): AppConfig;
 export function getNuxtConfig<
-  K extends LiteralUnion<Paths<LiteralToPrimitiveDeep<AppConfig>>, string>
+  K extends LiteralUnion<Paths<LiteralToPrimitiveDeep<AppConfig>>, string>,
 >(key: K): Get<AppConfig, K>;
 export function getNuxtConfig<
   T extends "app",
-  K extends LiteralUnion<Paths<LiteralToPrimitiveDeep<AppConfig>>, string>
+  K extends LiteralUnion<Paths<LiteralToPrimitiveDeep<AppConfig>>, string>,
 >(
   key: K,
-  options: GetNuxtConfigOptions<T, Get<AppConfig, K>>
+  options: GetNuxtConfigOptions<T, Get<AppConfig, K>>,
 ): Get<AppConfig, K>;
 export function getNuxtConfig<
   T extends Exclude<ConfigType, "app">,
   C extends T extends "private" ? RuntimeConfig : RuntimeConfig["public"],
-  K extends LiteralUnion<Paths<LiteralToPrimitiveDeep<C>>, string>
+  K extends LiteralUnion<Paths<LiteralToPrimitiveDeep<C>>, string>,
 >(key: K, options: GetNuxtConfigOptions<T, Get<C, K>>): Get<C, K>;
 /**
  * 获取 Nuxt 应用配置
@@ -160,9 +160,9 @@ export function getNuxtConfig<
   C extends T extends "app"
     ? AppConfig
     : T extends "private"
-    ? RuntimeConfig
-    : RuntimeConfig["public"],
-  K extends LiteralUnion<Paths<LiteralToPrimitiveDeep<C>>, string>
+      ? RuntimeConfig
+      : RuntimeConfig["public"],
+  K extends LiteralUnion<Paths<LiteralToPrimitiveDeep<C>>, string>,
 >(key?: K, options: GetNuxtConfigOptions<T, Get<C, K>> = {}) {
   const { type = "app", default: defaultValue } = options;
 
@@ -173,8 +173,8 @@ export function getNuxtConfig<
     type === "app"
       ? appConfig
       : type === "private"
-      ? runtimeConfig
-      : runtimeConfig.public;
+        ? runtimeConfig
+        : runtimeConfig.public;
 
   return (key ? get(config, key) : config) ?? defaultValue?.();
 }

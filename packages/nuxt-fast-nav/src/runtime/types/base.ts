@@ -20,28 +20,28 @@ type KeysDeep<
   I extends number = 30,
   IA extends number[] = [],
   D extends number = 10,
-  DA extends number[] = []
+  DA extends number[] = [],
 > = M["length"] extends IA["length"]
   ? never
   : I extends IA["length"]
-  ? never
-  : // 自身
-    | `${P}${Exclude<M[IA["length"]]["name"], symbol>}`
-      // 子级
-      | (M[IA["length"]]["children"] extends Array<FastNavMenu>
-          ? DA["length"] extends D
-            ? never
-            : KeysDeep<
-                M[IA["length"]]["children"],
-                `${P}${Exclude<M[IA["length"]]["name"], symbol>}.`,
-                I,
-                [],
-                D,
-                [0, ...DA]
-              >
-          : never)
-      // 下一个
-      | KeysDeep<M, P, I, [0, ...IA], D, []>;
+    ? never
+    : // 自身
+      | `${P}${Exclude<M[IA["length"]]["name"], symbol>}`
+        // 子级
+        | (M[IA["length"]]["children"] extends Array<FastNavMenu>
+            ? DA["length"] extends D
+              ? never
+              : KeysDeep<
+                  M[IA["length"]]["children"],
+                  `${P}${Exclude<M[IA["length"]]["name"], symbol>}.`,
+                  I,
+                  [],
+                  D,
+                  [0, ...DA]
+                >
+            : never)
+        // 下一个
+        | KeysDeep<M, P, I, [0, ...IA], D, []>;
 
 export interface BaseMeta {
   /**
@@ -143,7 +143,9 @@ export interface FastNavPage extends BaseMeta, Required<FastNavExtra> {
 /**
  * 导航页面（已填充）
  */
-export type FastNavPageFilled = RequiredDeep<Omit<FastNavPage, keyof FastNavExtra>> &
+export type FastNavPageFilled = RequiredDeep<
+  Omit<FastNavPage, keyof FastNavExtra>
+> &
   Required<FastNavExtra>;
 // #endregion
 
@@ -151,8 +153,10 @@ export type FastNavPageFilled = RequiredDeep<Omit<FastNavPage, keyof FastNavExtr
 /**
  * 导航菜单
  */
-export interface FastNavMenu<T extends object = object, N extends keyof T = keyof T>
-  extends Omit<MenuMeta, "has">,
+export interface FastNavMenu<
+  T extends object = object,
+  N extends keyof T = keyof T,
+> extends Omit<MenuMeta, "has">,
     FastNavExtra {
   /**
    * 唯一名称

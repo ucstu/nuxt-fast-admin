@@ -1,8 +1,8 @@
-import { defineNuxtPlugin } from "#app";
+import { defineNuxtPlugin, type NuxtApp } from "#app";
 import { getNuxtConfig } from "#imports";
 import UiElementPlus from "@fast-crud/ui-element";
 import ElementPlus from "element-plus";
-import { configKey } from "../../config";
+import { configKey } from "../config";
 import { installFsatCrud } from "../utils";
 
 import "element-plus/dist/index.css";
@@ -14,6 +14,6 @@ export default defineNuxtPlugin({
     const config = getNuxtConfig(configKey);
     nuxtApp.vueApp.use(ElementPlus);
     nuxtApp.vueApp.use(UiElementPlus, config.uiSetupOptions);
-    installFsatCrud(nuxtApp);
+    installFsatCrud(nuxtApp as NuxtApp);
   },
 });

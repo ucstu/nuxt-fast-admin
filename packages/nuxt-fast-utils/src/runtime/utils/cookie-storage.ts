@@ -9,7 +9,7 @@ export class H3CookieStorage extends CookieStorage {
   override setItem(
     key: string,
     data: string,
-    options?: (CookieOptions & CookieSerializeOptions) | undefined
+    options?: (CookieOptions & CookieSerializeOptions) | undefined,
   ): void {
     const event = useRequestEvent();
     if (event) {
@@ -18,7 +18,7 @@ export class H3CookieStorage extends CookieStorage {
         encodeURIComponent(key),
         encodeURIComponent(data),
         // @ts-expect-error
-        defu(options, this._defaultOptions)
+        defu(options, this._defaultOptions),
       );
     }
     super.setItem(key, data, options);
@@ -34,7 +34,7 @@ export class H3CookieStorage extends CookieStorage {
 
   override removeItem(
     key: string,
-    cookieOptions?: (CookieOptions & CookieSerializeOptions) | undefined
+    cookieOptions?: (CookieOptions & CookieSerializeOptions) | undefined,
   ): void {
     const event = useRequestEvent();
     if (event) {
@@ -42,7 +42,7 @@ export class H3CookieStorage extends CookieStorage {
         event,
         encodeURIComponent(key),
         // @ts-expect-error
-        defu(cookieOptions, this._defaultOptions)
+        defu(cookieOptions, this._defaultOptions),
       );
     }
     super.removeItem(key, cookieOptions);

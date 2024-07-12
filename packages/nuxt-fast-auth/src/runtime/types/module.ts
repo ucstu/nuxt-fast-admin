@@ -25,6 +25,6 @@ export interface ModuleRuntimeHooks extends AuthHooks, PageHooks {
    */
   "fast-auth:get-page": (
     input: FastAuthPage | FastAuthPageFilled,
-    result: ShallowRef<FastAuthPageFilled | undefined>
+    result: ShallowRef<FastAuthPageFilled | undefined>,
   ) => void;
 }

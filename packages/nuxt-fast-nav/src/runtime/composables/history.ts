@@ -12,7 +12,7 @@ import {
 import { extendRef, reactify } from "@ucstu/nuxt-fast-utils/exports";
 import defu from "defu";
 import { assign, cloneDeep, isEqual } from "lodash-es";
-import { configKey } from "../../config";
+import { configKey } from "../config";
 import type {
   FastNavHistory,
   FastNavHistoryFilled,
@@ -53,7 +53,7 @@ export const useNavHistories = createNuxtGlobalState(
 
     const origin = useState<Array<FastNavHistory>>(
       "fast-nav:histories",
-      () => []
+      () => [],
     );
 
     const result = computed(
@@ -61,7 +61,7 @@ export const useNavHistories = createNuxtGlobalState(
         origin.value.map((item) => ({
           ...item,
           meta: defu(item.meta ?? {}, pages.getPage(item.to)),
-        })) as Array<FastNavHistoryFilled>
+        })) as Array<FastNavHistoryFilled>,
     );
 
     /**
@@ -85,7 +85,7 @@ export const useNavHistories = createNuxtGlobalState(
       const _history = compressHistory(toValue(history));
 
       const old = origin.value.find((item) =>
-        toEqual(item.to, _history.to, nuxtApp)
+        toEqual(item.to, _history.to, nuxtApp),
       );
       if (old) {
         if (!isEqual(old, _history)) assign(old, _history);
@@ -100,13 +100,13 @@ export const useNavHistories = createNuxtGlobalState(
      * @param history 历史
      */
     async function close(
-      history: MaybeRefOrGetter<FastNavHistory> | undefined = current.value
+      history: MaybeRefOrGetter<FastNavHistory> | undefined = current.value,
     ) {
       const _history = toValue(history);
 
       if (!_history) return;
       const old = origin.value.find((item) =>
-        toEqual(item.to, _history.to, nuxtApp)
+        toEqual(item.to, _history.to, nuxtApp),
       );
       if (!old) {
         return console.warn(`[fast-nav] 未找到历史 `, _history, ` 的记录`);
@@ -136,7 +136,7 @@ export const useNavHistories = createNuxtGlobalState(
     async function closeAll() {
       // 筛除 "首页" 以外的所有历史
       origin.value = origin.value.filter((item) =>
-        toEqual(item.to, config.value.home, nuxtApp)
+        toEqual(item.to, config.value.home, nuxtApp),
       );
       // 如果 "剩余历史" 为空则跳转到 "首页"
       if (origin.value.length === 0) {
@@ -149,13 +149,13 @@ export const useNavHistories = createNuxtGlobalState(
      * @param history 历史
      */
     async function closeOthers(
-      history: MaybeRefOrGetter<FastNavHistory> | undefined = current.value
+      history: MaybeRefOrGetter<FastNavHistory> | undefined = current.value,
     ) {
       const _history = toValue(history);
 
       if (!_history) return;
       const old = origin.value.find((item) =>
-        toEqual(item.to, _history.to, nuxtApp)
+        toEqual(item.to, _history.to, nuxtApp),
       );
       if (!old) {
         return console.warn(`[fast-nav] 未找到历史 `, _history, ` 的记录`);
@@ -179,5 +179,5 @@ export const useNavHistories = createNuxtGlobalState(
       closeAll,
       closeOthers,
     });
-  }
+  },
 );

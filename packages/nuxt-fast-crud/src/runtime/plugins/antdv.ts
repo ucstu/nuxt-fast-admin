@@ -1,8 +1,8 @@
-import { defineNuxtPlugin } from "#app";
+import { defineNuxtPlugin, type NuxtApp } from "#app";
 import { getNuxtConfig } from "#imports";
 import UiAntdv from "@fast-crud/ui-antdv";
 import Antdv from "ant-design-vue";
-import { configKey } from "../../config";
+import { configKey } from "../config";
 import { installFsatCrud } from "../utils";
 
 import "ant-design-vue/dist/antd.css";
@@ -14,6 +14,6 @@ export default defineNuxtPlugin({
     const config = getNuxtConfig(configKey);
     nuxtApp.vueApp.use(Antdv);
     nuxtApp.vueApp.use(UiAntdv, config.uiSetupOptions);
-    installFsatCrud(nuxtApp);
+    installFsatCrud(nuxtApp as NuxtApp);
   },
 });

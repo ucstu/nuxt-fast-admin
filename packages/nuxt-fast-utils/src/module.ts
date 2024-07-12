@@ -1,6 +1,12 @@
 import { addImportsSources, createResolver, defineNuxtModule } from "@nuxt/kit";
 import { addModuleTypeTemplate } from "../utils";
-import { configKey, defaults, initModule, name, version } from "./config";
+import {
+  configKey,
+  defaults,
+  initModule,
+  name,
+  version,
+} from "./runtime/config";
 import type { ModuleOptions } from "./runtime/types";
 
 export type * from "./runtime/types/module";

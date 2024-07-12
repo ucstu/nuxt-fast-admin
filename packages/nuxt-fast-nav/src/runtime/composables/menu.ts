@@ -22,7 +22,7 @@ export function getNavMenus(nuxtApp = useNuxtApp()) {
       hooks.forEach((hook) => hook(...args));
     },
     "fast-nav:get-menus",
-    result
+    result,
   );
 
   return result.value;
@@ -31,10 +31,10 @@ export function getNavMenus(nuxtApp = useNuxtApp()) {
 export function getNavMenu(
   menu: FastNavMenu | FastNavMenuFilled,
   parent: string = "",
-  nuxtApp = useNuxtApp()
+  nuxtApp = useNuxtApp(),
 ): FastNavMenuFilled {
   const result = shallowRef<FastNavMenuFilled>(
-    cloneDeep(menu) as FastNavMenuFilled
+    cloneDeep(menu) as FastNavMenuFilled,
   );
 
   nuxtApp.hooks.callHookWith(
@@ -43,7 +43,7 @@ export function getNavMenu(
     },
     "fast-nav:get-menu",
     menu,
-    result
+    result,
   );
 
   return {
@@ -55,9 +55,9 @@ export function getNavMenu(
           ? getNavMenu(
               item as FastNavMenu,
               `${parent ? `${parent}.` : ""}${menu.name}`,
-              nuxtApp
+              nuxtApp,
             )
-          : item
+          : item,
       ) ?? [],
   };
 }
@@ -72,7 +72,7 @@ export const useNavMenus = createNuxtGlobalState((nuxtApp = useNuxtApp()) => {
         children: getNavMenus(nuxtApp),
       } as FastNavMenu,
       "",
-      nuxtApp
+      nuxtApp,
     );
     pages.value.forEach((page) => addPageToMenus(page, result));
     fillMenusRoute(result, pages.value);
@@ -95,7 +95,7 @@ export const useNavMenus = createNuxtGlobalState((nuxtApp = useNuxtApp()) => {
     let menu = result.value;
     for (const path of paths) {
       const parent = menu.children?.find(
-        (menu) => "name" in menu && menu.name === path
+        (menu) => "name" in menu && menu.name === path,
       ) as FastNavMenuFilled | undefined;
       if (!parent) break;
       parents.push(parent);

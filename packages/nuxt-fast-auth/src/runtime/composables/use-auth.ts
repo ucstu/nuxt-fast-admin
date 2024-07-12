@@ -16,8 +16,13 @@ import {
   createGlobalState,
   watchImmediate,
 } from "@ucstu/nuxt-fast-utils/exports";
-import { configKey } from "../../config";
-import type { FastAuthPer, FastAuthPerWrapper, FastAuthToken, FastAuthUser } from "../types";
+import { configKey } from "../config";
+import type {
+  FastAuthPer,
+  FastAuthPerWrapper,
+  FastAuthToken,
+  FastAuthUser,
+} from "../types";
 
 /**
  * 认证状态
@@ -101,14 +106,14 @@ export interface SignOutOptions extends NavigateOptions {}
 function getPers(
   user: FastAuthUser | null | undefined,
   type: "permissions" | "roles" = "permissions",
-  nuxtApp = useNuxtApp()
+  nuxtApp = useNuxtApp(),
 ) {
   const result = ref<Array<FastAuthPer>>([]);
   nuxtApp.hooks.callHookWith(
     (hooks, args) => hooks.forEach((hook) => hook(...args)),
     `fast-auth:get-${type}`,
     user,
-    result
+    result,
   );
   return result.value;
 }
@@ -133,8 +138,8 @@ export const useAuth = createGlobalState(
             ? cookieStorage
             : sessionCookieStorage
           : _remember.value
-          ? localStorage
-          : sessionStorage
+            ? localStorage
+            : sessionStorage,
     );
     const _status = useState<S>(
       "fast-auth:status",
@@ -145,15 +150,17 @@ export const useAuth = createGlobalState(
           signOut: false,
           getUser: false,
           authed: false,
-        } as S)
+        }) as S,
     );
     const roles = computed(() =>
       getPers(_user.value, "roles", nuxtApp).map(
-        (item) => ({ type: "role", value: item } as FastAuthPerWrapper)
-      )
+        (item) => ({ type: "role", value: item }) as FastAuthPerWrapper,
+      ),
     );
     const permissions = computed(() =>
-      getPers(_user.value, "permissions", nuxtApp)
+      getPers(_user.value, "permissions", nuxtApp).map(
+        (item) => ({ type: "per", value: item }) as FastAuthPerWrapper,
+      ),
     );
 
     watchImmediate(_user, (user) => (_status.value.authed = !!user));
@@ -163,7 +170,7 @@ export const useAuth = createGlobalState(
      * @param token 令牌
      */
     async function getUser(
-      token: MaybeRefOrGetter<string | undefined> = _token.value?.value
+      token: MaybeRefOrGetter<string | undefined> = _token.value?.value,
     ) {
       try {
         _status.value.getUser = true;
@@ -186,12 +193,12 @@ export const useAuth = createGlobalState(
           "fast-auth:sign-out",
           _user,
           _token,
-          undefined as any
+          undefined as any,
         );
         if (navigate) {
           await navigateTo(
             navigate === true ? config.value.signIn : navigate,
-            options.navigateOptions
+            options.navigateOptions,
           );
         }
       } finally {
@@ -209,5 +216,5 @@ export const useAuth = createGlobalState(
       permissions,
       roles,
     };
-  }
+  },
 );

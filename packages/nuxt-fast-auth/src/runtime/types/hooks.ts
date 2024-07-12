@@ -1,5 +1,4 @@
 import type { navigateTo } from "#imports";
-import type { RouteLocationNormalized } from "#vue-router";
 import type { HookResult } from "@nuxt/schema";
 import type {
   ReadonlyDeep,
@@ -8,8 +7,8 @@ import type {
 import type { Ref, ShallowRef } from "vue-demi";
 import type {
   FastAuthForm,
-  FastAuthMeta,
   FastAuthOptions,
+  FastAuthPageFilled,
   FastAuthPer,
   FastAuthToken,
   FastAuthUser,
@@ -124,11 +123,11 @@ export interface RefreshAuthHooks extends BaseAuthHooks {
   ): HookResult;
   /**
    * 刷新令牌
-   * @param refreshToken 刷新令牌
    * @param token 令牌
+   * @param refreshToken 刷新令牌
    * @param result 刷新结果
    */
-  "fast-auth:refresh-token"?(
+  "fast-auth:refresh-token"(
     token: string | undefined | null,
     refreshToken: string | undefined | null,
     result: ShallowRef<RefreshSignInResult | undefined>
@@ -154,19 +153,15 @@ export interface GuardOptions {
   /**
    * 目标路由
    */
-  to: RouteLocationNormalized;
+  to: FastAuthPageFilled;
   /**
    * 来源路由
    */
-  from: RouteLocationNormalized;
+  from: FastAuthPageFilled;
   /**
    * 用户信息
    */
-  user: FastAuthUser | undefined | null;
-  /**
-   * 页面鉴权元数据
-   */
-  page: FastAuthMeta;
+  user: FastAuthUser | undefined;
 }
 
 export interface PageHooks {
@@ -190,19 +185,19 @@ export interface PageHooks {
    * @description 返回值为 undefined 时终止路由守卫
    * @description 注意：不写返回值时默认返回 undefined
    */
-  "fast-auth:no-auth"(
+  "fast-auth:auth-through"(
     options: GuardOptions,
     result: ShallowRef<ReturnType<typeof navigateTo> | undefined>
   ): void;
   /**
-   * 需要认证但未认证
+   * 需要认证但未登录
    * @param options 选项
    * @param result 跳转 | null
    * @description 返回值为 null 时继续路由守卫
    * @description 返回值为 undefined 时终止路由守卫
    * @description 注意：不写返回值时默认返回 undefined
    */
-  "fast-auth:un-auth"(
+  "fast-auth:not-logged"(
     options: GuardOptions,
     result: ShallowRef<ReturnType<typeof navigateTo> | undefined>
   ): void;
@@ -214,7 +209,7 @@ export interface PageHooks {
    * @description 返回值为 undefined 时终止路由守卫
    * @description 注意：不写返回值时默认返回 undefined
    */
-  "fast-auth:passed"(
+  "fast-auth:auth-passed"(
     options: GuardOptions,
     result: ShallowRef<ReturnType<typeof navigateTo> | undefined>
   ): void;
@@ -226,7 +221,7 @@ export interface PageHooks {
    * @description 返回值为 undefined 时终止路由守卫
    * @description 注意：不写返回值时默认返回 undefined
    */
-  "fast-auth:failed"(
+  "fast-auth:auth-failed"(
     options: GuardOptions,
     result: ShallowRef<ReturnType<typeof navigateTo> | undefined>
   ): void;

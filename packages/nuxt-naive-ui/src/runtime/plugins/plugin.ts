@@ -4,6 +4,7 @@ import { setup } from "@css-render/vue3-ssr";
 export default defineNuxtPlugin({
   setup(nuxtApp) {
     const { collect } = setup(nuxtApp.vueApp);
+
     nuxtApp.ssrContext!.head.push({
       style: () =>
         collect()

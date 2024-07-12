@@ -9,7 +9,13 @@ import {
 } from "@nuxt/kit";
 import { addModuleTypeTemplate } from "@ucstu/nuxt-fast-utils/utils";
 import { minimatch } from "minimatch";
-import { configKey, defaults, initModule, name, version } from "./config";
+import {
+  configKey,
+  defaults,
+  initModule,
+  name,
+  version,
+} from "./runtime/config";
 import type { ModuleOptions } from "./runtime/types";
 
 export type * from "./runtime/types/module";
@@ -41,7 +47,7 @@ declare module "${options.moduleName}" {
 import type { FastNavPage } from "${options.moduleName}";
 declare module "${resolve(
           nuxt.options.appDir,
-          "../pages/runtime/composables"
+          "../pages/runtime/composables",
         )}" {
   interface PageMeta extends Omit<FastNavPage, "type" | "to"> {}
 }
@@ -75,7 +81,7 @@ declare module "${resolve(
         }
         const _interface = JSON.stringify(result, null, 2).replaceAll(
           "{}",
-          "never"
+          "never",
         );
         return `export interface _FastNavMenuKeys ${
           _interface === "never" ? "{}" : _interface

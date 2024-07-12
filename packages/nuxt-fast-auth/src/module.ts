@@ -8,7 +8,13 @@ import {
 } from "@nuxt/kit";
 import { addModuleTypeTemplate } from "@ucstu/nuxt-fast-utils/utils";
 import { camelCase } from "lodash-es";
-import { configKey, defaults, initModule, name, version } from "./config";
+import {
+  configKey,
+  defaults,
+  initModule,
+  name,
+  version,
+} from "./runtime/config";
 import type { ModuleConfig, ModuleOptions } from "./runtime/types";
 
 export type * from "./runtime/types/module";
@@ -35,7 +41,7 @@ export default defineNuxtModule<ModuleOptions>({
         return `import type { FastAuthPage } from "${moduleName}";
 declare module "${resolve(
           nuxt.options.appDir,
-          "../pages/runtime/composables"
+          "../pages/runtime/composables",
         )}" {
   interface PageMeta extends Omit<FastAuthPage, "to"> {}
 }`;

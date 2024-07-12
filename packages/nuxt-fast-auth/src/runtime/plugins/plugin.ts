@@ -1,21 +1,24 @@
 import { defineNuxtPlugin, onNuxtReady } from "#app";
 import { getNuxtConfig, useAuth, useNuxtConfig, watchEffect } from "#imports";
 import { useIntervalFn, watchImmediate } from "@ucstu/nuxt-fast-utils/exports";
-import { configKey } from "../../config";
 import type { useRefreshAuth } from "../composables";
+import { configKey } from "../config";
 
 function setTimeArrive(fn: () => void, time: number | string | Date) {
   let timer: NodeJS.Timeout | undefined;
   function start() {
-    timer = setTimeout(() => {
-      if (new Date().getTime() >= new Date(time).getTime()) {
-        clearTimeout(timer);
-        fn();
-      } else {
-        clearTimeout(timer);
-        start();
-      }
-    }, Math.min(new Date(time).getTime() - new Date().getTime(), 2147483647));
+    timer = setTimeout(
+      () => {
+        if (new Date().getTime() >= new Date(time).getTime()) {
+          clearTimeout(timer);
+          fn();
+        } else {
+          clearTimeout(timer);
+          start();
+        }
+      },
+      Math.min(new Date(time).getTime() - new Date().getTime(), 2147483647),
+    );
   }
   start();
   return () => clearTimeout(timer);
@@ -54,7 +57,7 @@ export default defineNuxtPlugin({
           clearTimeArrive = setTimeArrive(
             signOut,
             token.value.create +
-              (token.value.expires ?? config.value.provider.tokenExpires)
+              (token.value.expires ?? config.value.provider.tokenExpires),
           );
         });
       }
@@ -73,7 +76,7 @@ export default defineNuxtPlugin({
             signOut,
             refreshToken.value.create +
               (refreshToken.value.expires ??
-                config.value.provider.refreshTokenExpires)
+                config.value.provider.refreshTokenExpires),
           );
         });
 
@@ -86,7 +89,7 @@ export default defineNuxtPlugin({
             refresh,
             token.value.create +
               (token.value.expires ?? config.value.provider.tokenExpires) -
-              config.value.provider.tokenRefresh
+              config.value.provider.tokenRefresh,
           );
         });
 
@@ -109,11 +112,11 @@ export default defineNuxtPlugin({
       // 定时刷新用户
       const { pause, resume } = useIntervalFn(
         refreshUser,
-        () => config.value.session.refreshPeriodically
+        () => config.value.session.refreshPeriodically,
       );
       watchImmediate(
         () => config.value.session.refreshPeriodically,
-        (period) => (period === 0 ? pause() : resume())
+        (period) => (period === 0 ? pause() : resume()),
       );
 
       // 窗口焦点刷新用户

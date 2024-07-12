@@ -1,10 +1,11 @@
+import type { NuxtApp } from "#app";
 import { addRouteMiddleware, defineNuxtPlugin, ref } from "#imports";
 import { useNavHistories } from "../composables";
 import type { FastNavHistory } from "../types";
 
 export default defineNuxtPlugin({
   setup(nuxtApp) {
-    const histories = useNavHistories(nuxtApp);
+    const histories = useNavHistories(nuxtApp as NuxtApp);
 
     addRouteMiddleware(async (to) => {
       const history = ref<FastNavHistory>({

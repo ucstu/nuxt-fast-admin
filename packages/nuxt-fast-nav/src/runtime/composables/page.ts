@@ -21,7 +21,7 @@ export function getNavPages(nuxtApp = useNuxtApp()) {
       hooks.forEach((hook) => hook(...args));
     },
     "fast-nav:get-pages",
-    result
+    result,
   );
 
   return result.value;
@@ -29,7 +29,7 @@ export function getNavPages(nuxtApp = useNuxtApp()) {
 
 export function getNavPage(page: FastNavPage, nuxtApp = useNuxtApp()) {
   const result = shallowRef<FastNavPageFilled>(
-    cloneDeep(page) as FastNavPageFilled
+    cloneDeep(page) as FastNavPageFilled,
   );
 
   nuxtApp.hooks.callHookWith(
@@ -38,7 +38,7 @@ export function getNavPage(page: FastNavPage, nuxtApp = useNuxtApp()) {
     },
     "fast-nav:get-page",
     page,
-    result
+    result,
   );
 
   return result.value;
@@ -50,7 +50,7 @@ export const useNavPages = createNuxtGlobalState((nuxtApp = useNuxtApp()) => {
   const result = computedEager(() =>
     getNavPages(nuxtApp)
       .map((page) => getNavPage(page, nuxtApp))
-      .filter((page) => page !== undefined)
+      .filter((page) => page !== undefined),
   );
 
   /**
