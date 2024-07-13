@@ -1,4 +1,10 @@
-import { defineNuxtModule, installModule } from "@nuxt/kit";
+import {
+  addComponent,
+  createResolver,
+  defineNuxtModule,
+  extendPages,
+  installModule,
+} from "@nuxt/kit";
 import { addModuleTypeTemplate } from "@ucstu/nuxt-fast-utils/utils";
 import {
   configKey,
@@ -19,9 +25,16 @@ export default defineNuxtModule<ModuleOptions>({
   },
   defaults,
   setup(_options, nuxt) {
+    installModule("@nuxt/icon");
+    installModule("@ucstu/nuxt-fast-nav");
     installModule("@ucstu/nuxt-fast-utils");
+    installModule("@ucstu/nuxt-naive-ui");
 
     const options = initModule(_options, nuxt);
+
+    for (const module of options.modules) {
+      installModule(`@ucstu/nuxt-fast-${module}`);
+    }
 
     addModuleTypeTemplate({
       nuxt,
@@ -30,5 +43,19 @@ export default defineNuxtModule<ModuleOptions>({
       configKey,
       __dirname,
     });
+
+    const { resolve } = createResolver(import.meta.url);
+
+    if (options.modules.includes("auth")) {
+      addComponent({
+        filePath: resolve("./runtime/components/fa/pages/auth.vue"),
+        name: "FaPagesAuth",
+      });
+      extendPages((pages) => {
+        pages.push({
+          path: resolve("./runtime/pages/auth.vue"),
+        });
+      });
+    }
   },
 });

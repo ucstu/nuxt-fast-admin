@@ -1,4 +1,4 @@
-import { createClient } from "@hey-api/openapi-ts";
+import { createClient, type UserConfig } from "@hey-api/openapi-ts";
 import { extendServerRpc, onDevToolsInitialized } from "@nuxt/devtools-kit";
 import {
   addImports,
@@ -17,6 +17,7 @@ import {
   version,
 } from "./runtime/config";
 import type { ModuleOptions } from "./runtime/types";
+import { isFileSystemPath } from "./runtime/utils";
 
 export type * from "./runtime/types/module";
 
@@ -24,9 +25,7 @@ interface Document {
   name: string;
   url: string;
 }
-interface ClientFunctions {
-  reloadDocument(): void;
-}
+interface ClientFunctions {}
 
 interface ServerFunctions {
   getDocuments(): Array<Document>;
@@ -58,13 +57,40 @@ export default defineNuxtModule<ModuleOptions>({
     const resolver = createResolver(import.meta.url);
     const { resolve } = resolver;
 
-    for (const [key, vlue] of Object.entries(options.clients)) {
-      const output = resolve(nuxt.options.buildDir, "fast-fetch", key);
-      nuxt.options.alias[`#fast-fetch/${key}`] = output;
-      await createClient({ ...vlue, output });
+    function fillConfig(
+      name: string,
+      config: Pick<
+        UserConfig,
+        "input" | "schemas" | "services" | "types" | "client"
+      > = options.clients[name]
+    ) {
+      const input =
+        typeof config.input === "object"
+          ? config.input
+          : isFileSystemPath(config.input)
+          ? resolve(nuxt.options.rootDir, config.input)
+          : config.input;
+      const output = resolve(nuxt.options.buildDir, "fast-fetch", name);
+
+      return {
+        ...config,
+        input,
+        output,
+      };
+    }
+
+    for (const [name, value] of Object.entries(options.clients)) {
+      const config = fillConfig(name, value);
+      const { output } = config;
+      try {
+        await createClient(config);
+      } catch (e) {
+        console.error(e);
+      }
+      nuxt.options.alias[`#fast-fetch/${name}`] = output;
       addImports({
         name: "*",
-        as: `$${camelCase(key)}`,
+        as: `$${camelCase(name)}`,
         from: resolve(output, "index.ts"),
       });
     }
@@ -72,22 +98,29 @@ export default defineNuxtModule<ModuleOptions>({
     if (nuxt.options.devtools) {
       setupDevToolsUI(nuxt, resolver);
       onDevToolsInitialized(async () => {
-        const rpc = extendServerRpc<ClientFunctions, ServerFunctions>(
-          RPC_NAMESPACE,
-          {
-            getDocuments() {
-              return Object.entries(options.clients).map(([key, value]) => ({
-                name: key,
-                url: value.input as string,
-              }));
-            },
-            async refreshDocument(name) {
-              const output = resolve(nuxt.options.buildDir, "fast-fetch", name);
-              await createClient({ ...options.clients[name], output });
-              await rpc.broadcast.reloadDocument();
-            },
-          }
-        );
+        extendServerRpc<ClientFunctions, ServerFunctions>(RPC_NAMESPACE, {
+          getDocuments() {
+            return Object.entries(options.clients)
+              .map(([name, value]) => {
+                const { input } = fillConfig(name, value);
+                if (typeof input === "object" || isFileSystemPath(input))
+                  return;
+                return {
+                  name: name,
+                  url: input,
+                };
+              })
+              .filter((item) => item !== undefined);
+          },
+          async refreshDocument(name) {
+            const config = fillConfig(name);
+            try {
+              await createClient(config);
+            } catch (e) {
+              console.error(e);
+            }
+          },
+        });
       });
     }
   },

@@ -2,14 +2,12 @@ import type { Resolver } from "@nuxt/kit";
 import { existsSync } from "node:fs";
 import type { Nuxt } from "nuxt/schema";
 
-const DEVTOOLS_UI_ROUTE = "/__fast-fetch";
-const DEVTOOLS_UI_LOCAL_PORT = 3300;
+export const DEVTOOLS_UI_ROUTE = "/__fast-fetch";
+export const DEVTOOLS_UI_LOCAL_PORT = 3300;
 
 export function setupDevToolsUI(nuxt: Nuxt, resolver: Resolver) {
   const clientPath = resolver.resolve("./client");
   const isProductionBuild = existsSync(clientPath);
-
-  console.log("isProductionBuild", isProductionBuild, clientPath);
 
   // Serve production-built client (used when package is published)
   if (isProductionBuild) {
@@ -17,7 +15,6 @@ export function setupDevToolsUI(nuxt: Nuxt, resolver: Resolver) {
       const sirv = await import("sirv").then((r) => r.default || r);
       server.middlewares.use(
         DEVTOOLS_UI_ROUTE,
-        // @ts-expect-error
         sirv(clientPath, { dev: true, single: true })
       );
     });

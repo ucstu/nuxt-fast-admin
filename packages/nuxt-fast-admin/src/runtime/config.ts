@@ -10,7 +10,9 @@ export { name, version } from "../../package.json";
 
 export const configKey = "fastAdmin";
 
-export const defaults: ModuleOptionsDefaults = {};
+export const defaults: ModuleOptionsDefaults = {
+  modules: [],
+};
 
 export const configs: ModuleConfigDefaults = {};
 

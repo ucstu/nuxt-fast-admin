@@ -2,36 +2,32 @@
   <div class="relative n-bg-base flex flex-col h-screen">
     <div class="relative flex justify-between">
       <n-select-tabs v-model="current" :options="options" />
-      <n-button :disabled="!rpc || refreshing" @click="refreshDocument">
-        刷新
+      <n-button :disabled="!rpc || refreshing" @click="refresh">
+        <n-loading v-if="refreshing" />
+        <span v-else>Refresh</span>
       </n-button>
     </div>
     <rapi-doc
-      :spec-url="current"
+      v-if="showRapiDoc"
+      :spec-url="currentDoc?.url"
       render-style="read"
       style="flex: 1"
-    >
-    </rapi-doc>
+    />
   </div>
 </template>
-
-<script lang="ts">
-interface Document {
-  name: string;
-  url: string;
-}
-interface ClientFunctions {
-  reloadDocument(): void;
-}
-interface ServerFunctions {
-  getDocuments(): Array<Document>;
-  refreshDocument(name: string): void;
-}
-</script>
 
 <script setup lang="ts">
 import { onDevtoolsClientConnected } from "@nuxt/devtools-kit/iframe-client";
 import type { BirpcReturn } from "birpc";
+interface Document {
+  name: string;
+  url: string;
+}
+interface ClientFunctions {}
+interface ServerFunctions {
+  getDocuments(): Array<Document>;
+  refreshDocument(name: string): void;
+}
 
 useHead({
   script: [
@@ -53,31 +49,30 @@ const rpc = shallowRef<BirpcReturn<ServerFunctions, ClientFunctions>>();
 const options = computed(() => {
   return documents.value.map((doc) => ({
     label: doc.name,
-    value: doc.url,
+    value: doc.name,
   }));
+});
+
+const currentDoc = computed(() => {
+  return documents.value.find((doc) => doc.name === current.value);
 });
 
 onDevtoolsClientConnected(async (client) => {
   rpc.value = client.devtools.extendClientRpc<ServerFunctions, ClientFunctions>(
     RPC_NAMESPACE,
-    {
-      async reloadDocument() {
-        showRapiDoc.value = false;
-        await nextTick(() => {
-          showRapiDoc.value = true;
-        });
-      },
-    }
+    {}
   );
 
   documents.value = await rpc.value.getDocuments();
-  current.value = documents.value[0]?.url;
+  current.value = documents.value[0]?.name;
 });
 
-async function refreshDocument() {
+async function refresh() {
   try {
     refreshing.value = true;
     await rpc.value?.refreshDocument(current.value);
+    showRapiDoc.value = false;
+    await nextTick(() => (showRapiDoc.value = true));
   } finally {
     refreshing.value = false;
   }
