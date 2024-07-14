@@ -6,8 +6,8 @@ import type {
   ModuleOptionsDefaults,
 } from "./types";
 
-export { name, version } from "../../package.json";
-
+export const name = "@ucstu/nuxt-fast-fetch";
+export const version = "1.1.8";
 export const configKey = "fastFetch";
 
 export const defaults: ModuleOptionsDefaults = {
@@ -16,7 +16,10 @@ export const defaults: ModuleOptionsDefaults = {
 
 export const configs: ModuleConfigDefaults = {};
 
-export function initModule(_options: ModuleOptions, nuxt: Nuxt) {
+export function initModule(
+  _options: ModuleOptions,
+  nuxt: Nuxt,
+): ModuleOptionsDefaults {
   const options = _options as ModuleOptionsDefaults;
 
   nuxt.options.runtimeConfig.public[configKey] = options;

@@ -9,7 +9,10 @@ import {
 } from "./runtime/config";
 import type { ModuleOptions } from "./runtime/types";
 
-export type * from "./runtime/types/module";
+export type {
+  ModuleOptions,
+  ModulePublicRuntimeConfig,
+} from "./runtime/types/module";
 
 export default defineNuxtModule<ModuleOptions>({
   meta: {

@@ -17,7 +17,11 @@ import {
 } from "./runtime/config";
 import type { ModuleConfig, ModuleOptions } from "./runtime/types";
 
-export type * from "./runtime/types/module";
+export type {
+  ModuleOptions,
+  ModulePublicRuntimeConfig,
+  ModuleRuntimeHooks,
+} from "./runtime/types/module";
 
 export default defineNuxtModule<ModuleOptions>({
   meta: {
@@ -49,6 +53,11 @@ declare module "${resolve(
     });
 
     const { resolve } = createResolver(import.meta.url);
+
+    addPlugin({
+      name: `${name}:config`,
+      src: resolve(`./runtime/plugins/config`),
+    });
 
     addPlugin({
       name,

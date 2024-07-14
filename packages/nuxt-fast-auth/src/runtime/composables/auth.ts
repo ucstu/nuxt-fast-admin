@@ -12,7 +12,7 @@ import type { FastAuthBase, FastAuthPer, FastAuthPerWrapper } from "../types";
  */
 function have(
   has: Array<FastAuthPerWrapper | boolean>,
-  needs: FastAuthBase
+  needs: FastAuthBase,
 ): boolean {
   if (typeof needs === "boolean") {
     return needs === false
@@ -25,7 +25,7 @@ function have(
         typeof item === "object" &&
         item.type === "per" &&
         (typeof item.value === "number" || typeof item.value === "bigint") &&
-        item.value === needs
+        item.value === needs,
     );
   }
   if (typeof needs === "string") {
@@ -34,7 +34,7 @@ function have(
         typeof item === "object" &&
         item.type === "per" &&
         typeof item.value === "string" &&
-        minimatch(needs, item.value)
+        minimatch(needs, item.value),
     );
   }
   if (typeof needs === "object" && !Array.isArray(needs)) {
@@ -94,7 +94,7 @@ export function auth(
     | MaybeRefOrGetter<FastAuthBase>[]
     | [
         MaybeRefOrGetter<LiteralUnion<"!" | "|", FastAuthPer>>,
-        ...MaybeRefOrGetter<FastAuthBase>[]
+        ...MaybeRefOrGetter<FastAuthBase>[],
       ]
 ) {
   const { status, roles, permissions } = useAuth();

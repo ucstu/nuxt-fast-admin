@@ -1,3 +1,4 @@
+import type { NuxtApp } from "#app";
 import {
   createNuxtGlobalState,
   shallowRef,
@@ -13,7 +14,9 @@ import { cloneDeep } from "lodash-es";
 import type { FastNavPage, FastNavPageFilled } from "../types";
 import { toEqual } from "../utils/basic";
 
-export function getNavPages(nuxtApp = useNuxtApp()) {
+export function getNavPages(
+  nuxtApp: NuxtApp = useNuxtApp(),
+): Array<FastNavPage | FastNavPageFilled> {
   const result = shallowRef<Array<FastNavPage | FastNavPageFilled>>([]);
 
   nuxtApp.hooks.callHookWith(
@@ -27,7 +30,7 @@ export function getNavPages(nuxtApp = useNuxtApp()) {
   return result.value;
 }
 
-export function getNavPage(page: FastNavPage, nuxtApp = useNuxtApp()) {
+export function getNavPage(page: FastNavPage, nuxtApp: NuxtApp = useNuxtApp()) {
   const result = shallowRef<FastNavPageFilled>(
     cloneDeep(page) as FastNavPageFilled,
   );
@@ -44,7 +47,9 @@ export function getNavPage(page: FastNavPage, nuxtApp = useNuxtApp()) {
   return result.value;
 }
 
-export const useNavPages = createNuxtGlobalState((nuxtApp = useNuxtApp()) => {
+export const useNavPages = createNuxtGlobalState(function (
+  nuxtApp: NuxtApp = useNuxtApp(),
+) {
   const { currentRoute } = useRouter();
 
   const result = computedEager(() =>

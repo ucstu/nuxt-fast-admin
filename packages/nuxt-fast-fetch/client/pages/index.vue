@@ -60,7 +60,7 @@ const currentDoc = computed(() => {
 onDevtoolsClientConnected(async (client) => {
   rpc.value = client.devtools.extendClientRpc<ServerFunctions, ClientFunctions>(
     RPC_NAMESPACE,
-    {}
+    {},
   );
 
   documents.value = await rpc.value.getDocuments();

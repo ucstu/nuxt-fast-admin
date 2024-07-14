@@ -15,7 +15,7 @@ export function setupDevToolsUI(nuxt: Nuxt, resolver: Resolver) {
       const sirv = await import("sirv").then((r) => r.default || r);
       server.middlewares.use(
         DEVTOOLS_UI_ROUTE,
-        sirv(clientPath, { dev: true, single: true })
+        sirv(clientPath, { dev: true, single: true }),
       );
     });
   }

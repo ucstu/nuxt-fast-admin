@@ -1,3 +1,4 @@
+import type { NuxtApp } from "#app";
 import {
   computed,
   createNuxtGlobalState,
@@ -14,7 +15,9 @@ import type {
 import { addPageToMenus, fillMenusRoute, sortMenus } from "../utils";
 import { useNavPages } from "./page";
 
-export function getNavMenus(nuxtApp = useNuxtApp()) {
+export function getNavMenus(
+  nuxtApp: NuxtApp = useNuxtApp(),
+): Array<FastNavMenu | FastNavMenuFilled> {
   const result = shallowRef<Array<FastNavMenu | FastNavMenuFilled>>([]);
 
   nuxtApp.hooks.callHookWith(
@@ -31,7 +34,7 @@ export function getNavMenus(nuxtApp = useNuxtApp()) {
 export function getNavMenu(
   menu: FastNavMenu | FastNavMenuFilled,
   parent: string = "",
-  nuxtApp = useNuxtApp(),
+  nuxtApp: NuxtApp = useNuxtApp(),
 ): FastNavMenuFilled {
   const result = shallowRef<FastNavMenuFilled>(
     cloneDeep(menu) as FastNavMenuFilled,
@@ -62,7 +65,9 @@ export function getNavMenu(
   };
 }
 
-export const useNavMenus = createNuxtGlobalState((nuxtApp = useNuxtApp()) => {
+export const useNavMenus = createNuxtGlobalState(function (
+  nuxtApp: NuxtApp = useNuxtApp(),
+) {
   const pages = useNavPages(nuxtApp);
 
   const result = computed(() => {

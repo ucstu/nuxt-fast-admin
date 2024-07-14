@@ -6,8 +6,8 @@ import type {
   ModuleOptionsDefaults,
 } from "./types";
 
-export { name, version } from "../../package.json";
-
+export const name = "@ucstu/nuxt-fast-auth";
+export const version = "1.1.8";
 export const configKey = "fastAuth";
 
 export const defaults: ModuleOptionsDefaults = {
@@ -29,7 +29,7 @@ export const configs: ModuleConfigDefaults = {
     auth: {
       auth: false,
       redirect: {
-        unAuth: true,
+        anonymous: true,
         passed: false,
         failed: true,
       },
@@ -40,7 +40,10 @@ export const configs: ModuleConfigDefaults = {
   signOut: "/auth",
 };
 
-export function initModule(_options: ModuleOptions, nuxt: Nuxt) {
+export function initModule(
+  _options: ModuleOptions,
+  nuxt: Nuxt,
+): ModuleOptionsDefaults {
   const options = _options as ModuleOptionsDefaults;
 
   nuxt.options.runtimeConfig.public[configKey] = options;

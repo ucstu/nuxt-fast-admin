@@ -1,4 +1,3 @@
-import FastCrud from "@fast-crud/fast-crud";
 import {
   addComponent,
   addImportsSources,
@@ -19,7 +18,10 @@ import {
 } from "./runtime/config";
 import type { ModuleOptions } from "./runtime/types";
 
-export type * from "./runtime/types/module";
+export type {
+  ModuleOptions,
+  ModulePublicRuntimeConfig,
+} from "./runtime/types/module";
 
 export default defineNuxtModule<ModuleOptions>({
   meta: {
@@ -77,23 +79,6 @@ export default defineNuxtModule<ModuleOptions>({
       }
     }
 
-    if (process.env.NODE_ENV === "development") {
-      const optimizeDeps = [
-        "@fast-crud/fast-crud",
-        "@fast-crud/fast-extends",
-        "@fast-crud/ui-interface",
-        `@fast-crud/ui-${options.framework}`,
-      ];
-      extendViteConfig((config) => {
-        config.optimizeDeps ||= {};
-        config.optimizeDeps.include ||= [];
-        for (const item of optimizeDeps) {
-          if (!config.optimizeDeps.include.includes(item)) {
-            config.optimizeDeps.include.push(`${name} > ${item}`);
-          }
-        }
-      });
-    }
     const transpile = [
       "@fast-crud/fast-crud",
       "@fast-crud/fast-extends",
@@ -111,9 +96,51 @@ export default defineNuxtModule<ModuleOptions>({
       src: resolve(`./runtime/plugins/${options.framework}`),
     });
 
-    const components = Object.keys(FastCrud).filter((name) =>
-      /^Fs[A-Z]|fs-[a-z]/.test(name),
-    );
+    const components = [
+      "FsActionbar",
+      "FsBox",
+      "FsButton",
+      "FsCell",
+      "FsColumnsFilterLayoutDefault",
+      "FsComponentRender",
+      "FsContainer",
+      "FsCrud",
+      "FsDateFormat",
+      "FsDictCascader",
+      "FsDictCascaderFormat",
+      "FsDictCheckbox",
+      "FsDictRadio",
+      "FsDictSelect",
+      "FsDictSwitch",
+      "FsDictTree",
+      "FsEditable",
+      "FsEditableCell",
+      "FsForm",
+      "FsFormHelper",
+      "FsFormItem",
+      "FsFormProvider",
+      "FsFormWrapper",
+      "FsIcon",
+      "FsIconSvg",
+      "FsIconify",
+      "FsLabel",
+      "FsLayoutCard",
+      "FsLayoutDefault",
+      "FsLoading",
+      "FsPage",
+      "FsRender",
+      "FsRowHandle",
+      "FsSearch",
+      "FsSearchLayoutDefault",
+      "FsSearchV1",
+      "FsSlotRender",
+      "FsTable",
+      "FsTableColumnsFixedController",
+      "FsTableSelect",
+      "FsTabsFilter",
+      "FsToolbar",
+      "FsValuesFormat",
+    ];
 
     const clientOnlyComponents = ["FsCrud"];
 
@@ -128,9 +155,41 @@ export default defineNuxtModule<ModuleOptions>({
       });
     });
 
-    const composables = Object.keys(FastCrud).filter(
-      (name) => /^use[A-Z]/.test(name) || ["dict"].includes(name),
-    );
+    const composables = [
+      "useUi",
+      "asyncCompute",
+      "buildTableColumnsFlatMap",
+      "compute",
+      "dict",
+      "exportTable",
+      "forEachColumns",
+      "forEachTableColumns",
+      "getCrudOptionsPlugin",
+      "importTable",
+      "loadFsExportUtil",
+      "loadFsImportUtil",
+      "registerCrudOptionsPlugin",
+      "registerMergeColumnPlugin",
+      "setLogger",
+      "useColumns",
+      "useCompute",
+      "useCrud",
+      "useDict",
+      "useDictDefine",
+      "useDrag",
+      "useExpose",
+      "useFormWrapper",
+      "useFs",
+      "useFsAsync",
+      "useI18n",
+      "useMerge",
+      "useTypes",
+      "buildBinding",
+      "creator",
+      "doRenderComponent",
+      "renderComponent",
+      "useUiRender",
+    ];
 
     addImportsSources({
       from: resolve("./runtime/composables"),

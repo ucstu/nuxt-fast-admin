@@ -1,12 +1,13 @@
 import {
+  computed,
   cookieStorage,
   customRef,
+  toValue,
   useNuxtApp,
-  useRuntimeConfig,
+  useNuxtConfig,
   watch,
 } from "#imports";
 import {
-  toRef,
   tryOnScopeDispose,
   useStorage,
   type AnyFn,
@@ -16,6 +17,7 @@ import {
   type UseStorageOptions,
 } from "@vueuse/core";
 import { nanoid } from "nanoid";
+import { configKey } from "../config";
 
 /**
  * Keep states in the global scope to be reusable across Nuxt instances.
@@ -112,11 +114,14 @@ export function useNuxtStorage<T>(
   storage?: MaybeRefOrGetter<StorageLike>,
   options: UseStorageOptions<T> = {},
 ) {
-  const storageRef = toRef(storage);
-  if (!storageRef.value) {
-    const config = useRuntimeConfig().public.fastUtils;
-    storageRef.value = config.ssr ? cookieStorage : localStorage;
-  }
+  const config = useNuxtConfig(configKey, { type: "public" });
+  const storageRef = computed(() =>
+    toValue(storage)
+      ? toValue(storage)
+      : config.value.ssr
+        ? cookieStorage
+        : localStorage,
+  );
   return customRef((track, trigger) => {
     let storageValue = useStorage(key, defaults, storageRef.value, options);
     watch(storageRef, (newStorage) => {

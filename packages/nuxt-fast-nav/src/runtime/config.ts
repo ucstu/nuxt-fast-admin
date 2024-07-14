@@ -1,5 +1,4 @@
 import type { Nuxt } from "@nuxt/schema";
-import { name, version } from "../../package.json";
 import type {
   ModuleConfig,
   ModuleConfigDefaults,
@@ -7,8 +6,8 @@ import type {
   ModuleOptionsDefaults,
 } from "./types";
 
-export { name, version };
-
+export const name = "@ucstu/nuxt-fast-nav";
+export const version = "1.1.8";
 export const configKey = "fastNav";
 
 export const defaults: ModuleOptionsDefaults = {
@@ -42,7 +41,10 @@ export const configs: ModuleConfigDefaults = {
   keys: ["path"],
 };
 
-export function initModule(_options: ModuleOptions, nuxt: Nuxt) {
+export function initModule(
+  _options: ModuleOptions,
+  nuxt: Nuxt,
+): ModuleOptionsDefaults {
   const options = _options as ModuleOptionsDefaults;
 
   nuxt.options.runtimeConfig.public[configKey] = options;

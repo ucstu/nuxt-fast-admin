@@ -95,11 +95,11 @@ export interface FastAuthMeta {
    */
   redirect?: {
     /**
-     * 未认证重定向
-     * @description 未认证重定向
+     * 未登录重定向
+     * @description 未登录重定向
      * @default true
      */
-    unAuth?: boolean | RouteLocationRaw;
+    anonymous?: boolean | RouteLocationRaw;
     /**
      * 鉴权通过重定向
      * @description 鉴权通过重定向

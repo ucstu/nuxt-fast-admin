@@ -48,10 +48,10 @@
 <script lang="ts">
 import type { NLayoutSider } from "#components";
 import {
-    createInjectionState,
-    useDraggable,
-    useElementSize,
-    useFullscreen,
+  createInjectionState,
+  useDraggable,
+  useElementSize,
+  useFullscreen,
 } from "@vueuse/core";
 
 const [useProvideDefaultLayoutStore, useDefaultLayoutStore] =

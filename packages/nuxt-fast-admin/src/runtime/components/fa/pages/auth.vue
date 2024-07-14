@@ -134,7 +134,9 @@ const authConfig = useNuxtConfig("fastAdmin.pages.auth");
 const { signIn, signUp, status } = useAuth();
 
 const background = computed(() =>
-  authConfig.value!.background ? `url(${authConfig.value!.background})` : "none"
+  authConfig.value!.background
+    ? `url(${authConfig.value!.background})`
+    : "none",
 );
 
 const remember = defineModel<boolean>("remember", { default: false });
@@ -202,7 +204,7 @@ async function submitForm() {
   try {
     await [signIn, signUp][authType.value === "signIn" ? 0 : 1](
       authForm.value,
-      options
+      options,
     );
   } catch (error) {
     if (error instanceof FetchError) {

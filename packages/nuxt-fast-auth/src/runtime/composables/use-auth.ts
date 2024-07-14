@@ -1,3 +1,4 @@
+import type { NuxtApp } from "#app";
 import {
   computed,
   cookieStorage,
@@ -106,7 +107,7 @@ export interface SignOutOptions extends NavigateOptions {}
 function getPers(
   user: FastAuthUser | null | undefined,
   type: "permissions" | "roles" = "permissions",
-  nuxtApp = useNuxtApp(),
+  nuxtApp: NuxtApp = useNuxtApp(),
 ) {
   const result = ref<Array<FastAuthPer>>([]);
   nuxtApp.hooks.callHookWith(
@@ -122,99 +123,99 @@ function getPers(
  * 使用认证
  * @returns 认证
  */
-export const useAuth = createGlobalState(
-  <S extends AuthStatus = AuthStatus>(nuxtApp = useNuxtApp()) => {
-    const config = useNuxtConfig(configKey);
-    const fastUtilsConfig = getNuxtConfig("fastUtils", { type: "public" });
+export const useAuth = createGlobalState(function <
+  S extends AuthStatus = AuthStatus,
+>(nuxtApp: NuxtApp = useNuxtApp()) {
+  const config = useNuxtConfig(configKey);
+  const fastUtilsConfig = getNuxtConfig("fastUtils", { type: "public" });
 
-    const _user = useState<FastAuthUser | undefined>("fast-auth:user");
-    const _remember = useNuxtStorage<boolean>("fast-auth:remember", false);
-    const _token = useNuxtStorage<FastAuthToken | undefined>(
-      "fast-auth:token",
-      undefined,
-      () =>
-        fastUtilsConfig.ssr
-          ? _remember.value
-            ? cookieStorage
-            : sessionCookieStorage
-          : _remember.value
-            ? localStorage
-            : sessionStorage,
-    );
-    const _status = useState<S>(
-      "fast-auth:status",
-      () =>
-        ({
-          signIn: false,
-          signUp: false,
-          signOut: false,
-          getUser: false,
-          authed: false,
-        }) as S,
-    );
-    const roles = computed(() =>
-      getPers(_user.value, "roles", nuxtApp).map(
-        (item) => ({ type: "role", value: item }) as FastAuthPerWrapper,
-      ),
-    );
-    const permissions = computed(() =>
-      getPers(_user.value, "permissions", nuxtApp).map(
-        (item) => ({ type: "per", value: item }) as FastAuthPerWrapper,
-      ),
-    );
+  const _user = useState<FastAuthUser | undefined>("fast-auth:user");
+  const _remember = useNuxtStorage<boolean>("fast-auth:remember", false);
+  const _token = useNuxtStorage<FastAuthToken | undefined>(
+    "fast-auth:token",
+    undefined,
+    () =>
+      fastUtilsConfig.ssr
+        ? _remember.value
+          ? cookieStorage
+          : sessionCookieStorage
+        : _remember.value
+          ? localStorage
+          : sessionStorage,
+  );
+  const _status = useState<S>(
+    "fast-auth:status",
+    () =>
+      ({
+        signIn: false,
+        signUp: false,
+        signOut: false,
+        getUser: false,
+        authed: false,
+      }) as S,
+  );
+  const roles = computed(() =>
+    getPers(_user.value, "roles", nuxtApp).map(
+      (item) => ({ type: "role", value: item }) as FastAuthPerWrapper,
+    ),
+  );
+  const permissions = computed(() =>
+    getPers(_user.value, "permissions", nuxtApp).map(
+      (item) => ({ type: "per", value: item }) as FastAuthPerWrapper,
+    ),
+  );
 
-    watchImmediate(_user, (user) => (_status.value.authed = !!user));
+  watchImmediate(_user, (user) => (_status.value.authed = !!user));
 
-    /**
-     * 获取用户信息
-     * @param token 令牌
-     */
-    async function getUser(
-      token: MaybeRefOrGetter<string | undefined> = _token.value?.value,
-    ) {
-      try {
-        _status.value.getUser = true;
-        await nuxtApp.callHook("fast-auth:get-user", toValue(token), _user);
-      } finally {
-        _status.value.getUser = false;
-      }
+  /**
+   * 获取用户信息
+   * @param token 令牌
+   */
+  async function getUser(
+    token: MaybeRefOrGetter<string | undefined> = _token.value?.value,
+  ) {
+    try {
+      _status.value.getUser = true;
+      await nuxtApp.callHook("fast-auth:get-user", toValue(token), _user);
+    } finally {
+      _status.value.getUser = false;
     }
+  }
 
-    /**
-     * 退出登录
-     * @param options 退出登录选项
-     */
-    async function signOut(options: SignOutOptions = {}) {
-      const { navigate = false } = options;
+  /**
+   * 退出登录
+   * @param options 退出登录选项
+   */
+  async function signOut(options: SignOutOptions = {}) {
+    const { navigate = false } = options;
 
-      try {
-        _status.value.signOut = true;
-        await nuxtApp.callHook(
-          "fast-auth:sign-out",
-          _user,
-          _token,
-          undefined as any,
+    try {
+      _status.value.signOut = true;
+      await nuxtApp.callHook(
+        "fast-auth:sign-out",
+        _user,
+        _token,
+        undefined as any,
+      );
+      if (navigate) {
+        await navigateTo(
+          navigate === true ? config.value.signIn : navigate,
+          options.navigateOptions,
         );
-        if (navigate) {
-          await navigateTo(
-            navigate === true ? config.value.signIn : navigate,
-            options.navigateOptions,
-          );
-        }
-      } finally {
-        _status.value.signOut = false;
       }
+    } finally {
+      _status.value.signOut = false;
     }
+  }
 
-    return {
-      user: _user,
-      token: _token,
-      status: _status,
-      remember: _remember,
-      signOut,
-      getUser,
-      permissions,
-      roles,
-    };
-  },
-);
+  return {
+    user: _user,
+    token: _token,
+    status: _status,
+    remember: _remember,
+    signOut,
+    getUser,
+    permissions,
+    roles,
+  };
+});

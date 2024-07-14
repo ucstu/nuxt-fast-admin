@@ -5,10 +5,10 @@ import {
   readonly,
   shallowReadonly,
   shallowRef,
+  toRef,
   useRuntimeConfig,
 } from "#imports";
 import type { AppConfig as _AppConfig, RuntimeConfig } from "@nuxt/schema";
-import { toRef } from "@vueuse/core";
 import { get, set } from "lodash-es";
 import type {
   Get,

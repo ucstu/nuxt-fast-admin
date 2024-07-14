@@ -52,6 +52,7 @@ export default defineNuxtModule<ModuleOptions>({
         name: "FaPagesAuth",
       });
       extendPages((pages) => {
+        if (pages.length === 0) return;
         pages.push({
           path: resolve("./runtime/pages/auth.vue"),
         });

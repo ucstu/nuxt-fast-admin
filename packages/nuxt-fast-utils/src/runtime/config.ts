@@ -1,5 +1,4 @@
 import type { Nuxt } from "@nuxt/schema";
-import { name, version } from "../../package.json";
 import type {
   ModuleConfig,
   ModuleConfigDefaults,
@@ -7,15 +6,18 @@ import type {
   ModuleOptionsDefaults,
 } from "./types";
 
-export { name, version };
-
+export const name = "@ucstu/nuxt-fast-utils";
+export const version = "1.1.8";
 export const configKey = "fastUtils";
 
 export const defaults: ModuleOptionsDefaults = {};
 
 export const configs: ModuleConfigDefaults = {};
 
-export function initModule(_options: ModuleOptions, nuxt: Nuxt) {
+export function initModule(
+  _options: ModuleOptions,
+  nuxt: Nuxt,
+): ModuleOptionsDefaults {
   const options = _options as ModuleOptionsDefaults;
   const { ssr } = nuxt.options;
 

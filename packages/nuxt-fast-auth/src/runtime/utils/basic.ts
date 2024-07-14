@@ -6,12 +6,9 @@ import type { FastAuthBase, FastAuthMeta } from "../types";
  * @returns 是否为 FsAuthPage
  */
 export function isAuthMeta(
-  pageOrMeta: FastAuthMeta | FastAuthBase,
+  pageOrMeta: FastAuthMeta | FastAuthBase | undefined,
 ): pageOrMeta is FastAuthMeta {
-  return (
-    pageOrMeta instanceof Object &&
-    ("role" in pageOrMeta || "per" in pageOrMeta)
-  );
+  return pageOrMeta instanceof Object;
 }
 
 /**

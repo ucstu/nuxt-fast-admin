@@ -1,4 +1,4 @@
-import { abortNavigation, defineNuxtRouteMiddleware, useNuxtApp } from "#app";
+import { defineNuxtRouteMiddleware, useNuxtApp } from "#app";
 import { getNuxtConfig, navigateTo, shallowRef, useAuth } from "#imports";
 import { cloneDeep } from "lodash-es";
 import type { ShallowRef } from "vue-demi";
@@ -87,14 +87,14 @@ export default defineNuxtRouteMiddleware(async (_to, _from) => {
   }
 
   if (!status.value.authed) {
-    hookResult = callHook("fast-auth:not-logged", options);
+    hookResult = callHook("fast-auth:auth-anonymous", options);
     if (hookResult !== HookNull) return hookResult;
 
-    if (to.auth.redirect.unAuth) {
+    if (to.auth.redirect.anonymous) {
       return navigateTo(
-        to.auth.redirect.unAuth === true
+        to.auth.redirect.anonymous === true
           ? config.signIn
-          : to.auth.redirect.unAuth,
+          : to.auth.redirect.anonymous,
       );
     }
   } else {
@@ -120,7 +120,6 @@ export default defineNuxtRouteMiddleware(async (_to, _from) => {
             : to.auth.redirect.failed,
         );
       }
-      return abortNavigation();
     }
   }
 

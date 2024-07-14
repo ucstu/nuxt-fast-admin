@@ -27,7 +27,7 @@ export interface BaseAuthHooks {
    */
   "fast-auth:get-user"(
     token: string | undefined | null,
-    result: Ref<FastAuthUser | undefined>
+    result: Ref<FastAuthUser | undefined>,
   ): HookResult;
   /**
    * 获取角色列表
@@ -36,7 +36,7 @@ export interface BaseAuthHooks {
    */
   "fast-auth:get-roles"(
     user: ReadonlyDeep<FastAuthUser> | undefined | null,
-    result: ShallowRef<Array<FastAuthPer>>
+    result: ShallowRef<Array<FastAuthPer>>,
   ): void;
   /**
    * 获取权限列表
@@ -45,7 +45,7 @@ export interface BaseAuthHooks {
    */
   "fast-auth:get-permissions"(
     user: ReadonlyDeep<FastAuthUser> | undefined | null,
-    result: ShallowRef<Array<FastAuthPer>>
+    result: ShallowRef<Array<FastAuthPer>>,
   ): void;
 }
 
@@ -78,14 +78,14 @@ export interface LocalAuthHooks extends BaseAuthHooks {
    */
   "fast-auth:sign-in"(
     form: FastAuthForm,
-    result: ShallowRef<string | LocalSignInResult | undefined>
+    result: ShallowRef<string | LocalSignInResult | undefined>,
   ): HookResult;
   /**
    * 注销
    */
   "fast-auth:sign-out"(
     user: Ref<FastAuthUser | undefined>,
-    token: RemovableRef<FastAuthToken | undefined>
+    token: RemovableRef<FastAuthToken | undefined>,
   ): HookResult;
 }
 
@@ -111,7 +111,7 @@ export interface RefreshAuthHooks extends BaseAuthHooks {
    */
   "fast-auth:sign-in"(
     form: FastAuthForm,
-    result: ShallowRef<RefreshSignInResult | undefined>
+    result: ShallowRef<RefreshSignInResult | undefined>,
   ): HookResult;
   /**
    * 注销
@@ -119,7 +119,7 @@ export interface RefreshAuthHooks extends BaseAuthHooks {
   "fast-auth:sign-out"(
     user: Ref<FastAuthUser | undefined>,
     token: RemovableRef<FastAuthToken | undefined>,
-    refreshToken: RemovableRef<FastAuthToken | undefined>
+    refreshToken: RemovableRef<FastAuthToken | undefined>,
   ): HookResult;
   /**
    * 刷新令牌
@@ -130,7 +130,7 @@ export interface RefreshAuthHooks extends BaseAuthHooks {
   "fast-auth:refresh-token"(
     token: string | undefined | null,
     refreshToken: string | undefined | null,
-    result: ShallowRef<RefreshSignInResult | undefined>
+    result: ShallowRef<RefreshSignInResult | undefined>,
   ): HookResult;
 }
 
@@ -140,10 +140,10 @@ export type AuthHooks = FastAuthOptions extends {
   ? FastAuthOptions["provider"] extends "local"
     ? LocalAuthHooks
     : FastAuthOptions["provider"] extends "refresh"
-    ? RefreshAuthHooks
-    : FastAuthOptions["provider"] extends "base"
-    ? BaseAuthHooks
-    : BaseAuthHooks & LocalAuthHooks & RefreshAuthHooks
+      ? RefreshAuthHooks
+      : FastAuthOptions["provider"] extends "base"
+        ? BaseAuthHooks
+        : BaseAuthHooks & LocalAuthHooks & RefreshAuthHooks
   : BaseAuthHooks & LocalAuthHooks & RefreshAuthHooks;
 
 /**
@@ -175,7 +175,7 @@ export interface PageHooks {
    */
   "fast-auth:before-auth"(
     options: GuardOptions,
-    result: ShallowRef<ReturnType<typeof navigateTo> | undefined>
+    result: ShallowRef<ReturnType<typeof navigateTo> | undefined>,
   ): void;
   /**
    * 无需认证
@@ -187,7 +187,7 @@ export interface PageHooks {
    */
   "fast-auth:auth-through"(
     options: GuardOptions,
-    result: ShallowRef<ReturnType<typeof navigateTo> | undefined>
+    result: ShallowRef<ReturnType<typeof navigateTo> | undefined>,
   ): void;
   /**
    * 需要认证但未登录
@@ -197,9 +197,9 @@ export interface PageHooks {
    * @description 返回值为 undefined 时终止路由守卫
    * @description 注意：不写返回值时默认返回 undefined
    */
-  "fast-auth:not-logged"(
+  "fast-auth:auth-anonymous"(
     options: GuardOptions,
-    result: ShallowRef<ReturnType<typeof navigateTo> | undefined>
+    result: ShallowRef<ReturnType<typeof navigateTo> | undefined>,
   ): void;
   /**
    * 需要鉴权且已通过
@@ -211,7 +211,7 @@ export interface PageHooks {
    */
   "fast-auth:auth-passed"(
     options: GuardOptions,
-    result: ShallowRef<ReturnType<typeof navigateTo> | undefined>
+    result: ShallowRef<ReturnType<typeof navigateTo> | undefined>,
   ): void;
   /**
    * 需要鉴权但未通过
@@ -223,7 +223,7 @@ export interface PageHooks {
    */
   "fast-auth:auth-failed"(
     options: GuardOptions,
-    result: ShallowRef<ReturnType<typeof navigateTo> | undefined>
+    result: ShallowRef<ReturnType<typeof navigateTo> | undefined>,
   ): void;
   /**
    * 后置认证钩子
@@ -235,6 +235,6 @@ export interface PageHooks {
    */
   "fast-auth:after-auth"(
     options: GuardOptions,
-    result: ShallowRef<ReturnType<typeof navigateTo> | undefined>
+    result: ShallowRef<ReturnType<typeof navigateTo> | undefined>,
   ): void;
 }

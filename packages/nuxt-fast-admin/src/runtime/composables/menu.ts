@@ -15,7 +15,7 @@ function menusToOptions(menu: FastNavMenuFilled): MenuOption | undefined {
             { to: menu.path },
             {
               default: () => title,
-            }
+            },
           );
     },
     icon() {

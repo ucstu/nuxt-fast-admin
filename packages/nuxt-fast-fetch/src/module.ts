@@ -19,7 +19,10 @@ import {
 import type { ModuleOptions } from "./runtime/types";
 import { isFileSystemPath } from "./runtime/utils";
 
-export type * from "./runtime/types/module";
+export type {
+  ModuleOptions,
+  ModulePublicRuntimeConfig,
+} from "./runtime/types/module";
 
 interface Document {
   name: string;
@@ -62,14 +65,14 @@ export default defineNuxtModule<ModuleOptions>({
       config: Pick<
         UserConfig,
         "input" | "schemas" | "services" | "types" | "client"
-      > = options.clients[name]
+      > = options.clients[name],
     ) {
       const input =
         typeof config.input === "object"
           ? config.input
           : isFileSystemPath(config.input)
-          ? resolve(nuxt.options.rootDir, config.input)
-          : config.input;
+            ? resolve(nuxt.options.rootDir, config.input)
+            : config.input;
       const output = resolve(nuxt.options.buildDir, "fast-fetch", name);
 
       return {
