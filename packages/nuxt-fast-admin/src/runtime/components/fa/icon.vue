@@ -4,12 +4,9 @@
   </n-icon>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { computed, useNuxtApp } from "#imports";
 import iconifyCollections from "@iconify/collections/collections.json";
-</script>
-
-<script setup lang="ts">
 import { iconProps } from "naive-ui";
 
 function resolveIconName(name = "") {

@@ -1,4 +1,4 @@
-import type { Nuxt } from "@nuxt/schema";
+import type { Nuxt, PublicRuntimeConfig } from "@nuxt/schema";
 import type {
   ModuleConfig,
   ModuleConfigDefaults,
@@ -16,7 +16,7 @@ export const configs: ModuleConfigDefaults = {};
 
 export function initModule(
   _options: ModuleOptions,
-  nuxt: Nuxt,
+  nuxt: Nuxt
 ): ModuleOptionsDefaults {
   const options = _options as ModuleOptionsDefaults;
   const { ssr } = nuxt.options;
@@ -24,7 +24,7 @@ export function initModule(
   nuxt.options.runtimeConfig.public[configKey] = {
     ...options,
     ssr,
-  };
+  } as unknown as PublicRuntimeConfig[typeof configKey];
   nuxt.options.appConfig[configKey] = configs;
 
   return options;

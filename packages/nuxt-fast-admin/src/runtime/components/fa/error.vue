@@ -1,6 +1,6 @@
 <!-- eslint-disable vue/no-v-html -->
 <template>
-  <div class="fast-admin-page-error">
+  <div class="fast-admin-error">
     <n-result
       ref="resultRef"
       :status="status && (`${status}` as unknown as undefined)"
@@ -22,19 +22,19 @@
           <div v-if="isHTML(detiail)" style="padding: 0 20px 10px 20px">
             <n-collapse-transition
               :show="showStack"
-              class="fast-admin-page-error-stack"
+              class="fast-admin-error-stack"
             >
               <n-scrollbar x-scrollable y-scrollable style="max-height: 35vh">
                 <div v-html="detiail" />
               </n-scrollbar>
             </n-collapse-transition>
           </div>
-          <p v-else class="fast-admin-page-error-detail">{{ detiail }}</p>
+          <p v-else class="fast-admin-error-detail">{{ detiail }}</p>
         </div>
         <div style="padding: 0 20px">
           <n-collapse-transition
             :show="showStack"
-            class="fast-admin-page-error-stack"
+            class="fast-admin-error-stack"
           >
             <n-scrollbar x-scrollable y-scrollable style="max-height: 35vh">
               <n-log v-if="!isHTML(stack || '')" :log="stack" />
@@ -90,13 +90,11 @@
   </div>
 </template>
 
-<script lang="ts"></script>
-
 <script setup lang="ts">
-import type { NuxtError } from "#app";
-import { computedEager } from "@vueuse/core";
+import { type NuxtError } from "#app";
+import type { NResult } from "#components";
+import { computed, ref, useNuxtConfig, useRouter } from "#imports";
 import defu from "defu";
-import type { NResult } from "naive-ui";
 import {
   ErrorIcon,
   InfoIcon,
@@ -104,7 +102,7 @@ import {
   WarningIcon,
 } from "naive-ui/es/_internal/icons/index";
 import { FetchError } from "ofetch";
-import type { ErrorLevel } from "../../../types/base";
+
 function isHTML(str: string | undefined) {
   if (!str) return false;
   return /<\/?[a-z][\s\S]*>/i.test(str);
@@ -153,14 +151,14 @@ const emit = defineEmits<{
 }>();
 
 const router = useRouter();
-const adminConfig = refAppConfig("fastAdmin");
-const authConfig = refAppConfig("fastAuth");
+const authConfig = useNuxtConfig("fastAuth");
+const adminConfig = useNuxtConfig("fastAdmin");
 
 function isFetchError(error: Error | undefined | null): error is FetchError {
   return error instanceof FetchError;
 }
 
-const options = computedEager(() =>
+const options = computed(() =>
   defu(
     isFetchError(props.error) ? adminConfig.value.fetch!.error : {},
     adminConfig.value.error,
@@ -292,7 +290,7 @@ function toggleShowStack() {
 </script>
 
 <style>
-.fast-admin-page-error {
+.fast-admin-error {
   height: 100%;
   width: 100%;
   display: flex;
@@ -300,12 +298,12 @@ function toggleShowStack() {
   justify-content: center;
 }
 
-.fast-admin-page-error-detail {
+.fast-admin-error-detail {
   white-space: pre-warp;
   text-align: center;
 }
 
-.fast-admin-page-error-stack {
+.fast-admin-error-stack {
   margin: 0 auto;
   max-width: 1280px;
   border-radius: 0.5rem;

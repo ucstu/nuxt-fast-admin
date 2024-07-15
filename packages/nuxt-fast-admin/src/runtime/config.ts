@@ -1,4 +1,4 @@
-import type { Nuxt } from "@nuxt/schema";
+import type { Nuxt, PublicRuntimeConfig } from "@nuxt/schema";
 import type {
   ModuleConfig,
   ModuleConfigDefaults,
@@ -6,12 +6,21 @@ import type {
   ModuleOptionsDefaults,
 } from "./types";
 
-export { name, version } from "../../package.json";
-
+export const name = "@ucstu/nuxt-fast-admin";
+export const version = "1.1.8";
 export const configKey = "fastAdmin";
 
 export const defaults: ModuleOptionsDefaults = {
   modules: [],
+  customize: {
+    layouts: {
+      full: false,
+      default: false,
+    },
+    pages: {
+      auth: false,
+    },
+  },
 };
 
 export const configs: ModuleConfigDefaults = {};
@@ -19,7 +28,8 @@ export const configs: ModuleConfigDefaults = {};
 export function initModule(_options: ModuleOptions, nuxt: Nuxt) {
   const options = _options as ModuleOptionsDefaults;
 
-  nuxt.options.runtimeConfig.public[configKey] = options;
+  nuxt.options.runtimeConfig.public[configKey] =
+    options as unknown as PublicRuntimeConfig[typeof configKey];
   nuxt.options.appConfig[configKey] = configs;
 
   return options;
