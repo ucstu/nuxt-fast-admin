@@ -52,7 +52,7 @@ import {
   useDraggable,
   useElementSize,
   useFullscreen,
-} from "@vueuse/core";
+} from "@ucstu/nuxt-fast-utils/exports";
 
 const [useProvideDefaultLayoutStore, useDefaultLayoutStore] =
   createInjectionState(() => {

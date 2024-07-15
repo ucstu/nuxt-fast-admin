@@ -97,7 +97,7 @@
 
 <script setup lang="ts">
 import { reloadNuxtApp, useNavHistories, useNuxtConfig } from "#imports";
-import FaIcon from "../../icon.vue";
+import { FaIcon } from "#components";
 import { useDefaultLayoutStore } from "./index.vue";
 
 const ICON_MAP: Record<string, string> = {
@@ -141,9 +141,7 @@ const dropdownOptions = computed(() => {
 .fast-admin-layout-default-header {
   height: 3rem;
   padding: 0 1rem;
-  box-shadow:
-    0 1px 3px 0 rgba(0, 0, 0, 0.1),
-    0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
   position: relative;
   z-index: 1;
 }
