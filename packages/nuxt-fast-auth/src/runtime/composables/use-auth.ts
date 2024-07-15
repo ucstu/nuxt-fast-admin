@@ -2,14 +2,14 @@ import type { NuxtApp } from "#app";
 import {
   computed,
   cookieStorage,
-  getNuxtConfig,
   navigateTo,
   ref,
   sessionCookieStorage,
   toValue,
+  useAppConfig,
   useNuxtApp,
-  useNuxtConfig,
   useNuxtStorage,
+  useRuntimeConfig,
   useState,
   type MaybeRefOrGetter,
 } from "#imports";
@@ -23,6 +23,7 @@ import type {
   FastAuthPerWrapper,
   FastAuthToken,
   FastAuthUser,
+  ModuleConfigDefaults,
 } from "../types";
 
 /**
@@ -126,8 +127,9 @@ function getPers(
 export const useAuth = createGlobalState(function <
   S extends AuthStatus = AuthStatus,
 >(nuxtApp: NuxtApp = useNuxtApp()) {
-  const config = useNuxtConfig(configKey);
-  const fastUtilsConfig = getNuxtConfig("fastUtils", { type: "public" });
+  const appConfig = useAppConfig();
+  const config = computed(() => appConfig[configKey] as ModuleConfigDefaults);
+  const fastUtilsConfig = useRuntimeConfig().public.fastUtils;
 
   const _user = useState<FastAuthUser | undefined>("fast-auth:user");
   const _remember = useNuxtStorage<boolean>("fast-auth:remember", false);

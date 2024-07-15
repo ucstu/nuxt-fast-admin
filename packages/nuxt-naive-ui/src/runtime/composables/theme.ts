@@ -1,9 +1,10 @@
 import {
   computed,
-  getNuxtConfig,
-  useNuxtConfig,
+  createNuxtGlobalState,
+  useAppConfig,
   useNuxtReady,
   useNuxtStorage,
+  useRuntimeConfig,
 } from "#imports";
 import { extendRef } from "@ucstu/nuxt-fast-utils/exports";
 import {
@@ -14,13 +15,13 @@ import {
   type GlobalThemeOverrides,
 } from "naive-ui";
 import { configKey } from "../config";
-import type { NaiveUiThemeKey } from "../types";
+import type { ModuleConfigDefaults, NaiveUiThemeKey } from "../types";
 
 function getTheme(
   theme: NaiveUiThemeKey | null,
   themes?: Partial<Record<NaiveUiThemeKey, GlobalTheme>>
 ) {
-  if (!theme) return
+  if (!theme) return;
   switch (theme) {
     case "dark":
       return darkTheme;
@@ -35,25 +36,29 @@ function getThemeOverrides(
   theme: NaiveUiThemeKey | null,
   themesOverrides?: Partial<Record<NaiveUiThemeKey, GlobalThemeOverrides>>
 ) {
-  if (!theme) return
+  if (!theme) return;
   return themesOverrides?.[theme];
 }
 
-export function useNaiveUiTheme(theme?: NaiveUiThemeKey) {
-  const config = useNuxtConfig(configKey);
-  const runtimeConfig = getNuxtConfig("fastUtils", { type: "public" });
+export const useNaiveUiTheme = createNuxtGlobalState(function (
+  theme?: NaiveUiThemeKey
+) {
+  const appConfig = useAppConfig();
+  const runtimeConfig = useRuntimeConfig();
+  const config = computed(() => appConfig[configKey] as ModuleConfigDefaults);
+  const fastUtilsConfig = runtimeConfig.public.fastUtils;
+
   const store = useNuxtStorage<NaiveUiThemeKey>(
     "naive-ui:theme",
-    () => config.value.defaultTheme
+    () => theme ?? config.value.defaultTheme
   );
   const system = useOsTheme();
-  const isReady = useNuxtReady();
 
-  if (theme) store.value = theme;
+  const isReady = useNuxtReady();
 
   const real = computed(() =>
     store.value === "auto"
-      ? runtimeConfig.ssr
+      ? fastUtilsConfig.ssr
         ? isReady.value
           ? system.value
           : "light"
@@ -86,4 +91,4 @@ export function useNaiveUiTheme(theme?: NaiveUiThemeKey) {
       real,
     }
   );
-}
+});

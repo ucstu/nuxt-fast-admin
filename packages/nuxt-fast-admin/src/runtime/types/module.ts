@@ -7,16 +7,16 @@ export interface ModuleOptions {
    */
   modules?: Array<"auth" | "crud" | "fetch">;
   /**
-   * 用户自定义
+   * 功能开关
    */
-  customize?: {
+  features?: {
     /**
      * 自定义布局
      */
     layouts?: {
       /**
        * 全屏布局
-       * @default false
+       * @default true
        */
       full?: boolean;
       /**
@@ -31,9 +31,9 @@ export interface ModuleOptions {
     pages?: {
       /**
        * 登录页面
-       * @default false
+       * @default "auto"
        */
-      auth?: boolean;
+      auth?: boolean | "auto";
     };
   };
 }

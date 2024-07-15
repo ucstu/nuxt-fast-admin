@@ -14,14 +14,19 @@ import type {
 
 export interface ModuleOptions {
   /**
-   * 检查
+   * 功能开关
    */
-  check?: {
+  features?: {
     /**
-     * 是否开启 menu.parent 检查
-     * @default true
+     * 类型检查
      */
-    parent?: boolean;
+    check?: {
+      /**
+       * parent 检查
+       * @default true
+       */
+      parent?: boolean;
+    };
   };
 }
 

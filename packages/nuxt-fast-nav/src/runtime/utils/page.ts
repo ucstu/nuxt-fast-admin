@@ -1,7 +1,11 @@
-import { getNuxtConfig } from "#imports";
+import { useAppConfig } from "#imports";
 import type { RouteRecordNormalized } from "#vue-router";
 import { configKey } from "../config";
-import type { FastNavPage, FastNavPageFilled } from "../types";
+import type {
+  FastNavPage,
+  FastNavPageFilled,
+  ModuleConfigDefaults,
+} from "../types";
 
 function getPageParent(route: RouteRecordNormalized) {
   return (
@@ -13,7 +17,7 @@ export function getPageFilled(
   page: FastNavPage,
   route: RouteRecordNormalized,
 ): FastNavPageFilled {
-  const config = getNuxtConfig(configKey);
+  const config = useAppConfig()[configKey] as ModuleConfigDefaults;
 
   const { name, path, children } = route;
   const type = page.type ?? "static";

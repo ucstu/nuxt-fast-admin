@@ -1,4 +1,4 @@
-import type { Nuxt, PublicRuntimeConfig } from "@nuxt/schema";
+import type { Nuxt } from "@nuxt/schema";
 import type {
   ModuleConfig,
   ModuleConfigDefaults,
@@ -27,12 +27,11 @@ export const configs: ModuleConfigDefaults = {
 
 export function initModule(
   _options: ModuleOptions,
-  nuxt: Nuxt
+  nuxt: Nuxt,
 ): ModuleOptionsDefaults {
   const options = _options as ModuleOptionsDefaults;
 
-  nuxt.options.runtimeConfig.public[configKey] =
-    options as unknown as PublicRuntimeConfig[typeof configKey];
+  nuxt.options.runtimeConfig.public[configKey] = options as any;
   nuxt.options.appConfig[configKey] = configs;
 
   return options;
@@ -41,11 +40,5 @@ export function initModule(
 declare module "@nuxt/schema" {
   interface CustomAppConfig {
     [configKey]?: ModuleConfig;
-  }
-}
-
-declare module "@ucstu/nuxt-fast-utils/types" {
-  interface AppConfigOverrides {
-    [configKey]: ModuleConfigDefaults;
   }
 }

@@ -67,7 +67,7 @@ export default defineNuxtModule<ModuleOptions>({
       name: "FaError",
     });
 
-    if (options.customize.layouts.full) {
+    if (options.features.layouts.full) {
       addComponent({
         filePath: resolve("./runtime/components/fa/layouts/full.vue"),
         name: "FaLayoutsFull",
@@ -76,7 +76,7 @@ export default defineNuxtModule<ModuleOptions>({
       addLayout(resolve("./runtime/components/fa/layouts/full.vue"), "full");
     }
 
-    if (options.customize.layouts.default) {
+    if (options.features.layouts.default) {
       addComponent({
         filePath: resolve("./runtime/components/fa/layouts/default/index.vue"),
         name: "FaLayoutsDefault",
@@ -89,7 +89,7 @@ export default defineNuxtModule<ModuleOptions>({
     }
 
     if (options.modules.includes("auth")) {
-      if (options.customize.pages.auth) {
+      if (options.features.pages.auth) {
         addComponent({
           filePath: resolve("./runtime/components/fa/pages/auth.vue"),
           name: "FaPagesAuth",

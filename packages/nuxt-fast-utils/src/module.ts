@@ -38,8 +38,6 @@ export default defineNuxtModule<ModuleOptions>({
       from: resolve("./runtime/composables"),
       imports: [
         "useNuxtReady",
-        "useNuxtConfig",
-        "getNuxtConfig",
         "useNuxtStorage",
         "createNuxtGlobalState",
         "createNuxtSharedComposable",

@@ -110,8 +110,8 @@ interface MenuMetaParent {
   parent?:
     | "$root"
     | LiteralUnion<
-        FastNavOptions extends { check: { parent: boolean } }
-          ? FastNavOptions["check"]["parent"] extends true
+        FastNavOptions extends { features: { check: { parent: boolean } } }
+          ? FastNavOptions["features"]["check"]["parent"] extends true
             ? ResolvedAppConfig["fastNav"] extends { menus: Array<FastNavMenu> }
               ? KeysDeep<ResolvedAppConfig["fastNav"]["menus"]>
               : string

@@ -1,19 +1,21 @@
 import type { NuxtApp } from "#app";
 import {
+  computed,
   cookieStorage,
-  getNuxtConfig,
   navigateTo,
   sessionCookieStorage,
   shallowRef,
+  useAppConfig,
   useNuxtApp,
-  useNuxtConfig,
   useNuxtStorage,
+  useRuntimeConfig,
 } from "#imports";
 import { createGlobalState } from "@ucstu/nuxt-fast-utils/exports";
 import { configKey } from "../config";
 import type {
   FastAuthForm,
   FastAuthToken,
+  ModuleConfigDefaults,
   RefreshSignInResult,
 } from "../types";
 import {
@@ -41,9 +43,10 @@ export interface RefreshAuthStatus extends AuthStatus {
 export const useRefreshAuth = createGlobalState(function <
   F extends FastAuthForm = FastAuthForm,
 >(nuxtApp: NuxtApp = useNuxtApp()) {
+  const appConfig = useAppConfig();
   const auth = useAuth<RefreshAuthStatus>(nuxtApp);
-  const config = useNuxtConfig(configKey);
-  const fastUtilsConfig = getNuxtConfig("fastUtils", { type: "public" });
+  const config = computed(() => appConfig[configKey] as ModuleConfigDefaults);
+  const fastUtilsConfig = useRuntimeConfig().public.fastUtils;
 
   const {
     token: _token,

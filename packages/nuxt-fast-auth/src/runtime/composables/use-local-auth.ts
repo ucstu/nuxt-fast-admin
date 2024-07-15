@@ -1,8 +1,18 @@
 import type { NuxtApp } from "#app";
-import { navigateTo, shallowRef, useNuxtApp, useNuxtConfig } from "#imports";
+import {
+  computed,
+  navigateTo,
+  shallowRef,
+  useAppConfig,
+  useNuxtApp,
+} from "#imports";
 import { createGlobalState } from "@ucstu/nuxt-fast-utils/exports";
 import { configKey } from "../config";
-import type { FastAuthForm, LocalSignInResult } from "../types";
+import type {
+  FastAuthForm,
+  LocalSignInResult,
+  ModuleConfigDefaults,
+} from "../types";
 import { useAuth, type SignInOptions, type SignUpOptions } from "./use-auth";
 
 /**
@@ -13,7 +23,8 @@ export const useLocalAuth = createGlobalState(function <
   F extends FastAuthForm = FastAuthForm,
 >(nuxtApp: NuxtApp = useNuxtApp()) {
   const auth = useAuth(nuxtApp);
-  const config = useNuxtConfig(configKey);
+  const appConfig = useAppConfig();
+  const config = computed(() => appConfig[configKey] as ModuleConfigDefaults);
 
   const {
     token: _token,

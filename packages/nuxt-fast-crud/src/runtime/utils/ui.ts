@@ -1,11 +1,13 @@
 import type { NuxtApp } from "#app";
-import { getNuxtConfig, useNuxtApp } from "#imports";
+import { useAppConfig, useNuxtApp } from "#imports";
 import FastCrud from "@fast-crud/fast-crud";
 import defu from "defu";
 import { configKey } from "../config";
+import type { ModuleConfigDefaults } from "../types";
 
 export function installFsatCrud(nuxtApp: NuxtApp = useNuxtApp()) {
-  const config = getNuxtConfig(configKey);
+  const config = useAppConfig()[configKey] as ModuleConfigDefaults;
+
   if (typeof nuxtApp.$i18n === "object" && nuxtApp.$i18n !== null) {
     let hasZh = false;
     let hasEn = false;

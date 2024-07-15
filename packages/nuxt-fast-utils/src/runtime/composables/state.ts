@@ -4,7 +4,7 @@ import {
   customRef,
   toValue,
   useNuxtApp,
-  useNuxtConfig,
+  useRuntimeConfig,
   watch,
 } from "#imports";
 import {
@@ -114,11 +114,11 @@ export function useNuxtStorage<T>(
   storage?: MaybeRefOrGetter<StorageLike>,
   options: UseStorageOptions<T> = {},
 ) {
-  const config = useNuxtConfig(configKey, { type: "public" });
+  const config = useRuntimeConfig().public[configKey];
   const storageRef = computed(() =>
     toValue(storage)
       ? toValue(storage)
-      : config.value.ssr
+      : config.ssr
         ? cookieStorage
         : localStorage,
   );

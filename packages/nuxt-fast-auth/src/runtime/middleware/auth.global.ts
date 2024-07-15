@@ -1,5 +1,12 @@
-import { defineNuxtRouteMiddleware, useNuxtApp } from "#app";
-import { getNuxtConfig, navigateTo, shallowRef, useAuth } from "#imports";
+import { defineNuxtRouteMiddleware } from "#app";
+import {
+  navigateTo,
+  shallowRef,
+  useAppConfig,
+  useAuth,
+  useNuxtApp,
+  useRuntimeConfig,
+} from "#imports";
 import { cloneDeep } from "lodash-es";
 import type { ShallowRef } from "vue-demi";
 import { $auth, type useRefreshAuth } from "../composables";
@@ -8,6 +15,7 @@ import type {
   FastAuthPage,
   FastAuthPageFilled,
   GuardOptions,
+  ModuleConfigDefaults,
   PageHooks,
 } from "../types";
 
@@ -50,8 +58,8 @@ export function getAuthPage(page: FastAuthPage, nuxtApp = useNuxtApp()) {
 export default defineNuxtRouteMiddleware(async (_to, _from) => {
   const _auth = useAuth();
   const nuxtApp = useNuxtApp();
-  const config = getNuxtConfig(configKey);
-  const runtimeConfig = getNuxtConfig(configKey, { type: "public" });
+  const config = useAppConfig()[configKey] as ModuleConfigDefaults;
+  const runtimeConfig = useRuntimeConfig().public[configKey];
 
   const { status, user, token, getUser } = _auth;
 

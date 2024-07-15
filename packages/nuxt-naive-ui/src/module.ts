@@ -268,7 +268,7 @@ export default defineNuxtModule<ModuleOptions>({
 
     addImportsSources({
       from: resolve("./runtime/composables"),
-      imports: [...composables, "useNaiveUiTheme", "useNaiveUiThemeConfig"],
+      imports: [...composables, "useNaiveUiI18n", "useNaiveUiTheme"],
     });
   },
 });

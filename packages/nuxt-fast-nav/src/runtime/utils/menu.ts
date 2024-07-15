@@ -1,11 +1,15 @@
-import { getNuxtConfig } from "#imports";
+import { useAppConfig } from "#imports";
 import { configKey } from "../config";
-import type { FastNavMenu, FastNavMenuFilled } from "../types";
+import type {
+  FastNavMenu,
+  FastNavMenuFilled,
+  ModuleConfigDefaults,
+} from "../types";
 
 export function getMenuFilled(
   menu: FastNavMenu | FastNavMenuFilled,
 ): Omit<FastNavMenuFilled, "children" | "parent"> {
-  const config = getNuxtConfig(configKey);
+  const config = useAppConfig()[configKey] as ModuleConfigDefaults;
 
   return {
     name: menu.name,

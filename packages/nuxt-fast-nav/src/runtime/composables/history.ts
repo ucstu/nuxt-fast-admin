@@ -4,8 +4,8 @@ import {
   createNuxtGlobalState,
   navigateTo,
   toValue,
+  useAppConfig,
   useNuxtApp,
-  useNuxtConfig,
   useRouter,
   useState,
   type MaybeRefOrGetter,
@@ -18,6 +18,7 @@ import type {
   FastNavHistory,
   FastNavHistoryFilled,
   FastNavPageFilled,
+  ModuleConfigDefaults,
 } from "../types";
 import { toEqual } from "../utils";
 import { useNavPages } from "./page";
@@ -51,7 +52,8 @@ export const useNavHistories = createNuxtGlobalState(function (
 ) {
   const pages = useNavPages(nuxtApp);
   const { currentRoute } = useRouter();
-  const config = useNuxtConfig(configKey);
+  const appConfig = useAppConfig();
+  const config = computed(() => appConfig[configKey] as ModuleConfigDefaults);
 
   const origin = useState<Array<FastNavHistory>>(
     "fast-nav:histories",

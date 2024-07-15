@@ -1,16 +1,21 @@
-import { defineNuxtPlugin, useRouter } from "#app";
-import { useNuxtConfig } from "#imports";
+import { defineNuxtPlugin } from "#app";
+import { computed, useAppConfig, useRouter } from "#imports";
 import type { RequiredDeep } from "@ucstu/nuxt-fast-utils/exports";
 import defu from "defu";
 import { configKey } from "../config";
-import type { FastAuthBase, FastAuthMeta } from "../types";
+import type {
+  FastAuthBase,
+  FastAuthMeta,
+  ModuleConfigDefaults,
+} from "../types";
 import { isAuthMeta } from "../utils";
 
 export default defineNuxtPlugin({
   enforce: "pre",
   setup(nuxtApp) {
     const router = useRouter();
-    const config = useNuxtConfig(configKey);
+    const appConfig = useAppConfig();
+    const config = computed(() => appConfig[configKey] as ModuleConfigDefaults);
 
     nuxtApp.hook("fast-auth:get-page", (input, result) => {
       const raw = router.resolve(input.to).meta.auth as

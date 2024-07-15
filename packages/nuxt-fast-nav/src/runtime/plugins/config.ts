@@ -1,14 +1,16 @@
 import { defineNuxtPlugin } from "#app";
-import { useNuxtConfig, useRouter } from "#imports";
+import { computed, useAppConfig, useRouter } from "#imports";
 import { assign, isEqual, pick } from "lodash-es";
 import { configKey } from "../config";
+import type { ModuleConfigDefaults } from "../types";
 import { getMenuFilled, getPageFilled, toEqual } from "../utils";
 
 export default defineNuxtPlugin({
   enforce: "pre",
   setup(nuxtApp) {
     const router = useRouter();
-    const config = useNuxtConfig(configKey);
+    const appConfig = useAppConfig();
+    const config = computed(() => appConfig[configKey] as ModuleConfigDefaults);
 
     nuxtApp.hook("fast-nav:get-menus", (result) => {
       result.value.push(...config.value.menus);

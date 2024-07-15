@@ -1,8 +1,16 @@
-import { defineNuxtPlugin, onNuxtReady } from "#app";
-import { getNuxtConfig, useAuth, useNuxtConfig, watchEffect } from "#imports";
+import { defineNuxtPlugin } from "#app";
+import {
+  computed,
+  onNuxtReady,
+  useAppConfig,
+  useAuth,
+  useRuntimeConfig,
+  watchEffect,
+} from "#imports";
 import { useIntervalFn, watchImmediate } from "@ucstu/nuxt-fast-utils/exports";
 import type { useRefreshAuth } from "../composables";
 import { configKey } from "../config";
+import type { ModuleConfigDefaults } from "../types";
 
 function setTimeArrive(fn: () => void, time: number | string | Date) {
   let timer: NodeJS.Timeout | undefined;
@@ -27,8 +35,9 @@ function setTimeArrive(fn: () => void, time: number | string | Date) {
 export default defineNuxtPlugin({
   async setup() {
     const auth = useAuth();
-    const config = useNuxtConfig(configKey);
-    const runtimeConfig = getNuxtConfig(configKey, { type: "public" });
+    const appConfig = useAppConfig();
+    const config = computed(() => appConfig[configKey] as ModuleConfigDefaults);
+    const runtimeConfig = useRuntimeConfig().public[configKey];
 
     const { user, token, getUser, signOut } = auth;
 
