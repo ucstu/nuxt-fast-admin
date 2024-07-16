@@ -51,6 +51,10 @@ export interface AuthStatus {
    * 已登录
    */
   authed?: boolean;
+  /**
+   * 当前角色
+   */
+  role?: FastAuthPer | null | undefined;
 }
 /**
  * 跳转选项
@@ -99,23 +103,44 @@ export interface SignUpOptions extends SignInOptions {
 export interface SignOutOptions extends NavigateOptions {}
 
 /**
- * 获取用户权限|角色列表
+ * 获取用户角色列表
  * @param user 用户信息
- * @param type 类型
  * @param nuxtApp Nuxt 应用
- * @returns 用户权限|角色列表
+ * @returns 用户角色列表
  */
-function getPers(
+function getRoles(
   user: FastAuthUser | null | undefined,
-  type: "permissions" | "roles" = "permissions",
-  nuxtApp: NuxtApp = useNuxtApp(),
+  nuxtApp: NuxtApp = useNuxtApp()
 ) {
   const result = ref<Array<FastAuthPer>>([]);
   nuxtApp.hooks.callHookWith(
     (hooks, args) => hooks.forEach((hook) => hook(...args)),
-    `fast-auth:get-${type}`,
+    "fast-auth:get-roles",
     user,
-    result,
+    result
+  );
+  return result.value;
+}
+
+/**
+ * 获取用户权限列表
+ * @param user 用户信息
+ * @param role 用户角色
+ * @param nuxtApp Nuxt 应用
+ * @returns 用户权限列表
+ */
+function getPermissions(
+  user: FastAuthUser | null | undefined,
+  role: FastAuthPer | null | undefined,
+  nuxtApp: NuxtApp = useNuxtApp()
+) {
+  const result = ref<Array<FastAuthPer>>([]);
+  nuxtApp.hooks.callHookWith(
+    (hooks, args) => hooks.forEach((hook) => hook(...args)),
+    "fast-auth:get-permissions",
+    user,
+    role,
+    result
   );
   return result.value;
 }
@@ -125,7 +150,7 @@ function getPers(
  * @returns 认证
  */
 export const useAuth = createGlobalState(function <
-  S extends AuthStatus = AuthStatus,
+  S extends AuthStatus = AuthStatus
 >(nuxtApp: NuxtApp = useNuxtApp()) {
   const appConfig = useAppConfig();
   const config = computed(() => appConfig[configKey] as ModuleConfigDefaults);
@@ -142,8 +167,8 @@ export const useAuth = createGlobalState(function <
           ? cookieStorage
           : sessionCookieStorage
         : _remember.value
-          ? localStorage
-          : sessionStorage,
+        ? localStorage
+        : sessionStorage
   );
   const _status = useState<S>(
     "fast-auth:status",
@@ -154,17 +179,18 @@ export const useAuth = createGlobalState(function <
         signOut: false,
         getUser: false,
         authed: false,
-      }) as S,
+        role: null,
+      } as S)
   );
   const roles = computed(() =>
-    getPers(_user.value, "roles", nuxtApp).map(
-      (item) => ({ type: "role", value: item }) as FastAuthPerWrapper,
-    ),
+    getRoles(_user.value, nuxtApp).map(
+      (item) => ({ type: "role", value: item } as FastAuthPerWrapper)
+    )
   );
   const permissions = computed(() =>
-    getPers(_user.value, "permissions", nuxtApp).map(
-      (item) => ({ type: "per", value: item }) as FastAuthPerWrapper,
-    ),
+    getPermissions(_user.value, _status.value.role, nuxtApp).map(
+      (item) => ({ type: "per", value: item } as FastAuthPerWrapper)
+    )
   );
 
   watchImmediate(_user, (user) => (_status.value.authed = !!user));
@@ -174,7 +200,7 @@ export const useAuth = createGlobalState(function <
    * @param token 令牌
    */
   async function getUser(
-    token: MaybeRefOrGetter<string | undefined> = _token.value?.value,
+    token: MaybeRefOrGetter<string | undefined> = _token.value?.value
   ) {
     try {
       _status.value.getUser = true;
@@ -197,12 +223,12 @@ export const useAuth = createGlobalState(function <
         "fast-auth:sign-out",
         _user,
         _token,
-        undefined as any,
+        undefined as any
       );
       if (navigate) {
         await navigateTo(
           navigate === true ? config.value.signIn : navigate,
-          options.navigateOptions,
+          options.navigateOptions
         );
       }
     } finally {

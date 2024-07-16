@@ -19,7 +19,7 @@ export interface ModuleConfig {
   name?: string;
   /**
    * 应用图标
-   * @default "/favicon.ico"
+   * @default base64
    */
   logo?: string;
   /**

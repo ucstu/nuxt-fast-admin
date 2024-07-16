@@ -8,7 +8,7 @@ export default defineNuxtPlugin({
     const histories = useNavHistories(nuxtApp as NuxtApp);
 
     addRouteMiddleware(async (to) => {
-      const history = ref<FastNavHistory>({
+      const history = ref<FastNavHistory | undefined>({
         to: {
           hash: to.hash,
           path: to.path,
@@ -16,7 +16,7 @@ export default defineNuxtPlugin({
         },
       });
       await nuxtApp.callHook("fast-nav:get-history", to, history);
-      histories.open(history.value);
+      if (history.value) histories.open(history.value);
     });
   },
 });

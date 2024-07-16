@@ -1,9 +1,7 @@
 import { FaIcon, NuxtLink } from "#components";
 import {
-  $auth,
   createNuxtGlobalState,
   h,
-  isAuthMeta,
   isNavMenuFilled,
   useNavMenus,
 } from "#imports";
@@ -13,7 +11,7 @@ import type {
 } from "@ucstu/nuxt-fast-nav/types";
 import { reactify } from "@ucstu/nuxt-fast-utils/exports";
 import type { MenuOption } from "@ucstu/nuxt-naive-ui/exports";
-import { getToPath } from "../utils";
+import { authPage, getToPath } from "../utils";
 
 export function getAdminMenuOptions(
   menuOrPage: FastNavMenuFilled | FastNavPageFilled
@@ -35,9 +33,7 @@ export function getAdminMenuOptions(
   if (isNavMenuFilled(menuOrPage)) {
     show = menu.show && (children?.some((item) => item?.show) ?? false);
   } else {
-    show =
-      page.menu.show &&
-      $auth(isAuthMeta(page.auth) ? page.auth.auth : page.auth);
+    show = page.menu.show && authPage(page);
   }
 
   const options: MenuOption = {

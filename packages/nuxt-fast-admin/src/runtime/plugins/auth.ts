@@ -1,5 +1,6 @@
 import { defineNuxtPlugin } from "#app";
-import { useAuth } from "#imports";
+import { authPage, useAuth } from "#imports";
+import { authPageRef } from "../utils";
 
 export default defineNuxtPlugin({
   enforce: "pre",
@@ -13,5 +14,6 @@ export default defineNuxtPlugin({
         }
       }
     );
+    authPageRef.value = authPage;
   },
 });

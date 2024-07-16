@@ -21,7 +21,7 @@ export default defineNuxtPlugin({
     "fast-auth:get-roles": (user, result) => {
       result.value = user?.roles || [];
     },
-    "fast-auth:get-permissions": (user, result) => {
+    "fast-auth:get-permissions": (user, role, result) => {
       result.value = user?.permissions || [];
     },
   },

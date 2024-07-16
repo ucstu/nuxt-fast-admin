@@ -134,6 +134,9 @@ export default defineNuxtModule<ModuleOptions>({
             menu: {
               show: false,
             },
+            tab: {
+              show: false,
+            },
           },
         });
       });
