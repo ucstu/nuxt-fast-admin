@@ -1,9 +1,12 @@
 <template>
-  <div>for</div>
+  <div>bar - bar</div>
 </template>
 
 <script setup lang="ts">
 definePageMeta({
-  title: "for",
+  title: "bar - bar",
+  menu: {
+    parent: "bar",
+  },
 });
 </script>

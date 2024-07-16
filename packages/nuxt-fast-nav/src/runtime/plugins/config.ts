@@ -3,7 +3,7 @@ import { computed, useAppConfig, useRouter } from "#imports";
 import { assign, isEqual, pick } from "lodash-es";
 import { configKey } from "../config";
 import type { ModuleConfigDefaults } from "../types";
-import { getMenuFilled, getPageFilled, toEqual } from "../utils";
+import { getNavMenuFilled, getNavPageFilled, toEqual } from "../utils";
 
 export default defineNuxtPlugin({
   enforce: "pre",
@@ -16,7 +16,7 @@ export default defineNuxtPlugin({
       result.value.push(...config.value.menus);
     });
     nuxtApp.hook("fast-nav:get-menu", (input, result) => {
-      const menu = getMenuFilled(input);
+      const menu = getNavMenuFilled(input);
       if (!result.value) {
         result.value = menu;
         return;
@@ -26,6 +26,7 @@ export default defineNuxtPlugin({
     nuxtApp.hook("fast-nav:get-pages", (result) => {
       router.getRoutes().forEach((route) => {
         result.value.push({
+          ...route.meta,
           type: "static",
           to: route,
         });
@@ -39,7 +40,7 @@ export default defineNuxtPlugin({
       if (!route) {
         return console.warn(`[fast-nav] 未找到页面 `, input, ` 的路由`);
       }
-      const page = getPageFilled(input, route);
+      const page = getNavPageFilled(input, route);
       if (!result.value) {
         result.value = page;
         return;

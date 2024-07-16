@@ -1,6 +1,8 @@
 import {
   addComponent,
+  addImportsSources,
   addLayout,
+  addPlugin,
   createResolver,
   defineNuxtModule,
   extendPages,
@@ -19,6 +21,7 @@ import type { ModuleOptions } from "./runtime/types";
 export type {
   ModuleOptions,
   ModulePublicRuntimeConfig,
+  ModuleRuntimeHooks,
 } from "./runtime/types/module";
 
 export default defineNuxtModule<ModuleOptions>({
@@ -59,6 +62,10 @@ export default defineNuxtModule<ModuleOptions>({
       name: "VNode",
     });
     addComponent({
+      filePath: resolve("./runtime/components/fa/app.vue"),
+      name: "FaApp",
+    });
+    addComponent({
       filePath: resolve("./runtime/components/fa/icon.vue"),
       name: "FaIcon",
     });
@@ -67,45 +74,83 @@ export default defineNuxtModule<ModuleOptions>({
       name: "FaError",
     });
 
-    if (options.features.layouts.full) {
-      addComponent({
-        filePath: resolve("./runtime/components/fa/layouts/full.vue"),
-        name: "FaLayoutsFull",
-      });
-    } else {
-      addLayout(resolve("./runtime/components/fa/layouts/full.vue"), "full");
-    }
-
-    if (options.features.layouts.default) {
-      addComponent({
-        filePath: resolve("./runtime/components/fa/layouts/default/index.vue"),
-        name: "FaLayoutsDefault",
-      });
-    } else {
-      addLayout(
-        resolve("./runtime/components/fa/layouts/default/index.vue"),
-        "default"
-      );
-    }
-
+    addPlugin({
+      name,
+      src: resolve("./runtime/plugins/plugin.ts"),
+    });
     if (options.modules.includes("auth")) {
-      if (options.features.pages.auth) {
-        addComponent({
-          filePath: resolve("./runtime/components/fa/pages/auth.vue"),
-          name: "FaPagesAuth",
-        });
-      } else {
-        extendPages((pages) => {
-          if (pages.length === 0) return;
-          pages.push({
-            path: resolve("./runtime/components/fa/pages/auth.vue"),
-            meta: {
-              layout: "full",
-              auth: false,
-            },
-          });
-        });
-      }
+      addPlugin({
+        name: `${name}:auth`,
+        src: resolve("./runtime/plugins/auth.ts"),
+      });
     }
+
+    addComponent({
+      filePath: resolve("./runtime/components/fa/layouts/full.vue"),
+      name: "FaLayoutsFull",
+    });
+    if (options.features.layouts.full) {
+      addLayout(resolve("./runtime/layouts/full.vue"), "full");
+    }
+
+    addComponent({
+      filePath: resolve("./runtime/components/fa/layouts/default/index.vue"),
+      name: "FaLayoutsDefault",
+    });
+    addComponent({
+      filePath: resolve("./runtime/components/fa/layouts/default/menu.vue"),
+      name: "FaLayoutsDefaultMenu",
+    });
+    addComponent({
+      filePath: resolve("./runtime/components/fa/layouts/default/header.vue"),
+      name: "FaLayoutsDefaultHeader",
+    });
+    addComponent({
+      filePath: resolve("./runtime/components/fa/layouts/default/tabbar.vue"),
+      name: "FaLayoutsDefaultTabbar",
+    });
+    if (options.features.layouts.default) {
+      addLayout(resolve("./runtime/layouts/default.vue"), "default");
+    }
+
+    addComponent({
+      filePath: resolve("./runtime/components/fa/pages/auth.vue"),
+      name: "FaPagesAuth",
+    });
+    if (
+      (options.features.pages.auth === "auto" &&
+        options.modules.includes("auth")) ||
+      options.features.pages.auth
+    ) {
+      extendPages((pages) => {
+        if (pages.length === 0) return;
+        pages.push({
+          file: resolve("./runtime/pages/auth.vue"),
+          path: "/auth",
+          name: "auth",
+          meta: {
+            layout: "full",
+            auth: false,
+            menu: {
+              show: false,
+            },
+          },
+        });
+      });
+    }
+
+    addImportsSources({
+      from: resolve("./runtime/composables"),
+      imports: [
+        "getAdminMenuOptions",
+        "useAdminMenuOptions",
+        "useAdminGlobalMenuOptions",
+      ],
+    });
+
+    addImportsSources({
+      from: resolve("./runtime/utils"),
+      imports: ["isFetchError", "handleError"],
+    });
   },
 });

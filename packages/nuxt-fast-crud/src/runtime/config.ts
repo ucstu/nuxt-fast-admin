@@ -39,6 +39,6 @@ export function initModule(
 
 declare module "@nuxt/schema" {
   interface CustomAppConfig {
-    [configKey]?: ModuleConfig;
+    fastCrud?: ModuleConfig;
   }
 }

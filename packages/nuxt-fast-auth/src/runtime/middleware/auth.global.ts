@@ -1,5 +1,6 @@
 import { defineNuxtRouteMiddleware } from "#app";
 import {
+  getAuthPageFilled,
   navigateTo,
   shallowRef,
   useAppConfig,
@@ -7,51 +8,27 @@ import {
   useNuxtApp,
   useRuntimeConfig,
 } from "#imports";
-import { cloneDeep } from "lodash-es";
 import type { ShallowRef } from "vue-demi";
 import { $auth, type useRefreshAuth } from "../composables";
 import { configKey } from "../config";
-import type {
-  FastAuthPage,
-  FastAuthPageFilled,
-  GuardOptions,
-  ModuleConfigDefaults,
-  PageHooks,
-} from "../types";
+import type { GuardOptions, ModuleConfigDefaults, PageHooks } from "../types";
 
 const HookNull = Symbol("HookNull");
 
 function callHook(
   name: keyof PageHooks,
   options: GuardOptions,
-  nuxtApp = useNuxtApp(),
+  nuxtApp = useNuxtApp()
 ) {
   const result = shallowRef<ReturnType<typeof navigateTo> | typeof HookNull>(
-    HookNull,
+    HookNull
   );
   nuxtApp.hooks.callHookWith(
     (hooks, args) => hooks.forEach((hook) => hook(...args)),
     name,
     options,
-    result as ShallowRef<ReturnType<typeof navigateTo> | undefined>,
+    result as ShallowRef<ReturnType<typeof navigateTo> | undefined>
   );
-  return result.value;
-}
-
-export function getAuthPage(page: FastAuthPage, nuxtApp = useNuxtApp()) {
-  const result = shallowRef<FastAuthPageFilled>(
-    cloneDeep(page) as FastAuthPageFilled,
-  );
-
-  nuxtApp.hooks.callHookWith(
-    (hooks, args) => {
-      hooks.forEach((hook) => hook(...args));
-    },
-    "fast-auth:get-page",
-    page,
-    result,
-  );
-
   return result.value;
 }
 
@@ -76,8 +53,8 @@ export default defineNuxtRouteMiddleware(async (_to, _from) => {
     await getUser();
   }
 
-  const to = getAuthPage({ to: _to }, nuxtApp);
-  const from = getAuthPage({ to: _from }, nuxtApp);
+  const to = getAuthPageFilled({ to: _to }, nuxtApp);
+  const from = getAuthPageFilled({ to: _from }, nuxtApp);
 
   const options: GuardOptions = {
     to,
@@ -102,7 +79,7 @@ export default defineNuxtRouteMiddleware(async (_to, _from) => {
       return navigateTo(
         to.auth.redirect.anonymous === true
           ? config.signIn
-          : to.auth.redirect.anonymous,
+          : to.auth.redirect.anonymous
       );
     }
   } else {
@@ -114,7 +91,7 @@ export default defineNuxtRouteMiddleware(async (_to, _from) => {
         return navigateTo(
           to.auth.redirect.passed === true
             ? config.home
-            : to.auth.redirect.passed,
+            : to.auth.redirect.passed
         );
       }
     } else {
@@ -125,7 +102,7 @@ export default defineNuxtRouteMiddleware(async (_to, _from) => {
         return navigateTo(
           to.auth.redirect.failed === true
             ? config.home
-            : to.auth.redirect.failed,
+            : to.auth.redirect.failed
         );
       }
     }

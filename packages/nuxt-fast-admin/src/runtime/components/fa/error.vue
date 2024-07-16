@@ -91,9 +91,11 @@
 </template>
 
 <script setup lang="ts">
-import { type NuxtError } from "#app";
+import { useAppConfig, type NuxtError } from "#app";
 import type { NResult } from "#components";
-import { computed, ref, useNuxtConfig, useRouter } from "#imports";
+import { computed, isFetchError, isNuxtError, ref, useRouter } from "#imports";
+import type { RouteLocationRaw } from "#vue-router";
+import type { ModuleConfigDefaults as FastAuthConfig } from "@ucstu/nuxt-fast-auth/types";
 import defu from "defu";
 import {
   ErrorIcon,
@@ -101,12 +103,8 @@ import {
   SuccessIcon,
   WarningIcon,
 } from "naive-ui/es/_internal/icons/index";
-import { FetchError } from "ofetch";
-
-function isHTML(str: string | undefined) {
-  if (!str) return false;
-  return /<\/?[a-z][\s\S]*>/i.test(str);
-}
+import type { FetchError } from "ofetch";
+import type { ErrorLevel, ModuleConfigDefaults } from "../../types";
 
 const CAN_PPROCESS_STATUS = [
   401,
@@ -139,7 +137,7 @@ const props = withDefaults(
   }>(),
   {
     size: "medium",
-  },
+  }
 );
 
 const emit = defineEmits<{
@@ -151,18 +149,20 @@ const emit = defineEmits<{
 }>();
 
 const router = useRouter();
-const authConfig = useNuxtConfig("fastAuth");
-const adminConfig = useNuxtConfig("fastAdmin");
+const appConfig = useAppConfig();
+const authConfig = computed(() => appConfig.fastAuth as FastAuthConfig);
+const adminConfig = computed(() => appConfig.fastAdmin as ModuleConfigDefaults);
 
-function isFetchError(error: Error | undefined | null): error is FetchError {
-  return error instanceof FetchError;
+function isHTML(str: string | undefined) {
+  if (!str) return false;
+  return /<\/?[a-z][\s\S]*>/i.test(str);
 }
 
 const options = computed(() =>
   defu(
     isFetchError(props.error) ? adminConfig.value.fetch!.error : {},
-    adminConfig.value.error,
-  ),
+    adminConfig.value.error
+  )
 );
 const error = computed(() =>
   isNuxtError(props.error)
@@ -172,7 +172,7 @@ const error = computed(() =>
         ? (props.error.cause as NuxtError)
         : props.error
       : props.error
-    : props.error,
+    : props.error
 );
 const code = computed(() => {
   return (typeof props.status === "number" ? props.status : undefined) ||
@@ -180,7 +180,7 @@ const code = computed(() => {
     ? Number.parseInt(
         (error.value as FetchError).response?._data[
           adminConfig.value.fetch!.status!
-        ],
+        ]
       ) ||
         (error.value as FetchError).statusCode ||
         0
@@ -218,10 +218,10 @@ const message = computed(() => {
     error.value.message === "Failed to fetch"
       ? "连接失败"
       : error.value instanceof DOMException &&
-          error.value.message === "signal is aborted without reason"
-        ? "请求取消"
-        : (error.value as NuxtError).statusMessage ||
-          (error.value as NuxtError).message)
+        error.value.message === "signal is aborted without reason"
+      ? "请求取消"
+      : (error.value as NuxtError).statusMessage ||
+        (error.value as NuxtError).message)
   );
 });
 
@@ -239,13 +239,13 @@ const description = computed(() => {
     error.value.message === "Failed to fetch"
       ? "连接服务器失败，请更换网络连接或稍后再试"
       : error.value instanceof DOMException &&
-          error.value.message === "signal is aborted without reason"
-        ? "请求已取消，可能因为连续发起了重复请求"
-        : ((error.value as FetchError).response?._data[
-            adminConfig.value.fetch.message
-          ] as string) ||
-          (error.value as NuxtError).message ||
-          (error.value as NuxtError).statusMessage)
+        error.value.message === "signal is aborted without reason"
+      ? "请求已取消，可能因为连续发起了重复请求"
+      : ((error.value as FetchError).response?._data[
+          adminConfig.value.fetch.message
+        ] as string) ||
+        (error.value as NuxtError).message ||
+        (error.value as NuxtError).statusMessage)
   );
 });
 
@@ -257,16 +257,20 @@ const detiail = computed(() => {
   );
 });
 
+function getPath(location: RouteLocationRaw) {
+  return typeof location === "string" ? location : location.path;
+}
+
 function goAuth() {
   emit(
     "clearError",
-    defu(error.value, { redirect: authConfig.value.pages!.signIn }),
+    defu(error.value, { redirect: getPath(authConfig.value.signIn) })
   );
 }
 function goHome() {
   emit(
     "clearError",
-    defu(error.value, { redirect: authConfig.value.pages!.home }),
+    defu(error.value, { redirect: getPath(authConfig.value.home) })
   );
 }
 function goBack() {
@@ -275,8 +279,8 @@ function goBack() {
     defu(error.value, {
       redirect:
         (router.options.history.state.back as string) ||
-        authConfig.value.pages!.home,
-    }),
+        getPath(authConfig.value.home),
+    })
   );
 }
 function known() {

@@ -1,18 +1,24 @@
 <template>
   <div class="relative n-bg-base flex flex-col h-screen">
-    <div class="relative flex justify-between">
-      <n-select-tabs v-model="current" :options="options" />
-      <n-button :disabled="!rpc || refreshing" @click="refresh">
-        <n-loading v-if="refreshing" />
-        <span v-else>Refresh</span>
-      </n-button>
+    <div v-if="options.length" class="w-full h-full">
+      <div class="relative flex justify-between">
+        <n-select-tabs v-model="current" :options="options" />
+        <n-button :disabled="!rpc || refreshing" @click="refresh">
+          <n-loading v-if="refreshing" />
+          <span v-else>Refresh</span>
+        </n-button>
+      </div>
+      <rapi-doc
+        v-if="showRapiDoc"
+        :spec-url="currentDoc?.url"
+        render-style="read"
+        style="flex: 1"
+      />
     </div>
-    <rapi-doc
-      v-if="showRapiDoc"
-      :spec-url="currentDoc?.url"
-      render-style="read"
-      style="flex: 1"
-    />
+    <div class="w-full h-full flex justify-center items-center" v-else>
+      <n-icon icon="tabler:mood-empty" />
+      <span class="ml-2">No documents found</span>
+    </div>
   </div>
 </template>
 
@@ -60,7 +66,7 @@ const currentDoc = computed(() => {
 onDevtoolsClientConnected(async (client) => {
   rpc.value = client.devtools.extendClientRpc<ServerFunctions, ClientFunctions>(
     RPC_NAMESPACE,
-    {},
+    {}
   );
 
   documents.value = await rpc.value.getDocuments();

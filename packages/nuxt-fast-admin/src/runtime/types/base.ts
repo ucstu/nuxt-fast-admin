@@ -1,3 +1,4 @@
+import type { FastAuthForm } from "@ucstu/nuxt-fast-auth/types";
 import type { SetFieldType } from "@ucstu/nuxt-fast-utils/exports";
 import type { DropdownOption } from "@ucstu/nuxt-naive-ui/exports";
 
@@ -86,7 +87,7 @@ export interface LayoutDefaultOptions {
       show?: boolean;
       /**
        * 头像地址
-       * @default /images/layouts/default/header/avatar.svg
+       * @default base64
        */
       avatar?: string;
       /**
@@ -147,14 +148,18 @@ export interface PageAuthOptions {
   remember?: boolean;
   /**
    * 左侧图片
-   * @default /images/pages/auth/picture.png
+   * @default base64
    */
   picture?: string | false;
   /**
    * 背景图片
-   * @default /images/pages/auth/background.png
+   * @default base64
    */
   background?: string | false;
+  /**
+   * 表单默认
+   */
+  form?: FastAuthForm;
 }
 // #endregion
 

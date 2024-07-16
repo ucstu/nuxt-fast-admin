@@ -1,22 +1,18 @@
 <template>
   <n-tabs
-    :value="currentPage?.name"
-    :closable="closeable"
     animated
     type="card"
     size="small"
+    :value="current"
+    :closable="closeable"
     class="fast-admin-layout-default-tabbar"
     @close="closeTab"
     @update:value="openTab"
   >
-    <n-tab
-      v-for="history in histories"
-      :key="history.name?.toString()"
-      :name="history.name?.toString() || 'undefined'"
-    >
+    <n-tab v-for="(history, index) in histories" :key="index" :name="index">
       <n-flex align="center">
-        <fa-icon :name="history.tab.icon" />
-        <span>{{ history.tab.title }}</span>
+        <fa-icon :name="history.meta.tab.icon || history.meta.icon" />
+        <span>{{ history.meta.tab.title || history.meta.title }}</span>
       </n-flex>
     </n-tab>
     <template #prefix>
@@ -69,27 +65,42 @@
 
 <script setup lang="ts">
 import type { NTabs } from "#components";
+import {
+  computed,
+  navigateTo,
+  toEqual,
+  useAppConfig,
+  useNavHistories,
+} from "#imports";
 import type { DropdownOption } from "naive-ui";
+import type { ModuleConfigDefaults } from "../../../../types";
 import { useDefaultLayoutStore } from "./index.vue";
 
-const tabbarConfig = refAppConfig("fastAdmin.layouts.default.tabbar");
+const appConfig = useAppConfig();
+const tabbarConfig = computed(
+  () => (appConfig.fastAdmin as ModuleConfigDefaults).layouts.default.tabbar
+);
 
+const histories = useNavHistories();
+const { close, closeAll, closeOthers } = histories;
 const { showPage, refreshPage, pageFullscreen } = useDefaultLayoutStore()!;
-const { histories, currentPage, closePage, closeAllPages, closeOtherPages } =
-  useNav();
 
-function closeTab(name: string | undefined) {
-  const page = histories.value.find((history) => history.name === name);
-  if (!page) return;
-  closePage(page);
+const current = computed(() =>
+  histories.value.findIndex((item) => item === histories.current)
+);
+
+function closeTab(index: number) {
+  close(histories.value[index]);
 }
 
-function openTab(name: string) {
-  navigateTo({ name });
+async function openTab(index: number) {
+  await navigateTo(histories.value[index]?.to);
 }
 
 const closeable = computed(
-  () => histories.value.length > 1 || currentPage.value?.name === "/",
+  () =>
+    histories.value.length > 1 ||
+    !toEqual(histories.value[0]?.to, histories.current?.to)
 );
 
 const options: DropdownOption[] = [
@@ -101,13 +112,13 @@ const options: DropdownOption[] = [
 async function handleSelect(value: string) {
   switch (value) {
     case "close":
-      await closePage();
+      await close();
       break;
     case "close-all":
-      await closeAllPages();
+      await closeAll();
       break;
     case "close-other":
-      await closeOtherPages();
+      await closeOthers();
       break;
   }
 }

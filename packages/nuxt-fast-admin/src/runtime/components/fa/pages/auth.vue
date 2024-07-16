@@ -25,7 +25,6 @@
           class="fast-admin-page-auth-box-form"
           :model="authForm"
           :rules="authFormRules"
-          :label-width="80"
         >
           <slot
             name="form-header"
@@ -84,7 +83,7 @@
                 <n-button
                   v-if="authConfig!.forget && authType === 'signIn'"
                   text
-                  @click="authConfig!.hooks!.forget"
+                  @click="forgetPassword"
                 >
                   忘记密码
                 </n-button>
@@ -122,34 +121,39 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, useAuth, useNuxtConfig, useRouter } from "#imports";
-import type { FastAuthForm } from "@ucstu/nuxt-fast-auth/types";
+import {
+  computed,
+  handleError,
+  ref,
+  useAppConfig,
+  useAuth,
+  useNuxtApp,
+  useRouter,
+} from "#imports";
 import defu from "defu";
 import type { FormInst, FormRules } from "naive-ui";
 import { FetchError } from "ofetch";
+import type { ModuleConfigDefaults } from "../../../types";
 
 const router = useRouter();
-const adminConfig = useNuxtConfig("fastAdmin");
-const authConfig = useNuxtConfig("fastAdmin.pages.auth");
+const nuxtApp = useNuxtApp();
+const appConfig = useAppConfig();
+const adminConfig = computed(() => appConfig.fastAdmin as ModuleConfigDefaults);
+const authConfig = computed(() => adminConfig.value.pages.auth);
 const { signIn, signUp, status } = useAuth();
 
 const background = computed(() =>
-  authConfig.value!.background
-    ? `url(${authConfig.value!.background})`
-    : "none",
+  authConfig.value!.background ? `url(${authConfig.value!.background})` : "none"
 );
 
 const remember = defineModel<boolean>("remember", { default: false });
 const authType = defineModel<"signIn" | "signUp">("authType", {
   default: "signIn",
 });
-const authForm = defineModel<
-  FastAuthForm & {
-    repeat?: string;
-  }
->("authForm", {
-  default: {},
-});
+const authForm = ref({
+  repeat: "",
+  ...adminConfig.value.pages.auth.form,
+})
 const authFormRef = ref<FormInst>();
 const authFormRules = defineModel<FormRules>("authFormRules", {
   default: {},
@@ -204,7 +208,7 @@ async function submitForm() {
   try {
     await [signIn, signUp][authType.value === "signIn" ? 0 : 1](
       authForm.value,
-      options,
+      options
     );
   } catch (error) {
     if (error instanceof FetchError) {
@@ -214,11 +218,11 @@ async function submitForm() {
 }
 
 async function changeAuthType() {
-  if (authType.value === "signIn" && authConfig.value?.hooks?.signUp) {
-    await authConfig.value.hooks.signUp();
-    return;
-  }
   authType.value = authType.value === "signIn" ? "signUp" : "signIn";
+}
+
+async function forgetPassword() {
+  await nuxtApp.callHook("fast-admin:page-auth-forget-password");
 }
 </script>
 

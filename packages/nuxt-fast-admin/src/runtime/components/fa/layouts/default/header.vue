@@ -38,7 +38,7 @@
                 </n-flex>
               </template>
               <n-menu
-                :value="currentPage?.name"
+                :value="getToPath(current?.to)"
                 :options="menu.children"
                 :root-indent="16"
                 accordion
@@ -46,11 +46,11 @@
             </n-popover>
           </n-breadcrumb-item>
         </template>
-        <n-breadcrumb-item v-if="currentPage" :clickable="false">
+        <n-breadcrumb-item v-if="current" :clickable="false">
           <n-flex align="center">
-            <fa-icon :name="currentPage.menu.icon" />
-            <nuxt-link :to="currentPage.path">
-              {{ currentPage.menu.title }}
+            <fa-icon :name="current.menu.icon" />
+            <nuxt-link :to="current.to">
+              {{ current.menu.title }}
             </nuxt-link>
           </n-flex>
         </n-breadcrumb-item>
@@ -82,7 +82,7 @@
       <n-dropdown
         v-if="headerConfig!.dropdown!.show"
         :options="dropdownOptions"
-        @select="headerConfig!.dropdown!.hooks!.select"
+        @select="dropdownSelect"
       >
         <n-avatar
           style="cursor: pointer"
@@ -96,8 +96,21 @@
 </template>
 
 <script setup lang="ts">
-import { reloadNuxtApp, useNavHistories, useNuxtConfig } from "#imports";
 import { FaIcon } from "#components";
+import {
+  computed,
+  getAdminMenuOptions,
+  h,
+  reloadNuxtApp,
+  useAppConfig,
+  useNaiveUiTheme,
+  useNavMenus,
+  useNavPages,
+  useNuxtApp,
+} from "#imports";
+import type { DropdownOption } from "@ucstu/nuxt-naive-ui/exports";
+import type { ModuleConfigDefaults } from "../../../../types";
+import { getToPath } from "../../../../utils";
 import { useDefaultLayoutStore } from "./index.vue";
 
 const ICON_MAP: Record<string, string> = {
@@ -106,19 +119,34 @@ const ICON_MAP: Record<string, string> = {
   dark: "material-symbols:dark-mode",
 };
 
-const histories = useNavHistories();
-const menuConfig = useNuxtConfig("fastAdmin.layouts.default.menu");
-const headerConfig = useNuxtConfig("fastAdmin.layouts.default.header");
+const pages = useNavPages();
+const menus = useNavMenus();
+const appConfig = useAppConfig();
+const menuConfig = computed(
+  () => (appConfig.fastAdmin as ModuleConfigDefaults).layouts.default.menu
+);
+const headerConfig = computed(
+  () => (appConfig.fastAdmin as ModuleConfigDefaults).layouts.default.header
+);
 const { applicationFullscreen } = useDefaultLayoutStore()!;
-const parents = histories.menus;
+
+const current = computed(() => pages.current);
 
 const breadcrumbs = computed(() => {
-  return parents.value.map((parent) => {
-    return useMenuOptions(parent).value;
+  return menus.current.map((parent) => {
+    return getAdminMenuOptions(parent);
   });
 });
 
-const { store: naiveUiTheme } = useNaiveUiTheme();
+const themeConfig = useNaiveUiTheme();
+const naiveUiTheme = computed({
+  get() {
+    return themeConfig.store;
+  },
+  set(value) {
+    themeConfig.store = value;
+  },
+});
 function changeTheme() {
   const index = Object.keys(ICON_MAP).indexOf(naiveUiTheme.value);
   naiveUiTheme.value = Object.keys(ICON_MAP)[(index + 1) % 3];
@@ -135,15 +163,22 @@ const dropdownOptions = computed(() => {
     };
   });
 });
+
+const nuxtApp = useNuxtApp();
+async function dropdownSelect(value: string | number, option: DropdownOption) {
+  await nuxtApp.callHook(
+    "fast-admin:layout-default-header-dropdown-select",
+    value,
+    option
+  );
+}
 </script>
 
 <style>
 .fast-admin-layout-default-header {
   height: 3rem;
   padding: 0 1rem;
-  box-shadow:
-    0 1px 3px 0 rgba(0, 0, 0, 0.1),
-    0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
   position: relative;
   z-index: 1;
 }

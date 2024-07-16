@@ -1,7 +1,7 @@
 import { computed, createNuxtGlobalState, ref } from "#imports";
 import { extendRef, type LiteralUnion } from "@ucstu/nuxt-fast-utils/exports";
 import camelCase from "camelcase";
-import * as locales from "naive-ui/lib/locales";
+import * as locales from "naive-ui";
 
 const LANGS = [
   "zhCN",
@@ -34,9 +34,7 @@ const LANGS = [
 ] as const;
 
 type Lang = LiteralUnion<(typeof LANGS)[number], string>;
-export const useNaiveUiI18n = createNuxtGlobalState(function (
-  lang: Lang = "enUS",
-) {
+export const useNaiveUiI18n = createNuxtGlobalState(function (lang: Lang = "enUS") {
   const _lang = ref<Lang>(lang);
 
   const result = computed(() => {

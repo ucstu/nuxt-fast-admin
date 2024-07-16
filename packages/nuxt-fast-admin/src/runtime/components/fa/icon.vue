@@ -7,7 +7,7 @@
 <script setup lang="ts">
 import { computed, useNuxtApp } from "#imports";
 import iconifyCollections from "@iconify/collections/collections.json";
-import { iconProps } from "naive-ui";
+import { iconProps } from "@ucstu/nuxt-naive-ui/exports";
 
 function resolveIconName(name = "") {
   let prefix;

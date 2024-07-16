@@ -6,10 +6,6 @@ export default defineNuxtConfig({
       petStore: {
         input: "https://petstore3.swagger.io/api/v3/openapi.json",
       },
-      personStore: {
-        input:
-          "C:\\Users\\TMK\\ZXD\\nuxt-fast-admin\\packages\\nuxt-fast-fetch\\playground\\openapi.json",
-      },
     },
   },
 });

@@ -15,7 +15,7 @@ import {
   name,
   version,
 } from "./runtime/config";
-import type { ModuleConfig, ModuleOptions } from "./runtime/types";
+import type { ModuleOptions } from "./runtime/types";
 
 export type {
   ModuleOptions,
@@ -45,7 +45,7 @@ export default defineNuxtModule<ModuleOptions>({
         return `import type { FastAuthPage } from "${moduleName}";
 declare module "${resolve(
           nuxt.options.appDir,
-          "../pages/runtime/composables",
+          "../pages/runtime/composables"
         )}" {
   interface PageMeta extends Omit<FastAuthPage, "to"> {}
 }`;
@@ -78,6 +78,11 @@ declare module "${resolve(
       ],
     });
 
+    addImportsSources({
+      from: resolve(`./runtime/utils`),
+      imports: ["getAuthPageFilled"],
+    });
+
     addRouteMiddleware({
       path: resolve(`./runtime/middleware/auth.global`),
       name: "auth",
@@ -85,9 +90,3 @@ declare module "${resolve(
     });
   },
 });
-
-declare module "@nuxt/schema" {
-  interface CustomAppConfig {
-    [configKey]?: ModuleConfig;
-  }
-}

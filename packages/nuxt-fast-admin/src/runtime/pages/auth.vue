@@ -1,3 +1,3 @@
 <template>
-  <fa-app />
+  <fa-pages-auth />
 </template>

@@ -20,13 +20,13 @@
       </div>
     </slot>
     <slot
-      :value="currentPage?.name"
+      :value="getToPath(current?.to)"
       :collapsed="menuConfig!.collapsed"
       :options="options"
     >
       <n-menu
         class="fast-admin-layout-default-menu-content"
-        :value="currentPage?.name"
+        :value="getToPath(current?.to)"
         :collapsed="menuConfig!.collapsed"
         :options="options?.children"
         :root-indent="16"
@@ -37,12 +37,25 @@
   </div>
 </template>
 
-<script setup lang="tsx">
-const adminConfig = refAppConfig("fastAdmin");
-const menuConfig = refAppConfig("fastAdmin.layouts.default.menu");
+<script setup lang="ts">
+import {
+  computed,
+  useAdminGlobalMenuOptions,
+  useAppConfig,
+  useNavPages,
+} from "#imports";
+import type { ModuleConfigDefaults } from "../../../../types";
+import { getToPath } from "../../../../utils";
 
-const { currentPage, menus } = useNav();
-const options = useMenuOptions(menus);
+const appConfig = useAppConfig();
+const adminConfig = computed(() => appConfig.fastAdmin as ModuleConfigDefaults);
+const menuConfig = computed(
+  () => (appConfig.fastAdmin as ModuleConfigDefaults).layouts.default.menu
+);
+
+const pages = useNavPages();
+const current = computed(() => pages.current);
+const options = useAdminGlobalMenuOptions();
 </script>
 
 <style>

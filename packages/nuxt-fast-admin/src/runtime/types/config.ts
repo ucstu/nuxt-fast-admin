@@ -1,4 +1,9 @@
 import type {
+  Get,
+  OmitDeep,
+  RequiredDeep,
+} from "@ucstu/nuxt-fast-utils/exports";
+import type {
   AppOptions,
   ErrorOptions,
   FetchOptions,
@@ -49,4 +54,27 @@ export interface ModuleConfig {
   error?: ErrorOptions;
 }
 
-export type ModuleConfigDefaults = Required<ModuleConfig>;
+export type ModuleConfigDefaults = RequiredDeep<
+  OmitDeep<
+    ModuleConfig,
+    "layouts.default.header.dropdown.options" | "pages.auth.form"
+  >
+> & {
+  layouts: {
+    default: {
+      header: {
+        dropdown: {
+          options: Exclude<
+            Get<ModuleConfig, "layouts.default.header.dropdown.options">,
+            undefined
+          >;
+        };
+      };
+    };
+  };
+  pages: {
+    auth: {
+      form: Exclude<Get<ModuleConfig, "pages.auth.form">, undefined>;
+    };
+  };
+};

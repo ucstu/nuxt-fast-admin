@@ -47,12 +47,14 @@
 
 <script lang="ts">
 import type { NLayoutSider } from "#components";
+import { computed, nextTick, ref, useAppConfig } from "#imports";
 import {
   createInjectionState,
   useDraggable,
   useElementSize,
   useFullscreen,
 } from "@ucstu/nuxt-fast-utils/exports";
+import type { ModuleConfigDefaults } from "../../../../types";
 
 const [useProvideDefaultLayoutStore, useDefaultLayoutStore] =
   createInjectionState(() => {
@@ -81,7 +83,10 @@ export { useDefaultLayoutStore };
 
 <script setup lang="ts">
 const { content, showPage } = useProvideDefaultLayoutStore();
-const layoutConfig = refAppConfig("fastAdmin.layouts.default");
+const appConfig = useAppConfig();
+const layoutConfig = computed(
+  () => (appConfig.fastAdmin as ModuleConfigDefaults).layouts.default
+);
 
 // #region 菜单栏
 const resizer = ref<HTMLElement>();

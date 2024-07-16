@@ -1,24 +1,24 @@
 import { defineNuxtPlugin } from "#app";
-import { addRouteMiddleware, computed, useAppConfig, useHead } from "#imports";
-import { configKey } from "../config";
+import { computed, useAppConfig } from "#imports";
+import type { FastNavMenuFilled } from "@ucstu/nuxt-fast-nav/types";
 import type { ModuleConfigDefaults } from "../types";
 
 export default defineNuxtPlugin({
   enforce: "pre",
-  async setup() {
+  setup(nuxtApp) {
     const appConfig = useAppConfig();
-    const config = computed(() => appConfig[configKey] as ModuleConfigDefaults);
-
-    console.log(1111);
-
-    if (config.value.app.head) {
-      addRouteMiddleware((to) => {
-        const name = config.value.name;
-        const title = to.meta.tab?.title ?? to.meta.title ?? "";
-        useHead({
-          title: title ? `${title} - ${name}` : name,
-        });
-      });
-    }
+    const adminConfig = computed(
+      () => appConfig.fastAdmin as ModuleConfigDefaults
+    );
+    nuxtApp.hook("fast-admin:get-app-head-title", (input, result) => {
+      result.value = input?.title
+        ? `${input.title} - ${adminConfig.value.name}`
+        : adminConfig.value.name;
+    });
+    nuxtApp.hook("fast-nav:get-menu", (input, result) => {
+      if (input.name !== "$root") return;
+      if (!result.value) result.value = input as FastNavMenuFilled;
+      result.value.title = adminConfig.value.name;
+    });
   },
 });
