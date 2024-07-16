@@ -1,5 +1,4 @@
 import type { Nuxt } from "@nuxt/schema";
-import type { FastAuthPage } from "@ucstu/nuxt-fast-auth/types";
 import type { DialogApiInjection } from "naive-ui/lib/dialog/src/DialogProvider";
 import type { LoadingBarApiInjection } from "naive-ui/lib/loading-bar/src/LoadingBarProvider";
 import type { MessageApiInjection } from "naive-ui/lib/message/src/MessageProvider";
@@ -150,8 +149,4 @@ declare module "#app" {
       detail?: string;
     };
   }
-}
-
-declare module "@ucstu/nuxt-fast-nav/types" {
-  interface FastNavPage extends Omit<FastAuthPage, "to"> {}
 }

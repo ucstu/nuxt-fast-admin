@@ -1,5 +1,12 @@
 import { FaIcon, NuxtLink } from "#components";
-import { createNuxtGlobalState, h, useNavMenus } from "#imports";
+import {
+  $auth,
+  createNuxtGlobalState,
+  h,
+  isAuthMeta,
+  isNavMenuFilled,
+  useNavMenus,
+} from "#imports";
 import type {
   FastNavMenuFilled,
   FastNavPageFilled,
@@ -14,16 +21,31 @@ export function getAdminMenuOptions(
   const menu = menuOrPage as FastNavMenuFilled;
   const page = menuOrPage as FastNavPageFilled;
 
-  const title =
-    "name" in menuOrPage ? menu.title : page.tab.title ?? page.title;
+  const title = isNavMenuFilled(menuOrPage)
+    ? menu.title
+    : page.tab.title ?? page.title;
+
+  const children = isNavMenuFilled(menuOrPage)
+    ? menuOrPage.children
+        ?.map(getAdminMenuOptions)
+        .filter((item) => item !== undefined)
+    : undefined;
+
+  let show = false;
+  if (isNavMenuFilled(menuOrPage)) {
+    show = menu.show && (children?.some((item) => item?.show) ?? false);
+  } else {
+    show =
+      page.menu.show &&
+      $auth(isAuthMeta(page.auth) ? page.auth.auth : page.auth);
+  }
 
   const options: MenuOption = {
-    key:
-      "name" in menuOrPage
-        ? menu.to
-          ? getToPath(menu.to)
-          : `${menu.parent ? `${menu.parent}-` : ""}${menu.name}`
-        : getToPath(page.to),
+    key: isNavMenuFilled(menuOrPage)
+      ? menu.to
+        ? getToPath(menu.to)
+        : `${menu.parent ? `${menu.parent}-` : ""}${menu.name}`
+      : getToPath(page.to),
     label() {
       return menuOrPage.to
         ? h(
@@ -38,14 +60,9 @@ export function getAdminMenuOptions(
     icon() {
       return h(FaIcon, { name: menuOrPage.icon });
     },
-    show: "name" in menuOrPage ? menu.show : page.menu.show,
-    disabled: "name" in menuOrPage ? menu.disabled : page.menu.disabled,
-    children:
-      "name" in menuOrPage
-        ? menuOrPage.children
-            ?.map(getAdminMenuOptions)
-            .filter((item) => item !== undefined)
-        : undefined,
+    show,
+    disabled: isNavMenuFilled(menuOrPage) ? menu.disabled : page.menu.disabled,
+    children,
   };
   return options;
 }

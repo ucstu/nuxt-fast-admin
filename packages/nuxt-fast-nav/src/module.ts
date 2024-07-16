@@ -121,7 +121,14 @@ declare module "${resolve(
 
     addImportsSources({
       from: resolve("./runtime/utils"),
-      imports: ["toEqual"],
+      imports: [
+        "toEqual",
+        "isNavMenu",
+        "isNavPage",
+        "isNavMenuFilled",
+        "isNavPageFilled",
+        "getToPath",
+      ],
     });
   },
 });

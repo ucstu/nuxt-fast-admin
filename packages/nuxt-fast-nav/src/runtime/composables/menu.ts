@@ -12,7 +12,12 @@ import type {
   FastNavMenuFilled,
   FastNavPageFilled,
 } from "../types";
-import { addPageToMenus, fillMenusRoute, sortMenus } from "../utils";
+import {
+  addPageToMenus,
+  fillMenusRoute,
+  isNavMenuFilled,
+  sortMenus,
+} from "../utils";
 import { useNavPages } from "./page";
 
 export function getNavMenus(
@@ -100,7 +105,7 @@ export const useNavMenus = createNuxtGlobalState(function (
     let menu = result.value;
     for (const path of paths) {
       const parent = menu.children?.find(
-        (menu) => "name" in menu && menu.name === path,
+        (menu) => isNavMenuFilled(menu) && menu.name === path
       ) as FastNavMenuFilled | undefined;
       if (!parent) break;
       parents.push(parent);

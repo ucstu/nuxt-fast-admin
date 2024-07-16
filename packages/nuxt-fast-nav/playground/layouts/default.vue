@@ -3,7 +3,7 @@
     <div style="border: 1px solid blue">
       <div
         v-for="(history, index) in histories"
-        :key="`${index}-${history.to.path}`"
+        :key="`${index}-${getToPath(history.to)}`"
       >
         <nuxt-link :to="history.to">{{ history.meta.title }}</nuxt-link>
         <button @click="close(history)">关闭</button>
@@ -20,6 +20,7 @@
 
 <script setup lang="tsx">
 import { NuxtLink } from "#components";
+import { getToPath } from "#imports";
 import type { FastNavMenuFilled } from "../../src/runtime/types";
 
 const menus = useNavMenus();
@@ -45,11 +46,11 @@ const Menu = defineComponent({
         </h4>
         <ul>
           {this.menu.children.map((item) => {
-            if ("name" in item && !item.show) return;
-            if (!("name" in item) && !item.menu.show) return;
+            if (isNavMenuFilled(item) && !item.show) return;
+            if (!isNavMenuFilled(item) && !item.menu.show) return;
             return (
               <li>
-                {"name" in item ? (
+                {isNavMenuFilled(item) ? (
                   <Menu menu={item} />
                 ) : (
                   <NuxtLink to={item.to}>{item.title}</NuxtLink>

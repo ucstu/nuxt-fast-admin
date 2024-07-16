@@ -80,7 +80,7 @@ declare module "${resolve(
 
     addImportsSources({
       from: resolve(`./runtime/utils`),
-      imports: ["getAuthPageFilled"],
+      imports: ["isAuthMeta", "isAuthBase", "getAuthPageFilled"],
     });
 
     addRouteMiddleware({
