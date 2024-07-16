@@ -1,7 +1,5 @@
 import { useRouter } from "#app";
-import { computed, useAppConfig } from "#imports";
-import type { Router } from "#vue-router";
-import type { AppConfig } from "@nuxt/schema";
+import { $auth, computed, useAppConfig } from "#imports";
 import type { RequiredDeep } from "@ucstu/nuxt-fast-utils/exports";
 import defu from "defu";
 import { configKey } from "../config";
@@ -14,11 +12,9 @@ import type {
 } from "../types";
 import { isAuthMeta } from "./basic";
 
-export function getAuthPageFilled(
-  page: FastAuthPage,
-  appConfig: AppConfig = useAppConfig(),
-  router: Router = useRouter()
-): FastAuthPageFilled {
+export function getAuthPageFilled(page: FastAuthPage): FastAuthPageFilled {
+  const router = useRouter();
+  const appConfig = useAppConfig();
   const config = computed(() => appConfig[configKey] as ModuleConfigDefaults);
 
   const raw = router.resolve(page.to).meta.auth as
@@ -44,4 +40,10 @@ export function getAuthPageFilled(
       redirect,
     },
   };
+}
+
+export function authPage(page: FastAuthPage): boolean {
+  const filled = getAuthPageFilled(page);
+  const auth = isAuthMeta(filled.auth) ? filled.auth.auth : filled.auth;
+  return $auth(auth);
 }
