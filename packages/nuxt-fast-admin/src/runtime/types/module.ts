@@ -70,4 +70,8 @@ export interface ModuleRuntimeHooks {
    * 改变认证类型
    */
   "fast-admin:page-auth-forget-password": () => HookResult;
+  /**
+   * 注册 CRUD 资源
+   */
+  "fast-admin:register-crud-resource": () => HookResult;
 }

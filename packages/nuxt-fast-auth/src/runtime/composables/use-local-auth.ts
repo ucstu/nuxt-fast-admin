@@ -31,7 +31,7 @@ export const useLocalAuth = createGlobalState(function <
     user: _user,
     status: _status,
     remember: _remember,
-    getUser,
+    refreshUser,
   } = auth;
 
   /**
@@ -52,7 +52,7 @@ export const useLocalAuth = createGlobalState(function <
             value: result.value,
             create: new Date().getTime(),
           };
-          await getUser(result.value);
+          await refreshUser(result.value);
         } else {
           _token.value = {
             value: result.value.token,
@@ -60,7 +60,7 @@ export const useLocalAuth = createGlobalState(function <
             expires: result.value.tokenExpires,
           };
           if (result.value.user) _user.value = result.value.user;
-          else await getUser(result.value.token);
+          else await refreshUser(result.value.token);
         }
 
         if (remember !== undefined) {
@@ -69,7 +69,7 @@ export const useLocalAuth = createGlobalState(function <
         if (navigate) {
           await navigateTo(
             navigate === true ? config.value.home : navigate,
-            navigateOptions,
+            navigateOptions
           );
         }
       }

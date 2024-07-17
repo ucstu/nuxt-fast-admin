@@ -78,7 +78,7 @@ import { useDefaultLayoutStore } from "./index.vue";
 
 const appConfig = useAppConfig();
 const tabbarConfig = computed(
-  () => (appConfig.fastAdmin as ModuleConfigDefaults).layouts.default.tabbar
+  () => (appConfig.fastAdmin as ModuleConfigDefaults).layouts.default.tabbar,
 );
 
 const histories = useNavHistories();
@@ -86,7 +86,7 @@ const { close, closeAll, closeOthers } = histories;
 const { showPage, refreshPage, pageFullscreen } = useDefaultLayoutStore()!;
 
 const current = computed(() =>
-  histories.value.findIndex((item) => item === histories.current)
+  histories.value.findIndex((item) => item === histories.current),
 );
 
 function closeTab(index: number) {
@@ -100,7 +100,7 @@ async function openTab(index: number) {
 const closeable = computed(
   () =>
     histories.value.length > 1 ||
-    !toEqual(histories.value[0]?.to, histories.current?.to)
+    !toEqual(histories.value[0]?.to, histories.current?.to),
 );
 
 const options: DropdownOption[] = [

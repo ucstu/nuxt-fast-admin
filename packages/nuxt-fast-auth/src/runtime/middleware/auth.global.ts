@@ -38,7 +38,7 @@ export default defineNuxtRouteMiddleware(async (_to, _from) => {
   const config = useAppConfig()[configKey] as ModuleConfigDefaults;
   const runtimeConfig = useRuntimeConfig().public[configKey];
 
-  const { status, user, token, getUser } = _auth;
+  const { status, user, token, refreshUser } = _auth;
 
   if (runtimeConfig.provider === "refresh") {
     const { refreshToken, refresh } = _auth as ReturnType<
@@ -50,11 +50,11 @@ export default defineNuxtRouteMiddleware(async (_to, _from) => {
   }
 
   if (!user.value && token.value) {
-    await getUser();
+    await refreshUser();
   }
 
-  const to = getAuthPageFilled({ to: _to }, nuxtApp);
-  const from = getAuthPageFilled({ to: _from }, nuxtApp);
+  const to = getAuthPageFilled({ to: _to });
+  const from = getAuthPageFilled({ to: _from });
 
   const options: GuardOptions = {
     to,

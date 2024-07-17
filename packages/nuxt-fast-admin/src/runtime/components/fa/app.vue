@@ -1,11 +1,10 @@
 <template>
-  <n-config-provider class="fast-admin-app" v-bind="config">
-    <n-global-style />
-    <n-dialog-provider>
-      <n-loading-bar-provider>
-        <n-message-provider>
-          <n-modal-provider>
-            <n-notification-provider>
+  <n-config-provider class="fast-admin-app" v-bind="config" inline-theme-disabled>
+    <n-dialog-provider v-bind="dialog">
+      <n-loading-bar-provider v-bind="loadingBar">
+        <n-message-provider v-bind="message">
+          <n-modal-provider v-bind="modal">
+            <n-notification-provider v-bind="notification">
               <register-global-feedback />
               <define-template>
                 <slot>
@@ -50,7 +49,7 @@ import {
   useNavPages,
   useNuxtApp,
   useRuntimeConfig,
-  watch
+  watch,
 } from "#imports";
 import type { RouteLocationRaw } from "#vue-router";
 import { FsUiContext } from "@fast-crud/ui-naive";
@@ -62,12 +61,24 @@ import {
   useModal,
   useNotification,
   type ConfigProviderProps,
+  type DialogProviderProps,
+  type LoadingBarProviderProps,
+  type MessageProviderProps,
+  type ModalProviderProps,
+  type NotificationProviderProps,
 } from "@ucstu/nuxt-naive-ui/exports";
 import defu from "defu";
 import type { ModuleConfigDefaults } from "../../types";
 import { getAppHeadTitle } from "../../utils";
 
-const props = defineProps<ConfigProviderProps>();
+const props = defineProps<{
+  config?: ConfigProviderProps;
+  dialog?: DialogProviderProps;
+  loadingBar?: LoadingBarProviderProps;
+  message?: MessageProviderProps;
+  modal?: ModalProviderProps;
+  notification?: NotificationProviderProps;
+}>();
 
 const appConfig = useAppConfig();
 const runtimeConfig = useRuntimeConfig();
@@ -75,8 +86,14 @@ const adminConfig = computed(() => appConfig.fastAdmin as ModuleConfigDefaults);
 
 const i18nConfig = useNaiveUiI18n("zh-CN");
 const themeConfig = useNaiveUiTheme();
+
 const config = computed(
-  () => defu(props, themeConfig, i18nConfig) as ConfigProviderProps
+  () =>
+    defu(
+      props.config,
+      themeConfig.value,
+      i18nConfig.value
+    ) as ConfigProviderProps
 );
 
 const pages = useNavPages();

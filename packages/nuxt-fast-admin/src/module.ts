@@ -1,5 +1,5 @@
 import {
-  addComponent,
+  addComponentsDir,
   addImportsSources,
   addLayout,
   addPlugin,
@@ -57,23 +57,10 @@ export default defineNuxtModule<ModuleOptions>({
 
     const { resolve } = createResolver(import.meta.url);
 
-    addComponent({
-      filePath: resolve("./runtime/components/v-node.vue"),
-      name: "VNode",
+    addPlugin({
+      name: `${name}:config`,
+      src: resolve("./runtime/plugins/config.ts"),
     });
-    addComponent({
-      filePath: resolve("./runtime/components/fa/app.vue"),
-      name: "FaApp",
-    });
-    addComponent({
-      filePath: resolve("./runtime/components/fa/icon.vue"),
-      name: "FaIcon",
-    });
-    addComponent({
-      filePath: resolve("./runtime/components/fa/error.vue"),
-      name: "FaError",
-    });
-
     addPlugin({
       name,
       src: resolve("./runtime/plugins/plugin.ts"),
@@ -85,38 +72,12 @@ export default defineNuxtModule<ModuleOptions>({
       });
     }
 
-    addComponent({
-      filePath: resolve("./runtime/components/fa/layouts/full.vue"),
-      name: "FaLayoutsFull",
-    });
     if (options.features.layouts.full) {
       addLayout(resolve("./runtime/layouts/full.vue"), "full");
     }
-
-    addComponent({
-      filePath: resolve("./runtime/components/fa/layouts/default/index.vue"),
-      name: "FaLayoutsDefault",
-    });
-    addComponent({
-      filePath: resolve("./runtime/components/fa/layouts/default/menu.vue"),
-      name: "FaLayoutsDefaultMenu",
-    });
-    addComponent({
-      filePath: resolve("./runtime/components/fa/layouts/default/header.vue"),
-      name: "FaLayoutsDefaultHeader",
-    });
-    addComponent({
-      filePath: resolve("./runtime/components/fa/layouts/default/tabbar.vue"),
-      name: "FaLayoutsDefaultTabbar",
-    });
     if (options.features.layouts.default) {
       addLayout(resolve("./runtime/layouts/default.vue"), "default");
     }
-
-    addComponent({
-      filePath: resolve("./runtime/components/fa/pages/auth.vue"),
-      name: "FaPagesAuth",
-    });
     if (
       (options.features.pages.auth === "auto" &&
         options.modules.includes("auth")) ||
@@ -142,9 +103,15 @@ export default defineNuxtModule<ModuleOptions>({
       });
     }
 
+    addComponentsDir({
+      path: resolve("./runtime/components"),
+    });
+
     addImportsSources({
       from: resolve("./runtime/composables"),
       imports: [
+        "getAdminCrud",
+        "useAdminCrud",
         "getAdminMenuOptions",
         "useAdminMenuOptions",
         "useAdminGlobalMenuOptions",

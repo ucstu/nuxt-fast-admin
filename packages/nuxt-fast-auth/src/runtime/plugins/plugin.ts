@@ -36,7 +36,7 @@ export default defineNuxtPlugin({
     const config = computed(() => appConfig[configKey] as ModuleConfigDefaults);
     const runtimeConfig = useRuntimeConfig().public[configKey];
 
-    const { user, token, getUser, signOut } = auth;
+    const { user, token, refreshUser, signOut } = auth;
 
     if (runtimeConfig.provider === "refresh") {
       const { refreshToken, refresh } = auth as ReturnType<
@@ -48,7 +48,7 @@ export default defineNuxtPlugin({
     }
 
     if (!user.value && token.value) {
-      await getUser();
+      await refreshUser();
     }
 
     onNuxtReady(() => {
@@ -112,7 +112,7 @@ export default defineNuxtPlugin({
 
       // #region 刷新用户
       function refreshUser() {
-        if (token.value) getUser();
+        if (token.value) refreshUser();
       }
 
       // 定时刷新用户

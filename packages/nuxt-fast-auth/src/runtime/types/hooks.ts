@@ -41,6 +41,7 @@ export interface BaseAuthHooks {
   /**
    * 获取权限列表
    * @param user 用户信息
+   * @param role 角色信息
    * @param result 权限列表
    */
   "fast-auth:get-permissions"(

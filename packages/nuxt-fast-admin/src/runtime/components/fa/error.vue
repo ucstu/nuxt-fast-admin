@@ -137,7 +137,7 @@ const props = withDefaults(
   }>(),
   {
     size: "medium",
-  }
+  },
 );
 
 const emit = defineEmits<{
@@ -161,8 +161,8 @@ function isHTML(str: string | undefined) {
 const options = computed(() =>
   defu(
     isFetchError(props.error) ? adminConfig.value.fetch!.error : {},
-    adminConfig.value.error
-  )
+    adminConfig.value.error,
+  ),
 );
 const error = computed(() =>
   isNuxtError(props.error)
@@ -172,7 +172,7 @@ const error = computed(() =>
         ? (props.error.cause as NuxtError)
         : props.error
       : props.error
-    : props.error
+    : props.error,
 );
 const code = computed(() => {
   return (typeof props.status === "number" ? props.status : undefined) ||
@@ -180,7 +180,7 @@ const code = computed(() => {
     ? Number.parseInt(
         (error.value as FetchError).response?._data[
           adminConfig.value.fetch!.status!
-        ]
+        ],
       ) ||
         (error.value as FetchError).statusCode ||
         0
@@ -218,10 +218,10 @@ const message = computed(() => {
     error.value.message === "Failed to fetch"
       ? "连接失败"
       : error.value instanceof DOMException &&
-        error.value.message === "signal is aborted without reason"
-      ? "请求取消"
-      : (error.value as NuxtError).statusMessage ||
-        (error.value as NuxtError).message)
+          error.value.message === "signal is aborted without reason"
+        ? "请求取消"
+        : (error.value as NuxtError).statusMessage ||
+          (error.value as NuxtError).message)
   );
 });
 
@@ -239,13 +239,13 @@ const description = computed(() => {
     error.value.message === "Failed to fetch"
       ? "连接服务器失败，请更换网络连接或稍后再试"
       : error.value instanceof DOMException &&
-        error.value.message === "signal is aborted without reason"
-      ? "请求已取消，可能因为连续发起了重复请求"
-      : ((error.value as FetchError).response?._data[
-          adminConfig.value.fetch.message
-        ] as string) ||
-        (error.value as NuxtError).message ||
-        (error.value as NuxtError).statusMessage)
+          error.value.message === "signal is aborted without reason"
+        ? "请求已取消，可能因为连续发起了重复请求"
+        : ((error.value as FetchError).response?._data[
+            adminConfig.value.fetch.message
+          ] as string) ||
+          (error.value as NuxtError).message ||
+          (error.value as NuxtError).statusMessage)
   );
 });
 
@@ -264,13 +264,13 @@ function getPath(location: RouteLocationRaw) {
 function goAuth() {
   emit(
     "clearError",
-    defu(error.value, { redirect: getPath(authConfig.value.signIn) })
+    defu(error.value, { redirect: getPath(authConfig.value.signIn) }),
   );
 }
 function goHome() {
   emit(
     "clearError",
-    defu(error.value, { redirect: getPath(authConfig.value.home) })
+    defu(error.value, { redirect: getPath(authConfig.value.home) }),
   );
 }
 function goBack() {
@@ -280,7 +280,7 @@ function goBack() {
       redirect:
         (router.options.history.state.back as string) ||
         getPath(authConfig.value.home),
-    })
+    }),
   );
 }
 function known() {

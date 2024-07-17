@@ -12,7 +12,7 @@ export default defineNuxtPlugin({
         if (option.key === "logout") {
           await signOut({ navigate: true });
         }
-      }
+      },
     );
     authPageRef.value = authPage;
   },

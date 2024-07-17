@@ -50,7 +50,7 @@ import { getToPath } from "../../../../utils";
 const appConfig = useAppConfig();
 const adminConfig = computed(() => appConfig.fastAdmin as ModuleConfigDefaults);
 const menuConfig = computed(
-  () => (appConfig.fastAdmin as ModuleConfigDefaults).layouts.default.menu
+  () => (appConfig.fastAdmin as ModuleConfigDefaults).layouts.default.menu,
 );
 
 const pages = useNavPages();

@@ -123,10 +123,10 @@ const pages = useNavPages();
 const menus = useNavMenus();
 const appConfig = useAppConfig();
 const menuConfig = computed(
-  () => (appConfig.fastAdmin as ModuleConfigDefaults).layouts.default.menu
+  () => (appConfig.fastAdmin as ModuleConfigDefaults).layouts.default.menu,
 );
 const headerConfig = computed(
-  () => (appConfig.fastAdmin as ModuleConfigDefaults).layouts.default.header
+  () => (appConfig.fastAdmin as ModuleConfigDefaults).layouts.default.header,
 );
 const { applicationFullscreen } = useDefaultLayoutStore()!;
 
@@ -169,7 +169,7 @@ async function dropdownSelect(value: string | number, option: DropdownOption) {
   await nuxtApp.callHook(
     "fast-admin:layout-default-header-dropdown-select",
     value,
-    option
+    option,
   );
 }
 </script>
@@ -178,7 +178,9 @@ async function dropdownSelect(value: string | number, option: DropdownOption) {
 .fast-admin-layout-default-header {
   height: 3rem;
   padding: 0 1rem;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  box-shadow:
+    0 1px 3px 0 rgba(0, 0, 0, 0.1),
+    0 1px 2px -1px rgba(0, 0, 0, 0.1);
   position: relative;
   z-index: 1;
 }

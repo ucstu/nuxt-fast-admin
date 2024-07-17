@@ -85,7 +85,7 @@ export { useDefaultLayoutStore };
 const { content, showPage } = useProvideDefaultLayoutStore();
 const appConfig = useAppConfig();
 const layoutConfig = computed(
-  () => (appConfig.fastAdmin as ModuleConfigDefaults).layouts.default
+  () => (appConfig.fastAdmin as ModuleConfigDefaults).layouts.default,
 );
 
 // #region 菜单栏

@@ -34,7 +34,9 @@ const LANGS = [
 ] as const;
 
 type Lang = LiteralUnion<(typeof LANGS)[number], string>;
-export const useNaiveUiI18n = createNuxtGlobalState(function (lang: Lang = "enUS") {
+export const useNaiveUiI18n = createNuxtGlobalState(function (
+  lang: Lang = "enUS",
+) {
   const _lang = ref<Lang>(lang);
 
   const result = computed(() => {

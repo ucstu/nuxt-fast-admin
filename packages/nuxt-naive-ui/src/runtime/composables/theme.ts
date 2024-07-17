@@ -19,7 +19,7 @@ import type { ModuleConfigDefaults, NaiveUiThemeKey } from "../types";
 
 function getTheme(
   theme: NaiveUiThemeKey | null,
-  themes?: Partial<Record<NaiveUiThemeKey, GlobalTheme>>
+  themes?: Partial<Record<NaiveUiThemeKey, GlobalTheme>>,
 ) {
   if (!theme) return;
   switch (theme) {
@@ -34,14 +34,14 @@ function getTheme(
 
 function getThemeOverrides(
   theme: NaiveUiThemeKey | null,
-  themesOverrides?: Partial<Record<NaiveUiThemeKey, GlobalThemeOverrides>>
+  themesOverrides?: Partial<Record<NaiveUiThemeKey, GlobalThemeOverrides>>,
 ) {
   if (!theme) return;
   return themesOverrides?.[theme];
 }
 
 export const useNaiveUiTheme = createNuxtGlobalState(function (
-  theme?: NaiveUiThemeKey
+  theme?: NaiveUiThemeKey,
 ) {
   const appConfig = useAppConfig();
   const runtimeConfig = useRuntimeConfig();
@@ -50,7 +50,7 @@ export const useNaiveUiTheme = createNuxtGlobalState(function (
 
   const store = useNuxtStorage<NaiveUiThemeKey>(
     "naive-ui:theme",
-    () => theme ?? config.value.defaultTheme
+    () => theme ?? config.value.defaultTheme,
   );
   const system = useOsTheme();
 
@@ -63,7 +63,7 @@ export const useNaiveUiTheme = createNuxtGlobalState(function (
           ? system.value
           : "light"
         : system.value
-      : store.value
+      : store.value,
   );
 
   return extendRef(
@@ -77,18 +77,18 @@ export const useNaiveUiTheme = createNuxtGlobalState(function (
               ...value,
               name: key,
             },
-          ])
-        )
+          ]),
+        ),
       ),
       themeOverrides: getThemeOverrides(
         real.value,
-        config.value.themesOverrides
+        config.value.themesOverrides,
       ),
     })),
     {
       system,
       store,
       real,
-    }
+    },
   );
 });

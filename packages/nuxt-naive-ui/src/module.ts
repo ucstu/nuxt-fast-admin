@@ -8,7 +8,6 @@ import {
   installModule,
 } from "@nuxt/kit";
 import { addModuleTypeTemplate } from "@ucstu/nuxt-fast-utils/utils";
-import { camelCase, upperFirst } from "lodash-es";
 import { name, version } from "../package.json";
 import { configKey, defaults, initModule } from "./runtime/config";
 import type { ModuleOptions } from "./runtime/types";
@@ -238,9 +237,7 @@ export default defineNuxtModule<ModuleOptions>({
         export: name,
         name,
         filePath: resolve("./runtime/components"),
-        mode: clientOnlyComponents.includes(upperFirst(camelCase(name)))
-          ? "client"
-          : "all",
+        mode: clientOnlyComponents.includes(name) ? "client" : "all",
       });
     });
 

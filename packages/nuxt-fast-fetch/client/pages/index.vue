@@ -15,7 +15,7 @@
         style="flex: 1"
       />
     </div>
-    <div class="w-full h-full flex justify-center items-center" v-else>
+    <div v-else class="w-full h-full flex justify-center items-center">
       <n-icon icon="tabler:mood-empty" />
       <span class="ml-2">No documents found</span>
     </div>
@@ -66,7 +66,7 @@ const currentDoc = computed(() => {
 onDevtoolsClientConnected(async (client) => {
   rpc.value = client.devtools.extendClientRpc<ServerFunctions, ClientFunctions>(
     RPC_NAMESPACE,
-    {}
+    {},
   );
 
   documents.value = await rpc.value.getDocuments();

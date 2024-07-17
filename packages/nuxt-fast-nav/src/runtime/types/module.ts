@@ -42,7 +42,7 @@ export interface ModuleRuntimeHooks {
    * @param result 结果
    */
   "fast-nav:get-menus": (
-    result: ShallowRef<Array<FastNavMenu | FastNavMenuFilled>>
+    result: ShallowRef<Array<FastNavMenu | FastNavMenuFilled>>,
   ) => void;
   /**
    * 获取菜单信息
@@ -54,14 +54,14 @@ export interface ModuleRuntimeHooks {
     input: FastNavMenu | FastNavMenuFilled,
     result: ShallowRef<
       Omit<FastNavMenuFilled, "children" | "parent"> | undefined
-    >
+    >,
   ) => void;
   /**
    * 获取页面列表
    * @param result 结果
    */
   "fast-nav:get-pages": (
-    result: ShallowRef<Array<FastNavPage | FastNavPageFilled>>
+    result: ShallowRef<Array<FastNavPage | FastNavPageFilled>>,
   ) => void;
   /**
    * 获取页面信息
@@ -70,7 +70,7 @@ export interface ModuleRuntimeHooks {
    */
   "fast-nav:get-page": (
     input: FastNavPage | FastNavPageFilled,
-    result: ShallowRef<FastNavPageFilled | undefined>
+    result: ShallowRef<FastNavPageFilled | undefined>,
   ) => void;
   /**
    * 获取历史记录
@@ -79,7 +79,7 @@ export interface ModuleRuntimeHooks {
    */
   "fast-nav:get-history": (
     to: RouteLocationNormalizedGeneric,
-    result: ShallowRef<FastNavHistory | undefined>
+    result: ShallowRef<FastNavHistory | undefined>,
   ) => void;
   /**
    * 路径是否相等
@@ -90,6 +90,6 @@ export interface ModuleRuntimeHooks {
   "fast-nav:to-equal": (
     a: RouteLocationRaw | undefined,
     b: RouteLocationRaw | undefined,
-    result: ShallowRef<boolean | undefined>
+    result: ShallowRef<boolean | undefined>,
   ) => void;
 }

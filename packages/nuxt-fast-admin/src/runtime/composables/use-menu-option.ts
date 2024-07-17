@@ -14,14 +14,14 @@ import type { MenuOption } from "@ucstu/nuxt-naive-ui/exports";
 import { authPage, getToPath } from "../utils";
 
 export function getAdminMenuOptions(
-  menuOrPage: FastNavMenuFilled | FastNavPageFilled
+  menuOrPage: FastNavMenuFilled | FastNavPageFilled,
 ): MenuOption | undefined {
   const menu = menuOrPage as FastNavMenuFilled;
   const page = menuOrPage as FastNavPageFilled;
 
   const title = isNavMenuFilled(menuOrPage)
     ? menu.title
-    : page.tab.title ?? page.title;
+    : (page.tab.title ?? page.title);
 
   const children = isNavMenuFilled(menuOrPage)
     ? menuOrPage.children
@@ -49,7 +49,7 @@ export function getAdminMenuOptions(
             { to: menuOrPage.to },
             {
               default: () => title,
-            }
+            },
           )
         : title;
     },

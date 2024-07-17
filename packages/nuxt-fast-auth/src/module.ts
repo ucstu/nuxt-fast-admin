@@ -45,7 +45,7 @@ export default defineNuxtModule<ModuleOptions>({
         return `import type { FastAuthPage } from "${moduleName}";
 declare module "${resolve(
           nuxt.options.appDir,
-          "../pages/runtime/composables"
+          "../pages/runtime/composables",
         )}" {
   interface PageMeta extends Omit<FastAuthPage, "to"> {}
 }`;

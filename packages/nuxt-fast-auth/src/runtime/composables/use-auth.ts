@@ -150,7 +150,7 @@ function getPermissions(
  * @returns 认证
  */
 export const useAuth = createGlobalState(function <
-  S extends AuthStatus = AuthStatus
+  S extends AuthStatus = AuthStatus,
 >(nuxtApp: NuxtApp = useNuxtApp()) {
   const appConfig = useAppConfig();
   const config = computed(() => appConfig[configKey] as ModuleConfigDefaults);
@@ -196,10 +196,10 @@ export const useAuth = createGlobalState(function <
   watchImmediate(_user, (user) => (_status.value.authed = !!user));
 
   /**
-   * 获取用户信息
+   * 刷新用户信息
    * @param token 令牌
    */
-  async function getUser(
+  async function refreshUser(
     token: MaybeRefOrGetter<string | undefined> = _token.value?.value
   ) {
     try {
@@ -236,13 +236,22 @@ export const useAuth = createGlobalState(function <
     }
   }
 
+  /**
+   * 改变角色
+   * @param role 角色
+   */
+  function changeRole(role: FastAuthPer | null | undefined) {
+    _status.value.role = role;
+  }
+
   return {
     user: _user,
     token: _token,
     status: _status,
     remember: _remember,
     signOut,
-    getUser,
+    refreshUser,
+    changeRole,
     permissions,
     roles,
   };

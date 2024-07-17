@@ -11,7 +11,7 @@ import type {
 export function toEqual(
   a?: RouteLocationRaw,
   b?: RouteLocationRaw,
-  nuxtApp: NuxtApp = useNuxtApp()
+  nuxtApp: NuxtApp = useNuxtApp(),
 ): boolean {
   const result = shallowRef(false);
   if (!a || !b) return result.value;
@@ -23,32 +23,32 @@ export function toEqual(
     "fast-nav:to-equal",
     a,
     b,
-    result
+    result,
   );
 
   return result.value;
 }
 
 export function isNavMenu(
-  value: FastNavMenu | FastNavPage | undefined
+  value: FastNavMenu | FastNavPage | undefined,
 ): value is FastNavMenu {
   return value !== undefined && "name" in value;
 }
 
 export function isNavPage(
-  value: FastNavMenu | FastNavPage | undefined
+  value: FastNavMenu | FastNavPage | undefined,
 ): value is FastNavPage {
   return value !== undefined && !("name" in value);
 }
 
 export function isNavMenuFilled(
-  value: FastNavMenuFilled | FastNavPageFilled | undefined
+  value: FastNavMenuFilled | FastNavPageFilled | undefined,
 ): value is FastNavMenuFilled {
   return value !== undefined && "name" in value;
 }
 
 export function isNavPageFilled(
-  value: FastNavMenuFilled | FastNavPageFilled | undefined
+  value: FastNavMenuFilled | FastNavPageFilled | undefined,
 ): value is FastNavPageFilled {
   return value !== undefined && !("name" in value);
 }

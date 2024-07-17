@@ -143,7 +143,9 @@ const authConfig = computed(() => adminConfig.value.pages.auth);
 const { signIn, signUp, status } = useAuth();
 
 const background = computed(() =>
-  authConfig.value!.background ? `url(${authConfig.value!.background})` : "none"
+  authConfig.value!.background
+    ? `url(${authConfig.value!.background})`
+    : "none",
 );
 
 const remember = defineModel<boolean>("remember", { default: false });
@@ -153,7 +155,7 @@ const authType = defineModel<"signIn" | "signUp">("authType", {
 const authForm = ref({
   repeat: "",
   ...adminConfig.value.pages.auth.form,
-})
+});
 const authFormRef = ref<FormInst>();
 const authFormRules = defineModel<FormRules>("authFormRules", {
   default: {},
@@ -208,7 +210,7 @@ async function submitForm() {
   try {
     await [signIn, signUp][authType.value === "signIn" ? 0 : 1](
       authForm.value,
-      options
+      options,
     );
   } catch (error) {
     if (error instanceof FetchError) {

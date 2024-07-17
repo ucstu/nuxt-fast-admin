@@ -45,7 +45,7 @@ export const configs: ModuleConfigDefaults = {
 
 export function initModule(
   _options: ModuleOptions,
-  nuxt: Nuxt
+  nuxt: Nuxt,
 ): ModuleOptionsDefaults {
   const options = _options as ModuleOptionsDefaults;
 

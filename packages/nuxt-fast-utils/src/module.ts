@@ -1,4 +1,9 @@
-import { addImportsSources, createResolver, defineNuxtModule } from "@nuxt/kit";
+import {
+  addImportsSources,
+  addPlugin,
+  createResolver,
+  defineNuxtModule,
+} from "@nuxt/kit";
 import { addModuleTypeTemplate } from "../utils";
 import {
   configKey,
@@ -34,11 +39,18 @@ export default defineNuxtModule<ModuleOptions>({
 
     const { resolve } = createResolver(import.meta.url);
 
+    addPlugin({
+      name,
+      src: resolve("./runtime/plugins/plugin.ts"),
+    });
+
     addImportsSources({
       from: resolve("./runtime/composables"),
       imports: [
         "useNuxtReady",
         "useNuxtStorage",
+        "useNuxtAppBack",
+        "tryUseNuxtAppBack",
         "createNuxtGlobalState",
         "createNuxtSharedComposable",
       ],

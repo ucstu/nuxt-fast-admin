@@ -53,7 +53,7 @@ export const useRefreshAuth = createGlobalState(function <
     user: _user,
     status: _status,
     remember: _remember,
-    getUser,
+    refreshUser,
   } = auth;
 
   const _refreshToken = useNuxtStorage<FastAuthToken | undefined>(
@@ -65,8 +65,8 @@ export const useRefreshAuth = createGlobalState(function <
           ? cookieStorage
           : sessionCookieStorage
         : _remember.value
-          ? localStorage
-          : sessionStorage,
+        ? localStorage
+        : sessionStorage
   );
 
   /**
@@ -76,7 +76,7 @@ export const useRefreshAuth = createGlobalState(function <
    */
   async function signIn<F extends FastAuthForm = FastAuthForm>(
     form: F,
-    options: SignInOptions = {},
+    options: SignInOptions = {}
   ) {
     const { remember, navigate = false, navigateOptions } = options;
 
@@ -96,7 +96,7 @@ export const useRefreshAuth = createGlobalState(function <
           expires: result.value.refreshTokenExpires,
         };
         if (result.value.user) _user.value = result.value.user;
-        else await getUser(result.value.token);
+        else await refreshUser(result.value.token);
 
         if (remember !== undefined) {
           _remember.value = remember;
@@ -104,7 +104,7 @@ export const useRefreshAuth = createGlobalState(function <
         if (navigate) {
           await navigateTo(
             navigate === true ? config.value.home : navigate,
-            navigateOptions,
+            navigateOptions
           );
         }
       }
@@ -188,7 +188,7 @@ export const useRefreshAuth = createGlobalState(function <
           expires: result.value.refreshTokenExpires,
         };
         if (result.value.user) _user.value = result.value.user;
-        else await getUser();
+        else await refreshUser();
       }
     } finally {
       _status.value.refresh = false;

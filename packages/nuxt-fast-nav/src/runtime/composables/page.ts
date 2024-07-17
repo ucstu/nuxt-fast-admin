@@ -32,7 +32,7 @@ export function getNavPages(
 
 export function getNavPage(page: FastNavPage, nuxtApp: NuxtApp = useNuxtApp()) {
   const result = shallowRef<FastNavPageFilled | undefined>(
-    cloneDeep(page) as FastNavPageFilled
+    cloneDeep(page) as FastNavPageFilled,
   );
 
   nuxtApp.hooks.callHookWith(

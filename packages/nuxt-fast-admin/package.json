@@ -40,7 +40,8 @@
     "@ucstu/nuxt-fast-fetch": "workspace:^",
     "@ucstu/nuxt-fast-nav": "workspace:^",
     "@ucstu/nuxt-fast-utils": "workspace:^",
-    "@ucstu/nuxt-naive-ui": "workspace:^"
+    "@ucstu/nuxt-naive-ui": "workspace:^",
+    "openapi-types": "^12.1.3"
   },
   "devDependencies": {
     "@nuxt/devtools": "^1.3.9",

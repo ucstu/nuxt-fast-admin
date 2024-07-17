@@ -15,7 +15,7 @@ function getPageParent(route: RouteRecordNormalized) {
 
 export function getNavPageFilled(
   page: FastNavPage,
-  route: RouteRecordNormalized
+  route: RouteRecordNormalized,
 ): FastNavPageFilled {
   const config = useAppConfig()[configKey] as ModuleConfigDefaults;
 
@@ -37,8 +37,8 @@ export function getNavPageFilled(
       desc: page.menu?.desc ?? desc,
       has: page.menu?.has ?? config.page.menu.has,
       show:
-        page.menu?.show ??
-        ((children?.length ?? 0) === 0 && !/\/:.*?\(\)/.test(path))
+        (page.menu?.show ??
+        ((children?.length ?? 0) === 0 && !/\/:.*?\(\)/.test(path)))
           ? config.page.menu.show
           : false,
       parent: encodeURI(page.menu?.parent ?? getPageParent(route)),

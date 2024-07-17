@@ -3,7 +3,7 @@ import {
   cookieStorage,
   customRef,
   toValue,
-  useNuxtApp,
+  useNuxtAppBack,
   useRuntimeConfig,
   watch,
 } from "#imports";
@@ -27,10 +27,10 @@ import { configKey } from "../config";
  */
 export function createNuxtGlobalState<Fn extends AnyFn>(
   stateFactory: Fn,
-  name: string = nanoid(),
+  name: string = nanoid()
 ): Fn {
   return ((...args: any[]) => {
-    const nuxtApp = useNuxtApp();
+    const nuxtApp = useNuxtAppBack();
     if (!nuxtApp[`$${name}`]) {
       const result = stateFactory(...args);
       nuxtApp.provide(name, result);
@@ -47,12 +47,12 @@ export function createNuxtGlobalState<Fn extends AnyFn>(
  */
 export function createNuxtSharedComposable<Fn extends AnyFn>(
   composable: Fn,
-  name: string = nanoid(),
+  name: string = nanoid()
 ): Fn {
   let subscribers = 0;
 
   const dispose = () => {
-    const nuxtApp = useNuxtApp();
+    const nuxtApp = useNuxtAppBack();
     subscribers -= 1;
     if (subscribers <= 0) {
       // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
@@ -61,7 +61,7 @@ export function createNuxtSharedComposable<Fn extends AnyFn>(
   };
 
   return <Fn>((...args) => {
-    const nuxtApp = useNuxtApp();
+    const nuxtApp = useNuxtAppBack();
     subscribers += 1;
     if (!nuxtApp[`$${name}`]) {
       nuxtApp.provide(name, composable(...args));

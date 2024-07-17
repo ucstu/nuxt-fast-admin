@@ -4,7 +4,7 @@ import type { FastNavPageFilled } from "@ucstu/nuxt-fast-nav/types";
 
 export function getAppHeadTitle(
   page: FastNavPageFilled | undefined,
-  nuxtApp: NuxtApp = useNuxtApp()
+  nuxtApp: NuxtApp = useNuxtApp(),
 ) {
   const result = shallowRef<string>("");
 
@@ -12,7 +12,7 @@ export function getAppHeadTitle(
     (hooks, args) => hooks.forEach((hook) => hook(...args)),
     "fast-admin:get-app-head-title",
     page,
-    result
+    result,
   );
 
   return result.value;

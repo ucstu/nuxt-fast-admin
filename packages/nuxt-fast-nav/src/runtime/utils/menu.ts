@@ -7,7 +7,7 @@ import type {
 } from "../types";
 
 export function getNavMenuFilled(
-  menu: FastNavMenu | FastNavMenuFilled
+  menu: FastNavMenu | FastNavMenuFilled,
 ): Omit<FastNavMenuFilled, "children" | "parent"> {
   const config = useAppConfig()[configKey] as ModuleConfigDefaults;
 

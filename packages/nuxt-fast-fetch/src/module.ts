@@ -82,22 +82,6 @@ export default defineNuxtModule<ModuleOptions>({
       };
     }
 
-    for (const [name, value] of Object.entries(options.clients)) {
-      const config = fillConfig(name, value);
-      const { output } = config;
-      try {
-        await createClient(config);
-      } catch (e) {
-        console.error(e);
-      }
-      nuxt.options.alias[`#fast-fetch/${name}`] = output;
-      addImports({
-        name: "*",
-        as: `$${camelCase(name)}`,
-        from: resolve(output, "index.ts"),
-      });
-    }
-
     if (nuxt.options.devtools) {
       setupDevToolsUI(nuxt, resolver);
       onDevToolsInitialized(async () => {
@@ -125,6 +109,22 @@ export default defineNuxtModule<ModuleOptions>({
           },
         });
       });
+    }
+
+    for (const [name, value] of Object.entries(options.clients)) {
+      const config = fillConfig(name, value);
+      const { output } = config;
+      nuxt.options.alias[`#fast-fetch/${name}`] = output;
+      addImports({
+        name: "*",
+        as: `$${camelCase(name)}`,
+        from: resolve(output, "index.ts"),
+      });
+      try {
+        await createClient(config);
+      } catch (e) {
+        console.error(e);
+      }
     }
   },
 });
