@@ -1,15 +1,6 @@
 import type { RouteLocationRaw } from "#vue-router";
-import type {
-  LiteralUnion,
-  RequiredDeep,
-} from "@ucstu/nuxt-fast-utils/exports";
-import type {
-  FastNavHistory,
-  FastNavMenu,
-  FastNavMenuKeys,
-  MenuMeta,
-  TabMeta,
-} from "./base";
+import type { RequiredDeep } from "@ucstu/nuxt-fast-utils/exports";
+import type { FastNavMenu, FastNavMenuKeys, MenuMeta, TabMeta } from "./base";
 
 export interface ModuleConfig {
   /**
@@ -56,12 +47,6 @@ export interface ModuleConfig {
    * @default "/"
    */
   home?: RouteLocationRaw;
-  /**
-   * 历史比较字段
-   * @description 用于判断历史记录是否相等
-   * @default ["path"]
-   */
-  keys?: Array<LiteralUnion<keyof FastNavHistory["to"], string>>;
 }
 
 export type ModuleConfigDefaults = RequiredDeep<ModuleConfig>;

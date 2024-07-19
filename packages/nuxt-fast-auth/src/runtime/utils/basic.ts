@@ -1,23 +1,36 @@
-import type { FastAuthBase, FastAuthMeta } from "../types";
+import type { FastAuthBase, FastAuthMeta, FastAuthPage } from "../types";
 
 /**
  * 是否为 FsAuthPage
- * @param pageOrMeta 元数据
+ * @param metaOrBase 元数据
  * @returns 是否为 FsAuthPage
  */
 export function isAuthMeta(
-  pageOrMeta: FastAuthMeta | FastAuthBase | undefined,
-): pageOrMeta is FastAuthMeta {
-  return pageOrMeta instanceof Object;
+  metaOrBase: FastAuthMeta | FastAuthBase | undefined,
+): metaOrBase is FastAuthMeta {
+  return metaOrBase instanceof Object;
 }
 
 /**
  * 是否为 FsAuthMeta
- * @param pageOrMeta 元数据
+ * @param metaOrBase 元数据
  * @returns 是否为 FsAuthMeta
  */
 export function isAuthBase(
-  pageOrMeta: FastAuthMeta | FastAuthBase,
-): pageOrMeta is FastAuthBase {
-  return typeof pageOrMeta === "object" ? Array.isArray(pageOrMeta) : true;
+  metaOrBase: FastAuthMeta | FastAuthBase,
+): metaOrBase is FastAuthBase {
+  return metaOrBase instanceof Object ? Array.isArray(metaOrBase) : true;
+}
+
+/**
+ * 是否为 FsAuthPage
+ */
+export function isAuthPage(
+  pageOrBase: FastAuthBase | FastAuthPage,
+): pageOrBase is FastAuthPage {
+  return (
+    pageOrBase instanceof Object &&
+    !Array.isArray(pageOrBase) &&
+    "to" in pageOrBase
+  );
 }

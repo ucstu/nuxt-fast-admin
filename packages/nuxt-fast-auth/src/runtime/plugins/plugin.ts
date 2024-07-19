@@ -1,29 +1,30 @@
 import { defineNuxtPlugin } from "#app";
 import {
-  computed,
   onNuxtReady,
-  useAppConfig,
   useAuth,
+  useModuleConfig,
   useRuntimeConfig,
   watchEffect,
 } from "#imports";
 import { useIntervalFn, watchImmediate } from "@ucstu/nuxt-fast-utils/exports";
 import type { useRefreshAuth } from "../composables";
 import { configKey } from "../config";
-import type { ModuleConfigDefaults } from "../types";
 
 function setTimeArrive(fn: () => void, time: number | string | Date) {
   let timer: NodeJS.Timeout | undefined;
   function start() {
-    timer = setTimeout(() => {
-      if (new Date().getTime() >= new Date(time).getTime()) {
-        clearTimeout(timer);
-        fn();
-      } else {
-        clearTimeout(timer);
-        start();
-      }
-    }, Math.min(new Date(time).getTime() - new Date().getTime(), 2147483647));
+    timer = setTimeout(
+      () => {
+        if (new Date().getTime() >= new Date(time).getTime()) {
+          clearTimeout(timer);
+          fn();
+        } else {
+          clearTimeout(timer);
+          start();
+        }
+      },
+      Math.min(new Date(time).getTime() - new Date().getTime(), 2147483647),
+    );
   }
   start();
   return () => clearTimeout(timer);
@@ -32,8 +33,7 @@ function setTimeArrive(fn: () => void, time: number | string | Date) {
 export default defineNuxtPlugin({
   async setup() {
     const auth = useAuth();
-    const appConfig = useAppConfig();
-    const config = computed(() => appConfig[configKey] as ModuleConfigDefaults);
+    const authConfig = useModuleConfig(configKey);
     const runtimeConfig = useRuntimeConfig().public[configKey];
 
     const { user, token, refreshUser, signOut } = auth;
@@ -63,7 +63,7 @@ export default defineNuxtPlugin({
           clearTimeArrive = setTimeArrive(
             signOut,
             token.value.create +
-              (token.value.expires ?? config.value.provider.tokenExpires)
+              (token.value.expires ?? authConfig.value.provider.tokenExpires),
           );
         });
       }
@@ -82,7 +82,7 @@ export default defineNuxtPlugin({
             signOut,
             refreshToken.value.create +
               (refreshToken.value.expires ??
-                config.value.provider.refreshTokenExpires)
+                authConfig.value.provider.refreshTokenExpires),
           );
         });
 
@@ -94,14 +94,14 @@ export default defineNuxtPlugin({
           clearTimeArriveToken = setTimeArrive(
             refresh,
             token.value.create +
-              (token.value.expires ?? config.value.provider.tokenExpires) -
-              config.value.provider.tokenRefresh
+              (token.value.expires ?? authConfig.value.provider.tokenExpires) -
+              authConfig.value.provider.tokenRefresh,
           );
         });
 
         // 窗口焦点刷新 token
         watchEffect(() => {
-          if (config.value.provider.refreshOnWindowFocus) {
+          if (authConfig.value.provider.refreshOnWindowFocus) {
             window.addEventListener("focus", () => refresh());
           } else {
             window.removeEventListener("focus", () => refresh());
@@ -118,16 +118,16 @@ export default defineNuxtPlugin({
       // 定时刷新用户
       const { pause, resume } = useIntervalFn(
         refreshUser,
-        () => config.value.session.refreshPeriodically
+        () => authConfig.value.session.refreshPeriodically,
       );
       watchImmediate(
-        () => config.value.session.refreshPeriodically,
-        (period) => (period === 0 ? pause() : resume())
+        () => authConfig.value.session.refreshPeriodically,
+        (period) => (period === 0 ? pause() : resume()),
       );
 
       // 窗口焦点刷新用户
       watchEffect(() => {
-        if (config.value.session.refreshOnWindowFocus) {
+        if (authConfig.value.session.refreshOnWindowFocus) {
           window.addEventListener("focus", refreshUser);
         } else {
           window.removeEventListener("focus", refreshUser);

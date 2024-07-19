@@ -12,7 +12,7 @@
     "test": "pnpm run --no-bail --filter \"./packages/**\" test",
     "check": "pnpm --no-bail --filter \"./packages/**\" exec tsc --noEmit",
     "format": "pnpx prettier --write .",
-    "clean": "pnpx shx rm -rf ./**/dist | pnpx shx rm -rf ./**/.nuxt | pnpx shx rm -rf ./**/node_modules"
+    "clean": "pnpx shx rm -rf ./**/dist & pnpx shx rm -rf ./**/.nuxt & pnpx shx rm -rf ./**/node_modules"
   },
   "keywords": [
     "nuxt",

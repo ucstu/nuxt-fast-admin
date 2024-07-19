@@ -99,18 +99,18 @@
 import { FaIcon } from "#components";
 import {
   computed,
-  getAdminMenuOptions,
+  getAdminMenu,
+  getToPath,
   h,
   reloadNuxtApp,
-  useAppConfig,
+  useModuleConfig,
   useNaiveUiTheme,
   useNavMenus,
   useNavPages,
   useNuxtApp,
 } from "#imports";
 import type { DropdownOption } from "@ucstu/nuxt-naive-ui/exports";
-import type { ModuleConfigDefaults } from "../../../../types";
-import { getToPath } from "../../../../utils";
+import { configKey } from "../../../../config";
 import { useDefaultLayoutStore } from "./index.vue";
 
 const ICON_MAP: Record<string, string> = {
@@ -121,20 +121,15 @@ const ICON_MAP: Record<string, string> = {
 
 const pages = useNavPages();
 const menus = useNavMenus();
-const appConfig = useAppConfig();
-const menuConfig = computed(
-  () => (appConfig.fastAdmin as ModuleConfigDefaults).layouts.default.menu,
-);
-const headerConfig = computed(
-  () => (appConfig.fastAdmin as ModuleConfigDefaults).layouts.default.header,
-);
+const menuConfig = useModuleConfig(configKey, "layouts.default.menu");
+const headerConfig = useModuleConfig(configKey, "layouts.default.header");
 const { applicationFullscreen } = useDefaultLayoutStore()!;
 
 const current = computed(() => pages.current);
 
 const breadcrumbs = computed(() => {
   return menus.current.map((parent) => {
-    return getAdminMenuOptions(parent);
+    return getAdminMenu(parent);
   });
 });
 

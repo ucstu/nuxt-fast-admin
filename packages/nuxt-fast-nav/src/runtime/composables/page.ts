@@ -1,21 +1,18 @@
 import type { NuxtApp } from "#app";
 import {
+  $useRouter,
+  computed,
   createNuxtGlobalState,
   shallowRef,
+  toEqual,
   useNuxtApp,
-  useRouter,
 } from "#imports";
-import {
-  computedEager,
-  extendRef,
-  reactify,
-} from "@ucstu/nuxt-fast-utils/exports";
-import { cloneDeep } from "lodash-es";
+import { extendRef, reactify } from "@ucstu/nuxt-fast-utils/exports";
+import defu from "defu";
 import type { FastNavPage, FastNavPageFilled } from "../types";
-import { toEqual } from "../utils/basic";
 
 export function getNavPages(
-  nuxtApp: NuxtApp = useNuxtApp(),
+  nuxtApp: NuxtApp = useNuxtApp()
 ): Array<FastNavPage | FastNavPageFilled> {
   const result = shallowRef<Array<FastNavPage | FastNavPageFilled>>([]);
 
@@ -24,7 +21,7 @@ export function getNavPages(
       hooks.forEach((hook) => hook(...args));
     },
     "fast-nav:get-pages",
-    result,
+    result
   );
 
   return result.value;
@@ -32,7 +29,7 @@ export function getNavPages(
 
 export function getNavPage(page: FastNavPage, nuxtApp: NuxtApp = useNuxtApp()) {
   const result = shallowRef<FastNavPageFilled | undefined>(
-    cloneDeep(page) as FastNavPageFilled,
+    page as FastNavPageFilled
   );
 
   nuxtApp.hooks.callHookWith(
@@ -41,21 +38,28 @@ export function getNavPage(page: FastNavPage, nuxtApp: NuxtApp = useNuxtApp()) {
     },
     "fast-nav:get-page",
     page,
-    result,
+    extendRef(result, {
+      remove() {
+        result.value = undefined;
+      },
+      merge(value: Partial<FastNavPage | FastNavPageFilled>) {
+        result.value = defu(value, result.value) as FastNavPageFilled;
+      },
+    })
   );
 
   return result.value;
 }
 
 export const useNavPages = createNuxtGlobalState(function (
-  nuxtApp: NuxtApp = useNuxtApp(),
+  nuxtApp: NuxtApp = useNuxtApp()
 ) {
-  const { currentRoute } = useRouter();
+  const { currentRoute } = $useRouter(nuxtApp);
 
-  const result = computedEager(() =>
+  const result = computed(() =>
     getNavPages(nuxtApp)
       .map((page) => getNavPage(page, nuxtApp))
-      .filter((page) => page !== undefined),
+      .filter((page) => page !== undefined)
   );
 
   /**
@@ -64,7 +68,7 @@ export const useNavPages = createNuxtGlobalState(function (
    * @returns 页面
    */
   function getPage(to: FastNavPageFilled["to"] = currentRoute.value) {
-    return result.value.find((page) => toEqual(page.to, to, nuxtApp));
+    return result.value.find((page) => toEqual(to, page.to, nuxtApp));
   }
 
   const usePage = reactify(getPage);

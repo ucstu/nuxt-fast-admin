@@ -11,6 +11,7 @@ import type {
   ModuleConfigDefaults,
   ModuleOptions,
   ModuleOptionsDefaults,
+  ModulePublicRuntimeConfig,
 } from "./types";
 
 export const name = "@ucstu/nuxt-fast-admin";
@@ -18,7 +19,6 @@ export const version = "1.1.8";
 export const configKey = "fastAdmin";
 
 export const defaults: ModuleOptionsDefaults = {
-  modules: [],
   features: {
     layouts: {
       full: true,
@@ -51,13 +51,7 @@ export const configs: ModuleConfigDefaults = {
           show: true,
           avatar:
             "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0xMiAxMnEtMS42NSAwLTIuODI1LTEuMTc1VDggOHQxLjE3NS0yLjgyNVQxMiA0dDIuODI1IDEuMTc1VDE2IDh0LTEuMTc1IDIuODI1VDEyIDEybS04IDh2LTIuOHEwLS44NS40MzgtMS41NjJUNS42IDE0LjU1cTEuNTUtLjc3NSAzLjE1LTEuMTYyVDEyIDEzdDMuMjUuMzg4dDMuMTUgMS4xNjJxLjcyNS4zNzUgMS4xNjMgMS4wODhUMjAgMTcuMlYyMHoiLz48L3N2Zz4=",
-          options: [
-            {
-              label: "退出登录",
-              key: "logout",
-              icon: "material-symbols:logout",
-            },
-          ],
+          options: [],
         },
       },
       tabbar: { show: true, refresh: true, fullscreen: true, actions: true },
@@ -103,7 +97,7 @@ export const configs: ModuleConfigDefaults = {
 };
 
 export function initModule(_options: ModuleOptions, nuxt: Nuxt) {
-  const options = _options as ModuleOptionsDefaults;
+  const options = _options as ModulePublicRuntimeConfig[typeof configKey];
 
   nuxt.options.runtimeConfig.public[configKey] = options as any;
   nuxt.options.appConfig[configKey] = configs;
@@ -114,6 +108,12 @@ export function initModule(_options: ModuleOptions, nuxt: Nuxt) {
 declare module "@nuxt/schema" {
   interface CustomAppConfig {
     fastAdmin?: ModuleConfig;
+  }
+}
+
+declare module "@ucstu/nuxt-fast-utils/types" {
+  interface ModuleConfigs {
+    fastAdmin: ModuleConfigDefaults;
   }
 }
 

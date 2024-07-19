@@ -125,21 +125,20 @@ import {
   computed,
   handleError,
   ref,
-  useAppConfig,
   useAuth,
+  useModuleConfig,
   useNuxtApp,
   useRouter,
 } from "#imports";
 import defu from "defu";
 import type { FormInst, FormRules } from "naive-ui";
 import { FetchError } from "ofetch";
-import type { ModuleConfigDefaults } from "../../../types";
+import { configKey } from "../../../config";
 
 const router = useRouter();
 const nuxtApp = useNuxtApp();
-const appConfig = useAppConfig();
-const adminConfig = computed(() => appConfig.fastAdmin as ModuleConfigDefaults);
-const authConfig = computed(() => adminConfig.value.pages.auth);
+const adminConfig = useModuleConfig(configKey);
+const authConfig = useModuleConfig(configKey, "pages.auth");
 const { signIn, signUp, status } = useAuth();
 
 const background = computed(() =>

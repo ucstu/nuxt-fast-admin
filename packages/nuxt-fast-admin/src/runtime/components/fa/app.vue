@@ -1,5 +1,9 @@
 <template>
-  <n-config-provider class="fast-admin-app" v-bind="config" inline-theme-disabled>
+  <n-config-provider
+    class="fast-admin-app"
+    v-bind="config"
+    inline-theme-disabled
+  >
     <n-dialog-provider v-bind="dialog">
       <n-loading-bar-provider v-bind="loadingBar">
         <n-message-provider v-bind="message">
@@ -23,7 +27,7 @@
                 </slot>
               </define-template>
               <fs-ui-context
-                v-if="runtimeConfig.public.fastAdmin.modules.includes('crud')"
+                v-if="runtimeConfig.modules.includes('@ucstu/nuxt-fast-crud')"
               >
                 <reuse-template />
               </fs-ui-context>
@@ -41,13 +45,12 @@ import {
   computed,
   defineComponent,
   navigateTo,
-  useAppConfig,
   useHead,
   useLoadingIndicator,
+  useModuleConfig,
   useNaiveUiI18n,
   useNaiveUiTheme,
-  useNavPages,
-  useNuxtApp,
+  useNavHistories,
   useRuntimeConfig,
   watch,
 } from "#imports";
@@ -68,8 +71,7 @@ import {
   type NotificationProviderProps,
 } from "@ucstu/nuxt-naive-ui/exports";
 import defu from "defu";
-import type { ModuleConfigDefaults } from "../../types";
-import { getAppHeadTitle } from "../../utils";
+import { configKey } from "../../config";
 
 const props = defineProps<{
   config?: ConfigProviderProps;
@@ -78,11 +80,11 @@ const props = defineProps<{
   message?: MessageProviderProps;
   modal?: ModalProviderProps;
   notification?: NotificationProviderProps;
+  title?: string;
 }>();
 
-const appConfig = useAppConfig();
-const runtimeConfig = useRuntimeConfig();
-const adminConfig = computed(() => appConfig.fastAdmin as ModuleConfigDefaults);
+const adminConfig = useModuleConfig(configKey);
+const runtimeConfig = useRuntimeConfig().public[configKey];
 
 const i18nConfig = useNaiveUiI18n("zh-CN");
 const themeConfig = useNaiveUiTheme();
@@ -96,10 +98,13 @@ const config = computed(
     ) as ConfigProviderProps
 );
 
-const pages = useNavPages();
-const nuxtApp = useNuxtApp();
-
-useHead({ title: () => getAppHeadTitle(pages.current, nuxtApp) });
+const histories = useNavHistories();
+useHead({
+  title: () =>
+    props.title || histories.current?.meta.title
+      ? `${histories.current?.meta.title} - ${adminConfig.value.name}`
+      : adminConfig.value.name,
+});
 
 const [DefineTemplate, ReuseTemplate] = createReusableTemplate();
 

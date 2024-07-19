@@ -12,5 +12,5 @@ export interface ModuleOptions {
 export type ModuleOptionsDefaults = Required<ModuleOptions>;
 
 export interface ModulePublicRuntimeConfig {
-  fastCrud: ModuleOptionsDefaults;
+  fastFetch: ModuleOptionsDefaults;
 }

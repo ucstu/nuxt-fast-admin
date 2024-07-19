@@ -1,8 +1,15 @@
+import type { NuxtApp } from "#app";
 import { computed, type MaybeRefOrGetter, toValue, useAuth } from "#imports";
 import type { LiteralUnion } from "@ucstu/nuxt-fast-utils/exports";
 import { isEqual } from "lodash-es";
 import { minimatch } from "minimatch";
-import type { FastAuthBase, FastAuthPer, FastAuthPerWrapper } from "../types";
+import type {
+  FastAuthBase,
+  FastAuthPage,
+  FastAuthPer,
+  FastAuthPerWrapper,
+} from "../types";
+import { getAuthPageFilled, isAuthPage } from "../utils";
 
 /**
  * 是否具有
@@ -22,7 +29,7 @@ function have(
   if (typeof needs === "number" || typeof needs === "bigint") {
     return has.some(
       (item) =>
-        typeof item === "object" &&
+        item instanceof Object &&
         item.type === "per" &&
         (typeof item.value === "number" || typeof item.value === "bigint") &&
         item.value === needs,
@@ -31,14 +38,14 @@ function have(
   if (typeof needs === "string") {
     return has.some(
       (item) =>
-        typeof item === "object" &&
+        item instanceof Object &&
         item.type === "per" &&
         typeof item.value === "string" &&
         minimatch(needs, item.value),
     );
   }
-  if (typeof needs === "object" && !Array.isArray(needs)) {
-    return has.some((item) => typeof item === "object" && isEqual(item, needs));
+  if (needs instanceof Object && !Array.isArray(needs)) {
+    return has.some((item) => item instanceof Object && isEqual(item, needs));
   }
   if (Array.isArray(needs)) {
     switch (needs[0]) {
@@ -88,22 +95,37 @@ export function role(role: Exclude<FastAuthPer, boolean>): FastAuthPerWrapper {
  * @example auth("|", "user", "admin") // 是否拥有 user 或 admin 权限
  * @example auth("!", "user", "admin") // 是否没有 user 和 admin 权限
  * @example auth("|", ["user", "admin"], "all") // 是否 (同时拥有 user 和 admin 权限) 或 具有 all 权限
+ * @example auth(page) // 是否可以访问某一页面 FastAuthPage
  */
 export function auth(
   ...needs:
-    | MaybeRefOrGetter<FastAuthBase>[]
+    | MaybeRefOrGetter<FastAuthBase | FastAuthPage>[]
     | [
-        MaybeRefOrGetter<LiteralUnion<"!" | "|", FastAuthPer>>,
-        ...MaybeRefOrGetter<FastAuthBase>[],
+        MaybeRefOrGetter<
+          | LiteralUnion<"!" | "|", FastAuthPer>
+          | Exclude<FastAuthBase, FastAuthPer>
+          | FastAuthPage
+          | NuxtApp
+        >,
+        ...MaybeRefOrGetter<FastAuthBase | FastAuthPage>[],
       ]
 ) {
-  const { status, roles, permissions } = useAuth();
+  let nuxtApp: NuxtApp | undefined;
+  if (needs[0] instanceof Object && "globalName" in needs[0]) {
+    nuxtApp = needs.shift() as NuxtApp;
+  }
+  const { status, roles, permissions } = useAuth(nuxtApp);
   const _has = computed(() => [
     status.value.authed ?? false,
     ...roles.value,
     ...permissions.value,
   ]);
-  const _needs = computed(() => needs.map((need) => toValue(need)));
+  const _needs = computed(() =>
+    (needs as MaybeRefOrGetter<FastAuthBase | FastAuthPage>[]).map((need) => {
+      const value = toValue(need);
+      return isAuthPage(value) ? getAuthPageFilled(value, nuxtApp).auth : value;
+    }),
+  );
   return computed(() => have(_has.value, _needs.value as FastAuthBase));
 }
 
@@ -119,18 +141,34 @@ export function auth(
  * @example auth("|", "user", "admin") // 是否拥有 user 或 admin 权限
  * @example auth("!", "user", "admin") // 是否没有 user 和 admin 权限
  * @example auth("|", ["user", "admin"], "all") // 是否 (同时拥有 user 和 admin 权限) 或 具有 all 权限
+ * @example auth(page) // 是否可以访问某一页面 FastAuthPage
  */
 export function $auth(
   ...needs:
-    | FastAuthBase[]
-    | [LiteralUnion<"!" | "|", FastAuthPer> | FastAuthBase, ...FastAuthBase[]]
+    | (FastAuthBase | FastAuthPage)[]
+    | [
+        (
+          | LiteralUnion<"!" | "|", FastAuthPer>
+          | Exclude<FastAuthBase, FastAuthPer>
+          | FastAuthPage
+          | NuxtApp
+        ),
+        ...(FastAuthBase | FastAuthPage)[],
+      ]
 ): boolean {
-  const { status, roles, permissions } = useAuth();
+  let nuxtApp: NuxtApp | undefined;
+  if (needs[0] instanceof Object && "globalName" in needs[0]) {
+    nuxtApp = needs.shift() as NuxtApp;
+  }
+  const { status, roles, permissions } = useAuth(nuxtApp);
   const _has = [
     status.value.authed ?? false,
     ...roles.value,
     ...permissions.value,
   ];
-  const _needs = needs.map((need) => toValue(need));
+  const _needs = (needs as (FastAuthBase | FastAuthPage)[]).map((need) => {
+    const value = toValue(need);
+    return isAuthPage(value) ? getAuthPageFilled(value, nuxtApp).auth : value;
+  });
   return have(_has, _needs as FastAuthBase);
 }

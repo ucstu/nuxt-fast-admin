@@ -69,21 +69,17 @@ import {
   computed,
   navigateTo,
   toEqual,
-  useAppConfig,
+  useModuleConfig,
   useNavHistories,
 } from "#imports";
 import type { DropdownOption } from "naive-ui";
-import type { ModuleConfigDefaults } from "../../../../types";
+import { configKey } from "../../../../config";
 import { useDefaultLayoutStore } from "./index.vue";
-
-const appConfig = useAppConfig();
-const tabbarConfig = computed(
-  () => (appConfig.fastAdmin as ModuleConfigDefaults).layouts.default.tabbar,
-);
 
 const histories = useNavHistories();
 const { close, closeAll, closeOthers } = histories;
 const { showPage, refreshPage, pageFullscreen } = useDefaultLayoutStore()!;
+const tabbarConfig = useModuleConfig(configKey, "layouts.default.tabbar");
 
 const current = computed(() =>
   histories.value.findIndex((item) => item === histories.current),
@@ -100,7 +96,7 @@ async function openTab(index: number) {
 const closeable = computed(
   () =>
     histories.value.length > 1 ||
-    !toEqual(histories.value[0]?.to, histories.current?.to),
+    !toEqual(histories.current?.to, histories.value[0]?.to),
 );
 
 const options: DropdownOption[] = [

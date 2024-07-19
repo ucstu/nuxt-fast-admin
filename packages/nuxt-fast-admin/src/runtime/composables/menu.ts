@@ -1,6 +1,7 @@
 import { FaIcon, NuxtLink } from "#components";
 import {
   createNuxtGlobalState,
+  getToPath,
   h,
   isNavMenuFilled,
   useNavMenus,
@@ -11,9 +12,8 @@ import type {
 } from "@ucstu/nuxt-fast-nav/types";
 import { reactify } from "@ucstu/nuxt-fast-utils/exports";
 import type { MenuOption } from "@ucstu/nuxt-naive-ui/exports";
-import { authPage, getToPath } from "../utils";
 
-export function getAdminMenuOptions(
+export function getAdminMenu(
   menuOrPage: FastNavMenuFilled | FastNavPageFilled,
 ): MenuOption | undefined {
   const menu = menuOrPage as FastNavMenuFilled;
@@ -25,16 +25,9 @@ export function getAdminMenuOptions(
 
   const children = isNavMenuFilled(menuOrPage)
     ? menuOrPage.children
-        ?.map(getAdminMenuOptions)
+        ?.map(getAdminMenu)
         .filter((item) => item !== undefined)
     : undefined;
-
-  let show = false;
-  if (isNavMenuFilled(menuOrPage)) {
-    show = menu.show && (children?.some((item) => item?.show) ?? false);
-  } else {
-    show = page.menu.show && authPage(page);
-  }
 
   const options: MenuOption = {
     key: isNavMenuFilled(menuOrPage)
@@ -43,7 +36,7 @@ export function getAdminMenuOptions(
         : `${menu.parent ? `${menu.parent}-` : ""}${menu.name}`
       : getToPath(page.to),
     label() {
-      return menuOrPage.to
+      return menuOrPage.to && menu
         ? h(
             NuxtLink,
             { to: menuOrPage.to },
@@ -56,14 +49,14 @@ export function getAdminMenuOptions(
     icon() {
       return h(FaIcon, { name: menuOrPage.icon });
     },
-    show,
+    show: isNavMenuFilled(menuOrPage) ? menu.show : page.menu.show,
     disabled: isNavMenuFilled(menuOrPage) ? menu.disabled : page.menu.disabled,
     children,
   };
   return options;
 }
 
-export const useAdminMenuOptions = reactify(getAdminMenuOptions);
-export const useAdminGlobalMenuOptions = createNuxtGlobalState(function () {
-  return useAdminMenuOptions(useNavMenus());
+export const useAdminMenu = reactify(getAdminMenu);
+export const useAdminMenuGlobal = createNuxtGlobalState(function () {
+  return useAdminMenu(useNavMenus());
 });

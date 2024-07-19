@@ -91,11 +91,17 @@
 </template>
 
 <script setup lang="ts">
-import { useAppConfig, type NuxtError } from "#app";
+import { type NuxtError } from "#app";
 import type { NResult } from "#components";
-import { computed, isFetchError, isNuxtError, ref, useRouter } from "#imports";
-import type { RouteLocationRaw } from "#vue-router";
-import type { ModuleConfigDefaults as FastAuthConfig } from "@ucstu/nuxt-fast-auth/types";
+import {
+  computed,
+  getToPath,
+  isFetchError,
+  isNuxtError,
+  ref,
+  useModuleConfig,
+  useRouter,
+} from "#imports";
 import defu from "defu";
 import {
   ErrorIcon,
@@ -104,7 +110,8 @@ import {
   WarningIcon,
 } from "naive-ui/es/_internal/icons/index";
 import type { FetchError } from "ofetch";
-import type { ErrorLevel, ModuleConfigDefaults } from "../../types";
+import { configKey } from "../../config";
+import type { ErrorLevel } from "../../types";
 
 const CAN_PPROCESS_STATUS = [
   401,
@@ -149,9 +156,8 @@ const emit = defineEmits<{
 }>();
 
 const router = useRouter();
-const appConfig = useAppConfig();
-const authConfig = computed(() => appConfig.fastAuth as FastAuthConfig);
-const adminConfig = computed(() => appConfig.fastAdmin as ModuleConfigDefaults);
+const authConfig = useModuleConfig("fastAuth");
+const adminConfig = useModuleConfig(configKey);
 
 function isHTML(str: string | undefined) {
   if (!str) return false;
@@ -257,20 +263,16 @@ const detiail = computed(() => {
   );
 });
 
-function getPath(location: RouteLocationRaw) {
-  return typeof location === "string" ? location : location.path;
-}
-
 function goAuth() {
   emit(
     "clearError",
-    defu(error.value, { redirect: getPath(authConfig.value.signIn) }),
+    defu(error.value, { redirect: getToPath(authConfig.value.signIn) }),
   );
 }
 function goHome() {
   emit(
     "clearError",
-    defu(error.value, { redirect: getPath(authConfig.value.home) }),
+    defu(error.value, { redirect: getToPath(authConfig.value.home) }),
   );
 }
 function goBack() {
@@ -279,7 +281,7 @@ function goBack() {
     defu(error.value, {
       redirect:
         (router.options.history.state.back as string) ||
-        getPath(authConfig.value.home),
+        getToPath(authConfig.value.home),
     }),
   );
 }

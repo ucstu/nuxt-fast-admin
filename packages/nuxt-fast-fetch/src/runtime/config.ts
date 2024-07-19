@@ -4,6 +4,7 @@ import type {
   ModuleConfigDefaults,
   ModuleOptions,
   ModuleOptionsDefaults,
+  ModulePublicRuntimeConfig,
 } from "./types";
 
 export const name = "@ucstu/nuxt-fast-fetch";
@@ -20,7 +21,7 @@ export function initModule(
   _options: ModuleOptions,
   nuxt: Nuxt,
 ): ModuleOptionsDefaults {
-  const options = _options as ModuleOptionsDefaults;
+  const options = _options as ModulePublicRuntimeConfig[typeof configKey];
 
   nuxt.options.runtimeConfig.public[configKey] = options as any;
   nuxt.options.appConfig[configKey] = configs;

@@ -35,9 +35,6 @@
   "dependencies": {
     "@nuxt/icon": "^1.0.0",
     "@nuxt/kit": "^3.12.3",
-    "@ucstu/nuxt-fast-auth": "workspace:^",
-    "@ucstu/nuxt-fast-crud": "workspace:^",
-    "@ucstu/nuxt-fast-fetch": "workspace:^",
     "@ucstu/nuxt-fast-nav": "workspace:^",
     "@ucstu/nuxt-fast-utils": "workspace:^",
     "@ucstu/nuxt-naive-ui": "workspace:^",
@@ -54,6 +51,22 @@
     "eslint": "^9.7.0",
     "nuxt": "^3.12.3",
     "vitest": "^2.0.2"
+  },
+  "peerDependencies": {
+    "@ucstu/nuxt-fast-auth": "workspace:^",
+    "@ucstu/nuxt-fast-crud": "workspace:^",
+    "@ucstu/nuxt-fast-fetch": "workspace:^"
+  },
+  "peerDependenciesMeta": {
+    "@ucstu/nuxt-fast-auth": {
+      "optional": true
+    },
+    "@ucstu/nuxt-fast-crud": {
+      "optional": true
+    },
+    "@ucstu/nuxt-fast-fetch": {
+      "optional": true
+    }
   },
   "publishConfig": {
     "access": "public"

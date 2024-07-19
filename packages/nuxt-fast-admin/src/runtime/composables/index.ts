@@ -1,2 +1,2 @@
-export * from "./use-crud";
-export * from "./use-menu-option";
+export * from "./crud";
+export * from "./menu";

@@ -1,5 +1,5 @@
-import { useRouter } from "#app";
-import { $auth, computed, useAppConfig } from "#imports";
+import type { NuxtApp } from "#app";
+import { $useRouter, fixTo, useModuleConfig, useNuxtApp } from "#imports";
 import type { RequiredDeep } from "@ucstu/nuxt-fast-utils/exports";
 import defu from "defu";
 import { configKey } from "../config";
@@ -8,23 +8,22 @@ import type {
   FastAuthMeta,
   FastAuthPage,
   FastAuthPageFilled,
-  ModuleConfigDefaults,
 } from "../types";
 import { isAuthMeta } from "./basic";
 
-export function getAuthPageFilled(page: FastAuthPage): FastAuthPageFilled {
-  const router = useRouter();
-  const appConfig = useAppConfig();
-  const config = computed(() => appConfig[configKey] as ModuleConfigDefaults);
+export function getAuthPageFilled(
+  page: FastAuthPage,
+  nuxtApp: NuxtApp = useNuxtApp()
+): FastAuthPageFilled {
+  const router = $useRouter(nuxtApp);
+  const authConfig = useModuleConfig(configKey, nuxtApp);
 
-  const raw = router.resolve(page.to).meta.auth as
-    | FastAuthMeta
-    | FastAuthBase
-    | undefined;
+  const to = router.resolve(fixTo(page.to));
+  const raw = to?.meta.auth as FastAuthMeta | FastAuthBase | undefined;
   const rawAuth = isAuthMeta(raw) ? raw.auth : raw;
   const rawRedirect = isAuthMeta(raw) ? raw.redirect : undefined;
 
-  const store = config.value.page.auth;
+  const store = authConfig.value.page.auth;
   const storeAuth = isAuthMeta(store) ? store.auth : store;
   const storeRedirect = isAuthMeta(store) ? store.redirect : undefined;
 
@@ -40,10 +39,4 @@ export function getAuthPageFilled(page: FastAuthPage): FastAuthPageFilled {
       redirect,
     },
   };
-}
-
-export function authPage(page: FastAuthPage): boolean {
-  const filled = getAuthPageFilled(page);
-  const auth = isAuthMeta(filled.auth) ? filled.auth.auth : filled.auth;
-  return $auth(auth);
 }

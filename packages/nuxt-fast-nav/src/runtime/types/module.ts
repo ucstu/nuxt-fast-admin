@@ -1,8 +1,5 @@
-import type {
-  RouteLocationNormalizedGeneric,
-  RouteLocationRaw,
-} from "#vue-router";
-import type { RequiredDeep } from "@ucstu/nuxt-fast-utils/exports";
+import type { RouteLocationNormalizedGeneric } from "#vue-router";
+import { type RequiredDeep } from "@ucstu/nuxt-fast-utils/exports";
 import type { ShallowRef } from "vue-demi";
 import type {
   FastNavHistory,
@@ -42,7 +39,7 @@ export interface ModuleRuntimeHooks {
    * @param result 结果
    */
   "fast-nav:get-menus": (
-    result: ShallowRef<Array<FastNavMenu | FastNavMenuFilled>>,
+    result: ShallowRef<Array<FastNavMenu | FastNavMenuFilled>>
   ) => void;
   /**
    * 获取菜单信息
@@ -54,14 +51,21 @@ export interface ModuleRuntimeHooks {
     input: FastNavMenu | FastNavMenuFilled,
     result: ShallowRef<
       Omit<FastNavMenuFilled, "children" | "parent"> | undefined
-    >,
+    > & {
+      remove(): void;
+      merge(
+        value: Partial<
+          Omit<FastNavMenu | FastNavMenuFilled, "children" | "parent">
+        >
+      ): void;
+    }
   ) => void;
   /**
    * 获取页面列表
    * @param result 结果
    */
   "fast-nav:get-pages": (
-    result: ShallowRef<Array<FastNavPage | FastNavPageFilled>>,
+    result: ShallowRef<Array<FastNavPage | FastNavPageFilled>>
   ) => void;
   /**
    * 获取页面信息
@@ -70,7 +74,10 @@ export interface ModuleRuntimeHooks {
    */
   "fast-nav:get-page": (
     input: FastNavPage | FastNavPageFilled,
-    result: ShallowRef<FastNavPageFilled | undefined>,
+    result: ShallowRef<FastNavPageFilled | undefined> & {
+      remove(): void;
+      merge(value: Partial<FastNavPage | FastNavPageFilled>): void;
+    }
   ) => void;
   /**
    * 获取历史记录
@@ -79,17 +86,9 @@ export interface ModuleRuntimeHooks {
    */
   "fast-nav:get-history": (
     to: RouteLocationNormalizedGeneric,
-    result: ShallowRef<FastNavHistory | undefined>,
-  ) => void;
-  /**
-   * 路径是否相等
-   * @param a RouteLocationRaw
-   * @param b RouteLocationRaw
-   * @param result 结果
-   */
-  "fast-nav:to-equal": (
-    a: RouteLocationRaw | undefined,
-    b: RouteLocationRaw | undefined,
-    result: ShallowRef<boolean | undefined>,
+    result: ShallowRef<FastNavHistory | undefined> & {
+      remove(): void;
+      merge(value: Partial<FastNavHistory>): void;
+    }
   ) => void;
 }

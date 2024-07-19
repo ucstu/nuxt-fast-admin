@@ -40,22 +40,18 @@
 <script setup lang="ts">
 import {
   computed,
-  useAdminGlobalMenuOptions,
-  useAppConfig,
+  getToPath,
+  useAdminMenuGlobal,
+  useModuleConfig,
   useNavPages,
 } from "#imports";
-import type { ModuleConfigDefaults } from "../../../../types";
-import { getToPath } from "../../../../utils";
-
-const appConfig = useAppConfig();
-const adminConfig = computed(() => appConfig.fastAdmin as ModuleConfigDefaults);
-const menuConfig = computed(
-  () => (appConfig.fastAdmin as ModuleConfigDefaults).layouts.default.menu,
-);
+import { configKey } from "../../../../config";
 
 const pages = useNavPages();
 const current = computed(() => pages.current);
-const options = useAdminGlobalMenuOptions();
+const options = useAdminMenuGlobal();
+const adminConfig = useModuleConfig(configKey);
+const menuConfig = useModuleConfig(configKey, "layouts.default.menu");
 </script>
 
 <style>

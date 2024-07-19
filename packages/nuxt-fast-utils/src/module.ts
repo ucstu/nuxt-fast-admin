@@ -17,6 +17,7 @@ import type { ModuleOptions } from "./runtime/types";
 export type {
   ModuleOptions,
   ModulePublicRuntimeConfig,
+  ModuleRuntimeHooks,
 } from "./runtime/types/module";
 
 export default defineNuxtModule<ModuleOptions>({
@@ -47,10 +48,17 @@ export default defineNuxtModule<ModuleOptions>({
     addImportsSources({
       from: resolve("./runtime/composables"),
       imports: [
+        "toRefDeep",
         "useNuxtReady",
         "useNuxtStorage",
-        "useNuxtAppBack",
-        "tryUseNuxtAppBack",
+
+        "$useRouter",
+        "$useAppConfig",
+        "$useRuntimeConfig",
+
+        "getModuleConfig",
+        "useModuleConfig",
+
         "createNuxtGlobalState",
         "createNuxtSharedComposable",
       ],
@@ -58,7 +66,14 @@ export default defineNuxtModule<ModuleOptions>({
 
     addImportsSources({
       from: resolve("./runtime/utils"),
-      imports: ["cookieStorage", "sessionCookieStorage"],
+      imports: [
+        "fixTo",
+        "toEqual",
+        "getToPath",
+        "isNuxtApp",
+        "cookieStorage",
+        "sessionCookieStorage",
+      ],
     });
   },
 });

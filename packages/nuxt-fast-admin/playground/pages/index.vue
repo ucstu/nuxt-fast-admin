@@ -1,14 +1,5 @@
 <script setup lang="ts">
 const route = useRoute();
-
-console.log(
-  useAdminCrud($petStore, "$Pet", {
-    columns: {
-      tags: {},
-    },
-    references: ["status"],
-  })
-);
 </script>
 
 <template>

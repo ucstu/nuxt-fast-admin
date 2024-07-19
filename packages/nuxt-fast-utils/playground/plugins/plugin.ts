@@ -3,6 +3,7 @@ import { useTestState } from "../composables/test";
 
 export default defineNuxtPlugin({
   setup() {
-    useTestState();
+    const states = useTestState();
+    console.log("states", states);
   },
 });

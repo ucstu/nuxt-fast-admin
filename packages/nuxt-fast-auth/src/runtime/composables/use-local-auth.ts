@@ -1,18 +1,8 @@
 import type { NuxtApp } from "#app";
-import {
-  computed,
-  navigateTo,
-  shallowRef,
-  useAppConfig,
-  useNuxtApp,
-} from "#imports";
+import { navigateTo, shallowRef, useModuleConfig, useNuxtApp } from "#imports";
 import { createGlobalState } from "@ucstu/nuxt-fast-utils/exports";
 import { configKey } from "../config";
-import type {
-  FastAuthForm,
-  LocalSignInResult,
-  ModuleConfigDefaults,
-} from "../types";
+import type { FastAuthForm, LocalSignInResult } from "../types";
 import { useAuth, type SignInOptions, type SignUpOptions } from "./use-auth";
 
 /**
@@ -23,8 +13,7 @@ export const useLocalAuth = createGlobalState(function <
   F extends FastAuthForm = FastAuthForm,
 >(nuxtApp: NuxtApp = useNuxtApp()) {
   const auth = useAuth(nuxtApp);
-  const appConfig = useAppConfig();
-  const config = computed(() => appConfig[configKey] as ModuleConfigDefaults);
+  const authConfig = useModuleConfig(configKey);
 
   const {
     token: _token,
@@ -68,8 +57,8 @@ export const useLocalAuth = createGlobalState(function <
         }
         if (navigate) {
           await navigateTo(
-            navigate === true ? config.value.home : navigate,
-            navigateOptions
+            navigate === true ? authConfig.value.home : navigate,
+            navigateOptions,
           );
         }
       }

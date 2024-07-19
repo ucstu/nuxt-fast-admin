@@ -1,21 +1,19 @@
 import type { NuxtApp } from "#app";
 import {
-  computed,
+  $useRuntimeConfig,
   cookieStorage,
   navigateTo,
   sessionCookieStorage,
   shallowRef,
-  useAppConfig,
+  useModuleConfig,
   useNuxtApp,
   useNuxtStorage,
-  useRuntimeConfig,
 } from "#imports";
 import { createGlobalState } from "@ucstu/nuxt-fast-utils/exports";
 import { configKey } from "../config";
 import type {
   FastAuthForm,
   FastAuthToken,
-  ModuleConfigDefaults,
   RefreshSignInResult,
 } from "../types";
 import {
@@ -43,10 +41,9 @@ export interface RefreshAuthStatus extends AuthStatus {
 export const useRefreshAuth = createGlobalState(function <
   F extends FastAuthForm = FastAuthForm,
 >(nuxtApp: NuxtApp = useNuxtApp()) {
-  const appConfig = useAppConfig();
   const auth = useAuth<RefreshAuthStatus>(nuxtApp);
-  const config = computed(() => appConfig[configKey] as ModuleConfigDefaults);
-  const fastUtilsConfig = useRuntimeConfig().public.fastUtils;
+  const authConfig = useModuleConfig(configKey, nuxtApp);
+  const fastUtilsConfig = $useRuntimeConfig(nuxtApp).public.fastUtils;
 
   const {
     token: _token,
@@ -65,8 +62,9 @@ export const useRefreshAuth = createGlobalState(function <
           ? cookieStorage
           : sessionCookieStorage
         : _remember.value
-        ? localStorage
-        : sessionStorage
+          ? localStorage
+          : sessionStorage,
+    { nuxtApp },
   );
 
   /**
@@ -76,7 +74,7 @@ export const useRefreshAuth = createGlobalState(function <
    */
   async function signIn<F extends FastAuthForm = FastAuthForm>(
     form: F,
-    options: SignInOptions = {}
+    options: SignInOptions = {},
   ) {
     const { remember, navigate = false, navigateOptions } = options;
 
@@ -103,8 +101,8 @@ export const useRefreshAuth = createGlobalState(function <
         }
         if (navigate) {
           await navigateTo(
-            navigate === true ? config.value.home : navigate,
-            navigateOptions
+            navigate === true ? authConfig.value.home : navigate,
+            navigateOptions,
           );
         }
       }
@@ -130,7 +128,7 @@ export const useRefreshAuth = createGlobalState(function <
       );
       if (navigate) {
         await navigateTo(
-          navigate === true ? config.value.signIn : navigate,
+          navigate === true ? authConfig.value.signIn : navigate,
           options.navigateOptions,
         );
       }

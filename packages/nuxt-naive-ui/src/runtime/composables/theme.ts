@@ -1,10 +1,12 @@
+import type { NuxtApp } from "#app";
 import {
+  $useRuntimeConfig,
   computed,
   createNuxtGlobalState,
-  useAppConfig,
+  useModuleConfig,
+  useNuxtApp,
   useNuxtReady,
   useNuxtStorage,
-  useRuntimeConfig,
 } from "#imports";
 import { extendRef } from "@ucstu/nuxt-fast-utils/exports";
 import {
@@ -15,7 +17,7 @@ import {
   type GlobalThemeOverrides,
 } from "naive-ui";
 import { configKey } from "../config";
-import type { ModuleConfigDefaults, NaiveUiThemeKey } from "../types";
+import type { NaiveUiThemeKey } from "../types";
 
 function getTheme(
   theme: NaiveUiThemeKey | null,
@@ -42,15 +44,16 @@ function getThemeOverrides(
 
 export const useNaiveUiTheme = createNuxtGlobalState(function (
   theme?: NaiveUiThemeKey,
+  nuxtApp: NuxtApp = useNuxtApp(),
 ) {
-  const appConfig = useAppConfig();
-  const runtimeConfig = useRuntimeConfig();
-  const config = computed(() => appConfig[configKey] as ModuleConfigDefaults);
-  const fastUtilsConfig = runtimeConfig.public.fastUtils;
+  const naiveUiConfig = useModuleConfig(configKey, nuxtApp);
+  const fastUtilsConfig = $useRuntimeConfig(nuxtApp).public.fastUtils;
 
   const store = useNuxtStorage<NaiveUiThemeKey>(
     "naive-ui:theme",
-    () => theme ?? config.value.defaultTheme,
+    () => theme ?? naiveUiConfig.value.defaultTheme,
+    undefined,
+    { nuxtApp },
   );
   const system = useOsTheme();
 
@@ -71,18 +74,20 @@ export const useNaiveUiTheme = createNuxtGlobalState(function (
       theme: getTheme(
         real.value,
         Object.fromEntries(
-          Object.entries(config.value.customThemes).map(([key, value]) => [
-            key,
-            {
-              ...value,
-              name: key,
-            },
-          ]),
+          Object.entries(naiveUiConfig.value.customThemes).map(
+            ([key, value]) => [
+              key,
+              {
+                ...value,
+                name: key,
+              },
+            ],
+          ),
         ),
       ),
       themeOverrides: getThemeOverrides(
         real.value,
-        config.value.themesOverrides,
+        naiveUiConfig.value.themesOverrides,
       ),
     })),
     {

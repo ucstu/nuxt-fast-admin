@@ -1,10 +1,8 @@
-import { shallowRef } from "#imports";
-import type { FastAuthPage } from "@ucstu/nuxt-fast-auth/types";
+import type { $auth as __$auth, auth as __auth } from "#imports";
+import { computed, shallowRef } from "#imports";
 
-export const authPageRef = shallowRef<(page: FastAuthPage) => boolean>(
-  () => true,
-);
+export const _$auth = shallowRef<typeof __$auth>(() => true);
+export const _auth = shallowRef<typeof __auth>(() => computed(() => true));
 
-export function authPage(page: FastAuthPage) {
-  return authPageRef.value(page);
-}
+export const auth: typeof __auth = (...args) => _auth.value(...args);
+export const $auth: typeof __$auth = _$auth.value;

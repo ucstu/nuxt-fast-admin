@@ -2,11 +2,13 @@ import { createClient, type UserConfig } from "@hey-api/openapi-ts";
 import { extendServerRpc, onDevToolsInitialized } from "@nuxt/devtools-kit";
 import {
   addImports,
+  addTemplate,
   createResolver,
   defineNuxtModule,
   installModule,
 } from "@nuxt/kit";
 import { addModuleTypeTemplate } from "@ucstu/nuxt-fast-utils/utils";
+import { genExport } from "knitwork";
 import { camelCase } from "lodash-es";
 import { setupDevToolsUI } from "./devtools";
 import {
@@ -45,7 +47,7 @@ export default defineNuxtModule<ModuleOptions>({
   },
   defaults,
   async setup(_options, nuxt) {
-    installModule("@ucstu/nuxt-fast-utils");
+    await installModule("@ucstu/nuxt-fast-utils");
 
     const options = initModule(_options, nuxt);
 
@@ -65,14 +67,14 @@ export default defineNuxtModule<ModuleOptions>({
       config: Pick<
         UserConfig,
         "input" | "schemas" | "services" | "types" | "client"
-      > = options.clients[name],
+      > = options.clients[name]
     ) {
       const input =
-        typeof config.input === "object"
+        config.input instanceof Object
           ? config.input
           : isFileSystemPath(config.input)
-            ? resolve(nuxt.options.rootDir, config.input)
-            : config.input;
+          ? resolve(nuxt.options.rootDir, config.input)
+          : config.input;
       const output = resolve(nuxt.options.buildDir, "fast-fetch", name);
 
       return {
@@ -90,8 +92,7 @@ export default defineNuxtModule<ModuleOptions>({
             return Object.entries(options.clients)
               .map(([name, value]) => {
                 const { input } = fillConfig(name, value);
-                if (typeof input === "object" || isFileSystemPath(input))
-                  return;
+                if (input instanceof Object || isFileSystemPath(input)) return;
                 return {
                   name: name,
                   url: input,
@@ -104,7 +105,7 @@ export default defineNuxtModule<ModuleOptions>({
             try {
               await createClient(config);
             } catch (e) {
-              console.error(e);
+              console.error(`Failed to refresh document ${name}`, e);
             }
           },
         });
@@ -118,13 +119,29 @@ export default defineNuxtModule<ModuleOptions>({
       addImports({
         name: "*",
         as: `$${camelCase(name)}`,
-        from: resolve(output, "index.ts"),
+        from: output,
       });
       try {
         await createClient(config);
       } catch (e) {
-        console.error(e);
+        console.error(`Failed to create client ${name}`, e);
       }
     }
+
+    nuxt.options.alias["#fast-fetch"] = resolve(
+      nuxt.options.buildDir,
+      "fast-fetch"
+    );
+    addTemplate({
+      filename: resolve(nuxt.options.buildDir, "fast-fetch/index.ts"),
+      getContents() {
+        return Object.keys(options.clients)
+          .map((name) =>
+            genExport("./" + name, { name: "*", as: `$${camelCase(name)}` })
+          )
+          .join("\n");
+      },
+      write: true,
+    });
   },
 });

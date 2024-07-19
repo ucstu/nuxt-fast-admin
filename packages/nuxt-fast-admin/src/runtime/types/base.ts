@@ -1,6 +1,11 @@
 import type { FastAuthForm } from "@ucstu/nuxt-fast-auth/types";
-import type { SetFieldType } from "@ucstu/nuxt-fast-utils/exports";
+import type { CrudOptions } from "@ucstu/nuxt-fast-crud/exports";
+import type {
+  LiteralUnion,
+  SetFieldType,
+} from "@ucstu/nuxt-fast-utils/exports";
 import type { DropdownOption } from "@ucstu/nuxt-naive-ui/exports";
+import type { OpenAPIV3, OpenAPIV3_1 } from "openapi-types";
 
 // #region 应用相关
 export interface AppOptions {
@@ -251,5 +256,70 @@ export interface ErrorOptions {
    * @default true
    */
   propagate?: boolean;
+}
+// #endregion
+
+// #region CRUD相关
+export interface CrudApi {
+  [key: string]: object;
+}
+
+export type CrudSchemas =
+  | OpenAPIV3.SchemaObject
+  | OpenAPIV3.ReferenceObject
+  | OpenAPIV3_1.SchemaObject
+  | OpenAPIV3_1.ReferenceObject;
+
+export type CrudObjectSchema =
+  | OpenAPIV3.SchemaObject
+  | OpenAPIV3_1.SchemaObject;
+
+export type CrudResFromSchema<Schema> = Schema extends { properties: infer Res }
+  ? Res
+  : unknown;
+
+export type CrudReference<
+  Api extends CrudApi,
+  Key extends keyof Api & `$${string}`,
+  Res extends Partial<CrudResFromSchema<Api[Key]>>,
+> = {
+  /**
+   * API
+   */
+  api?: CrudApi;
+  /**
+   * 名称
+   */
+  name: LiteralUnion<keyof Api & `$${string}`, string>;
+  /**
+   * 字段
+   */
+  field: LiteralUnion<keyof Res, string>;
+  /**
+   * 覆盖
+   */
+  overrides?: Partial<CrudOptions<any>>;
+  /**
+   * 类型
+   * @default multiple
+   */
+  type?: "single" | "multiple";
+};
+
+export interface $CrudOptions<
+  Api extends CrudApi,
+  Name extends keyof Api & `$${string}`,
+  Res extends Partial<CrudResFromSchema<Api[Name]>>,
+> extends CrudOptions<Res> {
+  /**
+   * 资源名称
+   */
+  name: string;
+  /**
+   * 资源引用
+   */
+  references?: Array<
+    LiteralUnion<keyof Res, string> | CrudReference<Api, Name, Res>
+  >;
 }
 // #endregion

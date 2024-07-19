@@ -1,10 +1,10 @@
+import type { NuxtApp } from "#app";
 import {
   computed,
   cookieStorage,
   customRef,
   toValue,
-  useNuxtAppBack,
-  useRuntimeConfig,
+  useNuxtApp,
   watch,
 } from "#imports";
 import {
@@ -16,8 +16,12 @@ import {
   type StorageLike,
   type UseStorageOptions,
 } from "@vueuse/core";
+import { get, set } from "lodash-es";
 import { nanoid } from "nanoid";
+import type { Get, Paths } from "type-fest";
+import type { WritableComputedRef } from "vue-demi";
 import { configKey } from "../config";
+import { $useRuntimeConfig } from "./nuxt";
 
 /**
  * Keep states in the global scope to be reusable across Nuxt instances.
@@ -27,10 +31,10 @@ import { configKey } from "../config";
  */
 export function createNuxtGlobalState<Fn extends AnyFn>(
   stateFactory: Fn,
-  name: string = nanoid()
+  name: string = nanoid(),
 ): Fn {
   return ((...args: any[]) => {
-    const nuxtApp = useNuxtAppBack();
+    const nuxtApp = useNuxtApp();
     if (!nuxtApp[`$${name}`]) {
       const result = stateFactory(...args);
       nuxtApp.provide(name, result);
@@ -47,12 +51,12 @@ export function createNuxtGlobalState<Fn extends AnyFn>(
  */
 export function createNuxtSharedComposable<Fn extends AnyFn>(
   composable: Fn,
-  name: string = nanoid()
+  name: string = nanoid(),
 ): Fn {
   let subscribers = 0;
 
   const dispose = () => {
-    const nuxtApp = useNuxtAppBack();
+    const nuxtApp = useNuxtApp();
     subscribers -= 1;
     if (subscribers <= 0) {
       // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
@@ -61,7 +65,7 @@ export function createNuxtSharedComposable<Fn extends AnyFn>(
   };
 
   return <Fn>((...args) => {
-    const nuxtApp = useNuxtAppBack();
+    const nuxtApp = useNuxtApp();
     subscribers += 1;
     if (!nuxtApp[`$${name}`]) {
       nuxtApp.provide(name, composable(...args));
@@ -71,36 +75,39 @@ export function createNuxtSharedComposable<Fn extends AnyFn>(
   });
 }
 
+interface UseNuxtStorageOptions<T> extends UseStorageOptions<T> {
+  nuxtApp?: NuxtApp;
+}
 export function useNuxtStorage(
   key: string,
   defaults: MaybeRefOrGetter<string>,
   storage?: MaybeRefOrGetter<StorageLike>,
-  options?: UseStorageOptions<string>,
+  options?: UseNuxtStorageOptions<string>,
 ): RemovableRef<string>;
 export function useNuxtStorage(
   key: string,
   defaults: MaybeRefOrGetter<boolean>,
   storage?: MaybeRefOrGetter<StorageLike>,
-  options?: UseStorageOptions<boolean>,
+  options?: UseNuxtStorageOptions<boolean>,
 ): RemovableRef<boolean>;
 export function useNuxtStorage(
   key: string,
   defaults: MaybeRefOrGetter<number>,
   storage?: MaybeRefOrGetter<StorageLike>,
-  options?: UseStorageOptions<number>,
+  options?: UseNuxtStorageOptions<number>,
 ): RemovableRef<number>;
 export function useNuxtStorage<T>(
   key: string,
   defaults: MaybeRefOrGetter<T>,
   storage?: MaybeRefOrGetter<StorageLike>,
-  options?: UseStorageOptions<T>,
+  options?: UseNuxtStorageOptions<T>,
 ): RemovableRef<T>;
 export function useNuxtStorage<T = unknown>(
   key: string,
   // eslint-disable-next-line @typescript-eslint/unified-signatures
   defaults: MaybeRefOrGetter<null>,
   storage?: MaybeRefOrGetter<StorageLike>,
-  options?: UseStorageOptions<T>,
+  options?: UseNuxtStorageOptions<T>,
 ): RemovableRef<T>;
 
 /**
@@ -112,16 +119,18 @@ export function useNuxtStorage<T>(
   key: string,
   defaults: MaybeRefOrGetter<T>,
   storage?: MaybeRefOrGetter<StorageLike>,
-  options: UseStorageOptions<T> = {},
+  options: UseNuxtStorageOptions<T> = {},
 ) {
-  const config = useRuntimeConfig().public[configKey];
+  options.nuxtApp ??= useNuxtApp();
+  const runtimeConfig = $useRuntimeConfig(options.nuxtApp).public[configKey];
   const storageRef = computed(() =>
     toValue(storage)
       ? toValue(storage)
-      : config.ssr
+      : runtimeConfig.ssr
         ? cookieStorage
         : localStorage,
   );
+
   return customRef((track, trigger) => {
     let storageValue = useStorage(key, defaults, storageRef.value, options);
     watch(storageRef, (newStorage) => {
@@ -141,5 +150,20 @@ export function useNuxtStorage<T>(
         trigger();
       },
     };
+  });
+}
+
+export function toRefDeep<
+  T extends object,
+  K extends Paths<T> & string,
+  V extends Get<T, K>,
+>(obj: T, key: K): WritableComputedRef<V> {
+  return computed<V>({
+    get() {
+      return get(obj, key) as V;
+    },
+    set(value) {
+      set(obj, key, value);
+    },
   });
 }

@@ -1,27 +1,23 @@
 import type { NuxtApp } from "#app";
+import { createNuxtGlobalState, shallowRef, useNuxtApp } from "#imports";
 import {
-  computed,
-  createNuxtGlobalState,
-  shallowRef,
-  useNuxtApp,
-} from "#imports";
-import { extendRef, reactify } from "@ucstu/nuxt-fast-utils/exports";
+  computedEager,
+  extendRef,
+  reactify,
+  watchImmediate,
+} from "@ucstu/nuxt-fast-utils/exports";
+import defu from "defu";
 import { cloneDeep } from "lodash-es";
 import type {
   FastNavMenu,
   FastNavMenuFilled,
   FastNavPageFilled,
 } from "../types";
-import {
-  addPageToMenus,
-  fillMenusRoute,
-  isNavMenuFilled,
-  sortMenus,
-} from "../utils";
+import { fillMenusRoute, isNavMenuFilled, sortMenus } from "../utils";
 import { useNavPages } from "./page";
 
 export function getNavMenus(
-  nuxtApp: NuxtApp = useNuxtApp(),
+  nuxtApp: NuxtApp = useNuxtApp()
 ): Array<FastNavMenu | FastNavMenuFilled> {
   const result = shallowRef<Array<FastNavMenu | FastNavMenuFilled>>([]);
 
@@ -30,7 +26,7 @@ export function getNavMenus(
       hooks.forEach((hook) => hook(...args));
     },
     "fast-nav:get-menus",
-    result,
+    result
   );
 
   return result.value;
@@ -39,10 +35,10 @@ export function getNavMenus(
 export function getNavMenu(
   menu: FastNavMenu | FastNavMenuFilled,
   parent: string = "",
-  nuxtApp: NuxtApp = useNuxtApp(),
-): FastNavMenuFilled {
-  const result = shallowRef<FastNavMenuFilled>(
-    cloneDeep(menu) as FastNavMenuFilled,
+  nuxtApp: NuxtApp = useNuxtApp()
+): FastNavMenuFilled | undefined {
+  const result = shallowRef<FastNavMenuFilled | undefined>(
+    cloneDeep(menu) as FastNavMenuFilled
   );
 
   nuxtApp.hooks.callHookWith(
@@ -51,40 +47,59 @@ export function getNavMenu(
     },
     "fast-nav:get-menu",
     menu,
-    result,
+    extendRef(result, {
+      remove() {
+        result.value = undefined;
+      },
+      merge(
+        value: Partial<
+          Omit<FastNavMenu | FastNavMenuFilled, "children" | "parent">
+        >
+      ) {
+        result.value = defu(value, result.value) as FastNavMenuFilled;
+      },
+    })
   );
 
   return {
-    ...result.value,
+    ...result.value!,
     parent,
     children:
-      menu.children?.map((item) =>
-        "name" in item
-          ? getNavMenu(
-              item as FastNavMenu,
-              `${parent ? `${parent}.` : ""}${menu.name}`,
-              nuxtApp,
-            )
-          : item,
-      ) ?? [],
+      menu.children
+        ?.map((item) =>
+          "name" in item
+            ? getNavMenu(
+                item as FastNavMenu,
+                `${parent ? `${parent}.` : ""}${menu.name}`,
+                nuxtApp
+              )
+            : item
+        )
+        .filter((item) => item !== undefined) ?? [],
   };
 }
 
 export const useNavMenus = createNuxtGlobalState(function (
-  nuxtApp: NuxtApp = useNuxtApp(),
+  nuxtApp: NuxtApp = useNuxtApp()
 ) {
   const pages = useNavPages(nuxtApp);
 
-  const result = computed(() => {
+  watchImmediate(
+    () => pages.value,
+    () => {
+      console.log(pages.value);
+    }
+  );
+
+  const result = computedEager(() => {
     const result = getNavMenu(
       {
         name: "$root",
         children: getNavMenus(nuxtApp),
       } as FastNavMenu,
       "",
-      nuxtApp,
-    );
-    pages.value.forEach((page) => addPageToMenus(page, result));
+      nuxtApp
+    )!;
     fillMenusRoute(result, pages.value);
     sortMenus(result);
     return result;
@@ -105,7 +120,7 @@ export const useNavMenus = createNuxtGlobalState(function (
     let menu = result.value;
     for (const path of paths) {
       const parent = menu.children?.find(
-        (menu) => isNavMenuFilled(menu) && menu.name === path,
+        (menu) => isNavMenuFilled(menu) && menu.name === path
       ) as FastNavMenuFilled | undefined;
       if (!parent) break;
       parents.push(parent);

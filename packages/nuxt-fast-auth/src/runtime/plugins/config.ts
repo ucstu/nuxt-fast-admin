@@ -1,11 +1,11 @@
-import { defineNuxtPlugin } from "#app";
+import { defineNuxtPlugin, type NuxtApp } from "#app";
 import { getAuthPageFilled } from "../utils";
 
 export default defineNuxtPlugin({
   enforce: "pre",
   setup(nuxtApp) {
     nuxtApp.hook("fast-auth:get-page", (input, result) => {
-      result.value = getAuthPageFilled(input);
+      result.value = getAuthPageFilled(input, nuxtApp as NuxtApp);
     });
 
     // @ts-expect-error

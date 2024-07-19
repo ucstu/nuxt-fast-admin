@@ -1,4 +1,6 @@
+import type { RouteLocationRaw } from "#vue-router";
 import type { RequiredDeep } from "type-fest";
+import type { ShallowRef } from "vue-demi";
 import type { configKey } from "../config";
 
 export interface ModuleOptions {}
@@ -12,4 +14,18 @@ export interface ModulePublicRuntimeConfig {
      */
     ssr: boolean;
   };
+}
+
+export interface ModuleRuntimeHooks {
+  /**
+   * 路径是否相等
+   * @param a RouteLocationRaw
+   * @param b RouteLocationRaw
+   * @param result 结果
+   */
+  "fast-utils:to-equal": (
+    a: RouteLocationRaw | undefined,
+    b: RouteLocationRaw | undefined,
+    result: ShallowRef<boolean | undefined>,
+  ) => void;
 }

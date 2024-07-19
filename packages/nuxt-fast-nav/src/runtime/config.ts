@@ -4,6 +4,7 @@ import type {
   ModuleConfigDefaults,
   ModuleOptions,
   ModuleOptionsDefaults,
+  ModulePublicRuntimeConfig,
 } from "./types";
 
 export const name = "@ucstu/nuxt-fast-nav";
@@ -40,14 +41,13 @@ export const configs: ModuleConfigDefaults = {
     },
   },
   home: "/",
-  keys: ["path"],
 };
 
 export function initModule(
   _options: ModuleOptions,
   nuxt: Nuxt,
 ): ModuleOptionsDefaults {
-  const options = _options as ModuleOptionsDefaults;
+  const options = _options as ModulePublicRuntimeConfig[typeof configKey];
 
   nuxt.options.runtimeConfig.public[configKey] = options as any;
   nuxt.options.appConfig[configKey] = configs;
@@ -58,5 +58,11 @@ export function initModule(
 declare module "@nuxt/schema" {
   interface CustomAppConfig {
     fastNav?: ModuleConfig;
+  }
+}
+
+declare module "@ucstu/nuxt-fast-utils/types" {
+  interface ModuleConfigs {
+    fastNav: ModuleConfigDefaults;
   }
 }

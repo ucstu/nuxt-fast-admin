@@ -1,27 +1,51 @@
-import { defineNuxtPlugin } from "#app";
-import { computed, useAppConfig } from "#imports";
-import type { FastNavMenuFilled } from "@ucstu/nuxt-fast-nav/types";
-import type { ModuleConfigDefaults } from "../types";
+import { defineNuxtPlugin, type NuxtApp } from "#app";
+import { toEqual, useModuleConfig, useRuntimeConfig } from "#imports";
+import { configKey } from "../config";
+import { $auth } from "../utils";
 
 export default defineNuxtPlugin({
   enforce: "pre",
   setup(nuxtApp) {
-    const appConfig = useAppConfig();
-    const adminConfig = computed(
-      () => appConfig.fastAdmin as ModuleConfigDefaults
-    );
-    nuxtApp.hook("fast-admin:get-app-head-title", (input, result) => {
-      result.value = input?.title
-        ? `${input.title} - ${adminConfig.value.name}`
-        : adminConfig.value.name;
-    });
+    const adminConfig = useModuleConfig(configKey);
+    const runtimeConfig = useRuntimeConfig().public[configKey];
+
     nuxtApp.hook("fast-nav:get-history", (to, result) => {
-      if (to.name === "auth") result.value = undefined;
+      if (
+        runtimeConfig.modules.includes("@ucstu/nuxt-fast-auth") &&
+        to.name === "auth"
+      ) {
+        result.remove();
+      }
+      if (
+        runtimeConfig.modules.includes("@ucstu/nuxt-fast-crud") &&
+        runtimeConfig.modules.includes("@ucstu/nuxt-fast-fetch") &&
+        toEqual(to, "/crud/:api()/:name()")
+      ) {
+        const title = `CRUD ${to.params.api}/${to.params.name}`;
+        result.merge({
+          meta: {
+            title,
+            tab: { title },
+          },
+        });
+      }
     });
+
     nuxtApp.hook("fast-nav:get-menu", (input, result) => {
       if (input.name !== "$root") return;
-      if (!result.value) result.value = input as FastNavMenuFilled;
-      result.value.title = adminConfig.value.name;
+      result.merge({
+        title: adminConfig.value.name,
+      });
+    });
+
+    nuxtApp.hook("fast-nav:get-page", (input, result) => {
+      const show = $auth(nuxtApp as NuxtApp, input);
+      result.merge({
+        menu: { show: result.value?.menu?.show && show },
+        tab: {
+          show: result.value?.tab?.show && show,
+        },
+      });
     });
   },
 });

@@ -30,8 +30,8 @@ export default defineNuxtModule<ModuleOptions>({
     configKey,
   },
   defaults,
-  setup(_options, nuxt) {
-    installModule("@ucstu/nuxt-fast-utils");
+  async setup(_options, nuxt) {
+    await installModule("@ucstu/nuxt-fast-utils");
 
     const options = initModule(_options, nuxt);
 
@@ -80,7 +80,7 @@ declare module "${resolve(
 
     addImportsSources({
       from: resolve(`./runtime/utils`),
-      imports: ["isAuthMeta", "isAuthBase", "getAuthPageFilled", "authPage"],
+      imports: ["isAuthMeta", "isAuthBase"],
     });
 
     addRouteMiddleware({

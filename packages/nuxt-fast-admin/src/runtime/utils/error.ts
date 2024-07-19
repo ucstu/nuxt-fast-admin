@@ -1,8 +1,9 @@
 import type { NuxtError } from "#app";
-import { computed, isNuxtError, showError, useAppConfig } from "#imports";
+import { isNuxtError, showError, useModuleConfig } from "#imports";
 import defu from "defu";
 import { FetchError } from "ofetch";
-import type { ErrorOptions, ModuleConfigDefaults } from "../types";
+import { configKey } from "../config";
+import type { ErrorOptions } from "../types";
 
 export function isFetchError(
   error: Error | undefined | null,
@@ -30,10 +31,7 @@ export function handleError(
   error: NuxtError | Error | string | undefined | null,
   config: ErrorOptions = {},
 ) {
-  const appConfig = useAppConfig();
-  const adminConfig = computed(
-    () => appConfig.fastAdmin as ModuleConfigDefaults,
-  );
+  const adminConfig = useModuleConfig(configKey);
   const _error: NuxtError | Error | undefined | null =
     typeof error === "string" ? new Error(error) : error;
   const { handler, level, duration, interval, propagate } = defu(

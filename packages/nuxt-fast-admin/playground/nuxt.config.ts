@@ -1,5 +1,10 @@
 export default defineNuxtConfig({
-  modules: ["../src/module"],
+  modules: [
+    "@ucstu/nuxt-fast-auth",
+    "@ucstu/nuxt-fast-crud",
+    "@ucstu/nuxt-fast-fetch",
+    "../src/module",
+  ],
   devtools: { enabled: true },
   fastFetch: {
     clients: {

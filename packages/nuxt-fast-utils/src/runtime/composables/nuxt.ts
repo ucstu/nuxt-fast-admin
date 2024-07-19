@@ -1,5 +1,15 @@
 import type { NuxtApp } from "#app";
-import { onNuxtReady, shallowRef, tryUseNuxtApp } from "#imports";
+import __appConfig from "#build/app.config.mjs";
+import {
+  onNuxtReady,
+  reactive,
+  shallowRef,
+  useAppConfig,
+  useNuxtApp,
+  useRouter,
+  useRuntimeConfig,
+} from "#imports";
+import { klona } from "klona";
 
 /**
  * 使用 Nuxt 是否就绪
@@ -10,18 +20,37 @@ export function useNuxtReady() {
   return isReady;
 }
 
-export const nuxtApp = shallowRef<NuxtApp>();
-
-/**
- * 使用 Nuxt App
- */
-export function useNuxtAppBack() {
-  return tryUseNuxtApp() ?? nuxtApp.value!;
+export function $useAppConfig(
+  nuxtApp: NuxtApp = useNuxtApp()
+): ReturnType<typeof useAppConfig> {
+  try {
+    return useAppConfig();
+  } catch {
+    if (!nuxtApp._appConfig) {
+      nuxtApp._appConfig = (
+        import.meta.server ? klona(__appConfig) : reactive(__appConfig)
+      ) as any;
+    }
+    return nuxtApp._appConfig as any;
+  }
 }
 
-/**
- * 使用 Nuxt App
- */
-export function tryUseNuxtAppBack() {
-  return tryUseNuxtApp() ?? nuxtApp.value;
+export function $useRouter(
+  nuxtApp: NuxtApp = useNuxtApp()
+): ReturnType<typeof useRouter> {
+  try {
+    return useRouter();
+  } catch {
+    return nuxtApp.$router as any;
+  }
+}
+
+export function $useRuntimeConfig(
+  nuxtApp: NuxtApp = useNuxtApp()
+): ReturnType<typeof useRuntimeConfig> {
+  try {
+    return useRuntimeConfig();
+  } catch {
+    return nuxtApp.$config as any;
+  }
 }

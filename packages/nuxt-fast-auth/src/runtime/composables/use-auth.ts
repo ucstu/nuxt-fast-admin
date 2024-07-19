@@ -1,15 +1,15 @@
 import type { NuxtApp } from "#app";
 import {
+  $useRuntimeConfig,
   computed,
   cookieStorage,
   navigateTo,
   ref,
   sessionCookieStorage,
   toValue,
-  useAppConfig,
+  useModuleConfig,
   useNuxtApp,
   useNuxtStorage,
-  useRuntimeConfig,
   useState,
   type MaybeRefOrGetter,
 } from "#imports";
@@ -23,7 +23,6 @@ import type {
   FastAuthPerWrapper,
   FastAuthToken,
   FastAuthUser,
-  ModuleConfigDefaults,
 } from "../types";
 
 /**
@@ -110,14 +109,14 @@ export interface SignOutOptions extends NavigateOptions {}
  */
 function getRoles(
   user: FastAuthUser | null | undefined,
-  nuxtApp: NuxtApp = useNuxtApp()
+  nuxtApp: NuxtApp = useNuxtApp(),
 ) {
   const result = ref<Array<FastAuthPer>>([]);
   nuxtApp.hooks.callHookWith(
     (hooks, args) => hooks.forEach((hook) => hook(...args)),
     "fast-auth:get-roles",
     user,
-    result
+    result,
   );
   return result.value;
 }
@@ -132,7 +131,7 @@ function getRoles(
 function getPermissions(
   user: FastAuthUser | null | undefined,
   role: FastAuthPer | null | undefined,
-  nuxtApp: NuxtApp = useNuxtApp()
+  nuxtApp: NuxtApp = useNuxtApp(),
 ) {
   const result = ref<Array<FastAuthPer>>([]);
   nuxtApp.hooks.callHookWith(
@@ -140,7 +139,7 @@ function getPermissions(
     "fast-auth:get-permissions",
     user,
     role,
-    result
+    result,
   );
   return result.value;
 }
@@ -152,12 +151,16 @@ function getPermissions(
 export const useAuth = createGlobalState(function <
   S extends AuthStatus = AuthStatus,
 >(nuxtApp: NuxtApp = useNuxtApp()) {
-  const appConfig = useAppConfig();
-  const config = computed(() => appConfig[configKey] as ModuleConfigDefaults);
-  const fastUtilsConfig = useRuntimeConfig().public.fastUtils;
+  const authConfig = useModuleConfig(configKey, nuxtApp);
+  const fastUtilsConfig = $useRuntimeConfig(nuxtApp).public.fastUtils;
 
   const _user = useState<FastAuthUser | undefined>("fast-auth:user");
-  const _remember = useNuxtStorage<boolean>("fast-auth:remember", false);
+  const _remember = useNuxtStorage<boolean>(
+    "fast-auth:remember",
+    false,
+    undefined,
+    { nuxtApp },
+  );
   const _token = useNuxtStorage<FastAuthToken | undefined>(
     "fast-auth:token",
     undefined,
@@ -167,8 +170,9 @@ export const useAuth = createGlobalState(function <
           ? cookieStorage
           : sessionCookieStorage
         : _remember.value
-        ? localStorage
-        : sessionStorage
+          ? localStorage
+          : sessionStorage,
+    { nuxtApp },
   );
   const _status = useState<S>(
     "fast-auth:status",
@@ -180,17 +184,17 @@ export const useAuth = createGlobalState(function <
         getUser: false,
         authed: false,
         role: null,
-      } as S)
+      }) as S,
   );
   const roles = computed(() =>
     getRoles(_user.value, nuxtApp).map(
-      (item) => ({ type: "role", value: item } as FastAuthPerWrapper)
-    )
+      (item) => ({ type: "role", value: item }) as FastAuthPerWrapper,
+    ),
   );
   const permissions = computed(() =>
     getPermissions(_user.value, _status.value.role, nuxtApp).map(
-      (item) => ({ type: "per", value: item } as FastAuthPerWrapper)
-    )
+      (item) => ({ type: "per", value: item }) as FastAuthPerWrapper,
+    ),
   );
 
   watchImmediate(_user, (user) => (_status.value.authed = !!user));
@@ -200,7 +204,7 @@ export const useAuth = createGlobalState(function <
    * @param token 令牌
    */
   async function refreshUser(
-    token: MaybeRefOrGetter<string | undefined> = _token.value?.value
+    token: MaybeRefOrGetter<string | undefined> = _token.value?.value,
   ) {
     try {
       _status.value.getUser = true;
@@ -223,12 +227,12 @@ export const useAuth = createGlobalState(function <
         "fast-auth:sign-out",
         _user,
         _token,
-        undefined as any
+        undefined as any,
       );
       if (navigate) {
         await navigateTo(
-          navigate === true ? config.value.signIn : navigate,
-          options.navigateOptions
+          navigate === true ? authConfig.value.signIn : navigate,
+          options.navigateOptions,
         );
       }
     } finally {

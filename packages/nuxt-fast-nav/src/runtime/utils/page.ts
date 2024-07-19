@@ -1,28 +1,34 @@
-import { useAppConfig } from "#imports";
-import type { RouteRecordNormalized } from "#vue-router";
+import type { NuxtApp } from "#app";
+import { $useRouter, fixTo, getModuleConfig, useNuxtApp } from "#imports";
 import { configKey } from "../config";
-import type {
-  FastNavPage,
-  FastNavPageFilled,
-  ModuleConfigDefaults,
-} from "../types";
+import type { FastNavPage, FastNavPageFilled } from "../types";
 
-function getPageParent(route: RouteRecordNormalized) {
+function isParam(str: string) {
+  return /^:.*/.test(str);
+}
+
+function getPageParent(path: string) {
   return (
-    route.path.replace("/", "").split("/").slice(0, -1).join(".") || "$root"
+    path
+      .split("/")
+      .filter((item) => item && !isParam(item))
+      .slice(0, -1)
+      .join(".") || "$root"
   );
 }
 
 export function getNavPageFilled(
   page: FastNavPage,
-  route: RouteRecordNormalized,
+  nuxtApp: NuxtApp = useNuxtApp()
 ): FastNavPageFilled {
-  const config = useAppConfig()[configKey] as ModuleConfigDefaults;
+  const router = $useRouter(nuxtApp);
+  const navConfig = getModuleConfig(configKey, nuxtApp);
 
-  const { name, path, children } = route;
+  const { name, path } = router.resolve(fixTo(page.to));
+
   const type = page.type ?? "static";
   const title = page.title ?? name?.toString() ?? path;
-  const icon = page.icon ?? config.page.icon;
+  const icon = page.icon ?? navConfig.page.icon;
   const desc = page.desc ?? "";
 
   return {
@@ -35,26 +41,22 @@ export function getNavPageFilled(
       title: page.menu?.title ?? title,
       icon: page.menu?.icon ?? icon,
       desc: page.menu?.desc ?? desc,
-      has: page.menu?.has ?? config.page.menu.has,
-      show:
-        (page.menu?.show ??
-        ((children?.length ?? 0) === 0 && !/\/:.*?\(\)/.test(path)))
-          ? config.page.menu.show
-          : false,
-      parent: encodeURI(page.menu?.parent ?? getPageParent(route)),
-      disabled: page.menu?.disabled ?? config.page.menu.disabled,
-      order: page.menu?.order ?? config.page.menu.order,
+      has: page.menu?.has ?? navConfig.page.menu.has,
+      show: page.menu?.show ?? navConfig.page.menu.show,
+      parent: encodeURI(page.menu?.parent ?? getPageParent(path)),
+      disabled: page.menu?.disabled ?? navConfig.page.menu.disabled,
+      order: page.menu?.order ?? navConfig.page.menu.order,
     },
     tab: {
       ...page.tab,
       title: page.tab?.title ?? title,
       icon: page.tab?.icon ?? icon,
       desc: page.tab?.desc ?? desc,
-      has: page.tab?.has ?? config.page.tab.has,
-      show: page.tab?.show ?? config.page.tab.show,
+      has: page.tab?.has ?? navConfig.page.tab.has,
+      show: page.tab?.show ?? navConfig.page.tab.show,
     },
     to: {
-      path: route.path,
+      path,
     },
   };
 }

@@ -27,7 +27,7 @@ export interface BaseAuthHooks {
    */
   "fast-auth:get-user"(
     token: string | undefined | null,
-    result: Ref<FastAuthUser | undefined>
+    result: Ref<FastAuthUser | undefined>,
   ): HookResult;
   /**
    * 获取角色列表
@@ -36,7 +36,7 @@ export interface BaseAuthHooks {
    */
   "fast-auth:get-roles"(
     user: ReadonlyDeep<FastAuthUser> | undefined | null,
-    result: ShallowRef<Array<FastAuthPer>>
+    result: ShallowRef<Array<FastAuthPer>>,
   ): void;
   /**
    * 获取权限列表
@@ -47,7 +47,7 @@ export interface BaseAuthHooks {
   "fast-auth:get-permissions"(
     user: ReadonlyDeep<FastAuthUser> | undefined | null,
     role: ReadonlyDeep<FastAuthPer> | undefined | null,
-    result: ShallowRef<Array<FastAuthPer>>
+    result: ShallowRef<Array<FastAuthPer>>,
   ): void;
 }
 
