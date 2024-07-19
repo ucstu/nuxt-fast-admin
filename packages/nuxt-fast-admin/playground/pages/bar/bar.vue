@@ -6,7 +6,7 @@
 definePageMeta({
   title: "bar - bar",
   menu: {
-    parent: "bar",
+    parent: "$root",
   },
 });
 </script>

@@ -58,7 +58,7 @@ export const useLocalAuth = createGlobalState(function <
         if (navigate) {
           await navigateTo(
             navigate === true ? authConfig.value.home : navigate,
-            navigateOptions
+            navigateOptions,
           );
         }
       }

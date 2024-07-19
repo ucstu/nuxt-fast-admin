@@ -85,6 +85,10 @@ export { useDefaultLayoutStore };
 const { content, showPage } = useProvideDefaultLayoutStore();
 const layoutConfig = useModuleConfig(configKey, "layouts.default");
 
+defineOptions({
+  name: "FaLayoutesDefault",
+});
+
 // #region 菜单栏
 const resizer = ref<HTMLElement>();
 const sider = ref<InstanceType<typeof NLayoutSider>>();

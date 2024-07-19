@@ -69,14 +69,14 @@ export default defineNuxtModule<ModuleOptions>({
       config: Pick<
         UserConfig,
         "input" | "schemas" | "services" | "types" | "client"
-      > = options.clients[name]
+      > = options.clients[name],
     ) {
       const input =
         config.input instanceof Object
           ? config.input
           : isFileSystemPath(config.input)
-          ? resolve(nuxt.options.rootDir, config.input)
-          : config.input;
+            ? resolve(nuxt.options.rootDir, config.input)
+            : config.input;
       const output = resolve(nuxt.options.buildDir, "fast-fetch", name);
 
       return {
@@ -137,14 +137,14 @@ export default defineNuxtModule<ModuleOptions>({
 
     nuxt.options.alias["#fast-fetch"] = resolve(
       nuxt.options.buildDir,
-      "fast-fetch"
+      "fast-fetch",
     );
     addTemplate({
       filename: resolve(nuxt.options.buildDir, "fast-fetch/index.ts"),
       getContents() {
         return Object.keys(options.clients)
           .map((name) =>
-            genExport("./" + name, { name: "*", as: `$${camelCase(name)}` })
+            genExport("./" + name, { name: "*", as: `$${camelCase(name)}` }),
           )
           .join("\n");
       },

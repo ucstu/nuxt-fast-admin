@@ -1,5 +1,5 @@
-import type { ResolvedAppConfig } from "#build/types/app.config";
 import type { RouteLocationRaw } from "#vue-router";
+import type { AppConfig } from "@nuxt/schema";
 import type {
   LiteralUnion,
   OverrideProperties,
@@ -20,28 +20,28 @@ type KeysDeep<
   I extends number = 30,
   IA extends number[] = [],
   D extends number = 10,
-  DA extends number[] = [],
+  DA extends number[] = []
 > = M["length"] extends IA["length"]
   ? never
   : I extends IA["length"]
-    ? never
-    : // 自身
-      | `${P}${Exclude<M[IA["length"]]["name"], symbol>}`
-        // 子级
-        | (M[IA["length"]]["children"] extends Array<FastNavMenu>
-            ? DA["length"] extends D
-              ? never
-              : KeysDeep<
-                  M[IA["length"]]["children"],
-                  `${P}${Exclude<M[IA["length"]]["name"], symbol>}.`,
-                  I,
-                  [],
-                  D,
-                  [0, ...DA]
-                >
-            : never)
-        // 下一个
-        | KeysDeep<M, P, I, [0, ...IA], D, []>;
+  ? never
+  : // 自身
+    | `${P}${Exclude<M[IA["length"]]["name"], symbol>}`
+      // 子级
+      | (M[IA["length"]]["children"] extends Array<FastNavMenu>
+          ? DA["length"] extends D
+            ? never
+            : KeysDeep<
+                M[IA["length"]]["children"],
+                `${P}${Exclude<M[IA["length"]]["name"], symbol>}.`,
+                I,
+                [],
+                D,
+                [0, ...DA]
+              >
+          : never)
+      // 下一个
+      | KeysDeep<M, P, I, [0, ...IA], D, []>;
 
 export interface BaseMeta {
   /**
@@ -112,8 +112,8 @@ interface MenuMetaParent {
     | LiteralUnion<
         FastNavOptions extends { features: { check: { parent: boolean } } }
           ? FastNavOptions["features"]["check"]["parent"] extends true
-            ? ResolvedAppConfig["fastNav"] extends { menus: Array<FastNavMenu> }
-              ? KeysDeep<ResolvedAppConfig["fastNav"]["menus"]>
+            ? AppConfig["fastNav"] extends { menus: Array<FastNavMenu> }
+              ? KeysDeep<AppConfig["fastNav"]["menus"]>
               : string
             : string
           : string,
@@ -129,7 +129,7 @@ export interface FastNavPage extends BaseMeta, Required<FastNavExtra> {
   /**
    * 页面类型
    */
-  type: LiteralUnion<"static", string>;
+  type?: LiteralUnion<"static", string>;
   /**
    * 菜单配置
    */
@@ -155,7 +155,7 @@ export type FastNavPageFilled = RequiredDeep<
  */
 export interface FastNavMenu<
   T extends object = object,
-  N extends keyof T = keyof T,
+  N extends keyof T = keyof T
 > extends Omit<MenuMeta, "has">,
     FastNavExtra {
   /**
@@ -189,17 +189,7 @@ export type FastNavMenuFilled = OverrideProperties<
 /**
  * 导航历史
  */
-export interface FastNavHistory extends Required<FastNavExtra> {
-  /**
-   * 元数据
-   */
-  meta?: BaseMeta & {
-    /**
-     * 标签配置
-     */
-    tab?: TabMeta;
-  };
-}
+export interface FastNavHistory extends Omit<FastNavPage, "menu"> {}
 
 /**
  * 导航历史（已填充）

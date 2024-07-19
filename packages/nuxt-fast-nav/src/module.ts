@@ -8,6 +8,7 @@ import {
   updateTemplates,
 } from "@nuxt/kit";
 import { addModuleTypeTemplate } from "@ucstu/nuxt-fast-utils/utils";
+import { genAugmentation, genTypeImport } from "knitwork";
 import { minimatch } from "minimatch";
 import {
   configKey,
@@ -36,30 +37,43 @@ export default defineNuxtModule<ModuleOptions>({
 
     const options = initModule(_options, nuxt);
 
+    const { resolve } = createResolver(import.meta.url);
+
+    const pageModule = resolve(
+      nuxt.options.appDir,
+      "../pages/runtime/composables",
+    );
+
     addModuleTypeTemplate({
       nuxt,
       name,
       options,
       configKey,
       __dirname,
-      getContents({ nuxt, options }) {
-        return `import type { _FastNavMenuKeys } from "./nuxt-fast-nav/menu-key";
-declare module "${options.moduleName}" {
-  interface FastNavMenuKeys extends _FastNavMenuKeys {}
-}
+      getContents({ options: { moduleName } }) {
+        return `${genTypeImport("./nuxt-fast-nav/menu-key", [
+          "_FastNavMenuKeys",
+        ])}
+${genAugmentation(moduleName, {
+  FastNavMenuKeys: [
+    {},
+    {
+      extends: "_FastNavMenuKeys",
+    },
+  ],
+})}
 
-import type { FastNavPage } from "${options.moduleName}";
-declare module "${resolve(
-          nuxt.options.appDir,
-          "../pages/runtime/composables",
-        )}" {
-  interface PageMeta extends Omit<FastNavPage, "type" | "to"> {}
-}
-`;
+${genTypeImport(moduleName, ["FastNavPage"])}
+${genAugmentation(pageModule, {
+  PageMeta: [
+    {},
+    {
+      extends: 'Omit<FastNavPage, "type" | "to">',
+    },
+  ],
+})}`;
       },
     });
-
-    const { resolve } = createResolver(import.meta.url);
 
     addTemplate({
       write: true,

@@ -11,11 +11,11 @@ import queryString from "query-string";
 export function resolveTo(to: undefined, nuxtApp?: NuxtApp): undefined;
 export function resolveTo(
   to: RouteLocationRaw,
-  nuxtApp?: NuxtApp
+  nuxtApp?: NuxtApp,
 ): RouteLocationAsRelativeGeneric | RouteLocationAsPathGeneric;
 export function resolveTo(
   to: RouteLocationRaw | undefined,
-  nuxtApp: NuxtApp = useNuxtApp()
+  nuxtApp: NuxtApp = useNuxtApp(),
 ): RouteLocationAsRelativeGeneric | RouteLocationAsPathGeneric | undefined {
   if (!to) return;
   if (typeof to === "string") {
@@ -37,7 +37,7 @@ export function resolveTo(
 
 export function getToPath(
   to: RouteLocationRaw | undefined,
-  nuxtApp: NuxtApp = useNuxtApp()
+  nuxtApp: NuxtApp = useNuxtApp(),
 ) {
   if (!to) return;
   if (typeof to === "string") return to;

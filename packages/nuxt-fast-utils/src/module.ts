@@ -42,7 +42,7 @@ export default defineNuxtModule<ModuleOptions>({
 
     addPlugin({
       name,
-      src: resolve("./runtime/plugins/plugin.ts"),
+      src: resolve("./runtime/plugins/plugin"),
     });
 
     addImportsSources({

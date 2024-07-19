@@ -39,7 +39,12 @@ export const configs: ModuleConfigDefaults = {
   },
   layouts: {
     default: {
-      menu: { width: 272, collapsed: false, collapsedWidth: 56 },
+      menu: {
+        width: 272,
+        accordion: true,
+        collapsed: false,
+        collapsedWidth: 56,
+      },
       header: {
         show: true,
         reload: false,

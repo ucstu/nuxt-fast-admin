@@ -114,6 +114,10 @@ import type { DropdownOption } from "@ucstu/nuxt-naive-ui/exports";
 import { configKey } from "../../../../config";
 import { useDefaultLayoutStore } from "./index.vue";
 
+defineOptions({
+  name: "FaLayoutesDefaultHeader",
+});
+
 const ICON_MAP: Record<string, string> = {
   auto: "material-symbols:nightlight-badge",
   light: "material-symbols:light-mode",

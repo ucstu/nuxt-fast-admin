@@ -80,14 +80,14 @@ export interface LocalAuthHooks extends BaseAuthHooks {
    */
   "fast-auth:sign-in"(
     form: FastAuthForm,
-    result: ShallowRef<string | LocalSignInResult | undefined>
+    result: ShallowRef<string | LocalSignInResult | undefined>,
   ): HookResult;
   /**
    * 注销
    */
   "fast-auth:sign-out"(
     user: Ref<FastAuthUser>,
-    token: RemovableRef<FastAuthToken>
+    token: RemovableRef<FastAuthToken>,
   ): HookResult;
 }
 
@@ -113,7 +113,7 @@ export interface RefreshAuthHooks extends BaseAuthHooks {
    */
   "fast-auth:sign-in"(
     form: FastAuthForm,
-    result: ShallowRef<RefreshSignInResult | undefined>
+    result: ShallowRef<RefreshSignInResult | undefined>,
   ): HookResult;
   /**
    * 注销
@@ -121,7 +121,7 @@ export interface RefreshAuthHooks extends BaseAuthHooks {
   "fast-auth:sign-out"(
     user: Ref<FastAuthUser | undefined>,
     token: RemovableRef<FastAuthToken>,
-    refreshToken: RemovableRef<FastAuthToken>
+    refreshToken: RemovableRef<FastAuthToken>,
   ): HookResult;
   /**
    * 刷新令牌
@@ -132,7 +132,7 @@ export interface RefreshAuthHooks extends BaseAuthHooks {
   "fast-auth:refresh-token"(
     token: string | undefined | null,
     refreshToken: string | undefined | null,
-    result: ShallowRef<RefreshSignInResult | undefined>
+    result: ShallowRef<RefreshSignInResult | undefined>,
   ): HookResult;
 }
 

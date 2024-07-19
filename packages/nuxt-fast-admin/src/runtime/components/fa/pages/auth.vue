@@ -135,6 +135,10 @@ import type { FormInst, FormRules } from "naive-ui";
 import { FetchError } from "ofetch";
 import { configKey } from "../../../config";
 
+defineOptions({
+  name: "FaPagesAuth",
+});
+
 const router = useRouter();
 const nuxtApp = useNuxtApp();
 const adminConfig = useModuleConfig(configKey);

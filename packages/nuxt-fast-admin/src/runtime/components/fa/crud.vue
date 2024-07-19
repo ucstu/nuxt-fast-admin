@@ -10,6 +10,10 @@ import type { CrudOptions } from "@ucstu/nuxt-fast-crud/exports";
 import { computedEager } from "@ucstu/nuxt-fast-utils/exports";
 import defu from "defu";
 
+defineOptions({
+  name: "FaCrud",
+});
+
 const props = withDefaults(
   defineProps<{
     /**

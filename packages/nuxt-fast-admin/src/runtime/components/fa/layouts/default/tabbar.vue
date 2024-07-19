@@ -9,10 +9,14 @@
     @close="closeTab"
     @update:value="openTab"
   >
-    <n-tab v-for="history in histories" :key="getToPath(history.to)" :name="getToPath(history.to)!">
+    <n-tab
+      v-for="history in histories"
+      :key="getToPath(history.to)"
+      :name="getToPath(history.to)!"
+    >
       <n-flex align="center">
-        <fa-icon :name="history.meta.tab.icon || history.meta.icon" />
-        <span>{{ history.meta.tab.title || history.meta.title }}</span>
+        <fa-icon :name="history.tab.icon || history.icon" />
+        <span>{{ history.tab.title || history.title }}</span>
       </n-flex>
     </n-tab>
     <template #prefix>
@@ -77,17 +81,21 @@ import type { DropdownOption } from "naive-ui";
 import { configKey } from "../../../../config";
 import { useDefaultLayoutStore } from "./index.vue";
 
+defineOptions({
+  name: "FaLayoutesDefaultTabbar",
+});
+
 const histories = useNavHistories();
 const { close, closeAll, closeOthers } = histories;
 const { showPage, refreshPage, pageFullscreen } = useDefaultLayoutStore()!;
 const tabbarConfig = useModuleConfig(configKey, "layouts.default.tabbar");
 
-async function closeTab(index: number) {
-  await close(histories.value[index]);
+async function closeTab(fullPath: string) {
+  await close(fullPath);
 }
 
-async function openTab(index: number) {
-  await navigateTo(histories.value[index]?.to);
+async function openTab(fullPath: string) {
+  await navigateTo(fullPath);
 }
 
 const closeable = computedEager(

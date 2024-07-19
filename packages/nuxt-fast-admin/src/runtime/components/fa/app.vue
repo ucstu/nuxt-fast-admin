@@ -75,6 +75,10 @@ import {
 import defu from "defu";
 import { configKey } from "../../config";
 
+defineOptions({
+  name: "FaApp",
+});
+
 const props = defineProps<{
   config?: ConfigProviderProps;
   dialog?: DialogProviderProps;
@@ -103,8 +107,8 @@ const config = computedEager(
 const histories = useNavHistories();
 useHead({
   title: () =>
-    props.title || histories.current?.meta.title
-      ? `${histories.current?.meta.title} - ${adminConfig.value.name}`
+    props.title || histories.current?.title
+      ? `${histories.current?.title} - ${adminConfig.value.name}`
       : adminConfig.value.name,
 });
 

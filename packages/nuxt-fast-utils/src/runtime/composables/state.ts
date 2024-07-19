@@ -36,7 +36,7 @@ import { $useRuntimeConfig } from "./nuxt";
  */
 export function createNuxtGlobalState<Fn extends AnyFn>(
   stateFactory: Fn,
-  name: string = nanoid()
+  name: string = nanoid(),
 ): Fn {
   return ((...args: any[]) => {
     const nuxtApp = useNuxtApp();
@@ -56,7 +56,7 @@ export function createNuxtGlobalState<Fn extends AnyFn>(
  */
 export function createNuxtSharedComposable<Fn extends AnyFn>(
   composable: Fn,
-  name: string = nanoid()
+  name: string = nanoid(),
 ): Fn {
   let subscribers = 0;
 
@@ -87,32 +87,32 @@ export function useNuxtStorage(
   key: string,
   defaults: MaybeRefOrGetter<string>,
   storage?: MaybeRefOrGetter<StorageLike>,
-  options?: UseNuxtStorageOptions<string>
+  options?: UseNuxtStorageOptions<string>,
 ): RemovableRef<string>;
 export function useNuxtStorage(
   key: string,
   defaults: MaybeRefOrGetter<boolean>,
   storage?: MaybeRefOrGetter<StorageLike>,
-  options?: UseNuxtStorageOptions<boolean>
+  options?: UseNuxtStorageOptions<boolean>,
 ): RemovableRef<boolean>;
 export function useNuxtStorage(
   key: string,
   defaults: MaybeRefOrGetter<number>,
   storage?: MaybeRefOrGetter<StorageLike>,
-  options?: UseNuxtStorageOptions<number>
+  options?: UseNuxtStorageOptions<number>,
 ): RemovableRef<number>;
 export function useNuxtStorage<T>(
   key: string,
   defaults: MaybeRefOrGetter<T>,
   storage?: MaybeRefOrGetter<StorageLike>,
-  options?: UseNuxtStorageOptions<T>
+  options?: UseNuxtStorageOptions<T>,
 ): RemovableRef<T>;
 export function useNuxtStorage<T = unknown>(
   key: string,
   // eslint-disable-next-line @typescript-eslint/unified-signatures
   defaults: MaybeRefOrGetter<null>,
   storage?: MaybeRefOrGetter<StorageLike>,
-  options?: UseNuxtStorageOptions<T>
+  options?: UseNuxtStorageOptions<T>,
 ): RemovableRef<T>;
 
 /**
@@ -124,7 +124,7 @@ export function useNuxtStorage<T>(
   key: string,
   defaults: MaybeRefOrGetter<T>,
   storage?: MaybeRefOrGetter<StorageLike>,
-  options: UseNuxtStorageOptions<T> = {}
+  options: UseNuxtStorageOptions<T> = {},
 ) {
   options.nuxtApp ??= useNuxtApp();
   const runtimeConfig = $useRuntimeConfig(options.nuxtApp).public[configKey];
@@ -132,8 +132,8 @@ export function useNuxtStorage<T>(
     toValue(storage)
       ? toValue(storage)
       : runtimeConfig.ssr
-      ? cookieStorage
-      : localStorage
+        ? cookieStorage
+        : localStorage,
   );
 
   if (storageRef.value instanceof H3CookieStorage) {
@@ -169,7 +169,7 @@ export function useNuxtStorage<T>(
 export function toRefDeep<
   T extends object,
   K extends Paths<T> & string,
-  V extends Get<T, K>
+  V extends Get<T, K>,
 >(obj: T, key: K): WritableComputedRef<V> {
   return computed<V>({
     get() {
@@ -184,15 +184,15 @@ export function toRefDeep<
 // eslint-disable-next-line @typescript-eslint/ban-types
 export function reactifyEager<T extends Function, K extends boolean = true>(
   fn: T,
-  options?: ReactifyOptions<K>
+  options?: ReactifyOptions<K>,
 ): Reactified<T, K> {
   const unrefFn = options?.computedGetter === false ? unref : toValue;
   return function (this: any, ...args: any[]) {
     return computedEager(() =>
       fn.apply(
         this,
-        args.map((i) => unrefFn(i))
-      )
+        args.map((i) => unrefFn(i)),
+      ),
     );
   } as any;
 }

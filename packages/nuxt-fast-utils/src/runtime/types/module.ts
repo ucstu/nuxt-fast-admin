@@ -1,14 +1,13 @@
 import type { RouteLocationRaw } from "#vue-router";
 import type { RequiredDeep } from "type-fest";
 import type { ShallowRef } from "vue-demi";
-import type { configKey } from "../config";
 
 export interface ModuleOptions {}
 
 export type ModuleOptionsDefaults = RequiredDeep<ModuleOptions>;
 
 export interface ModulePublicRuntimeConfig {
-  [configKey]: ModuleOptionsDefaults & {
+  fastUtils: ModuleOptionsDefaults & {
     /**
      * 服务端渲染
      */

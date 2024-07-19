@@ -20,7 +20,7 @@ export interface ModuleOptions {
     check?: {
       /**
        * parent 检查
-       * @default true
+       * @default false
        */
       parent?: boolean;
     };

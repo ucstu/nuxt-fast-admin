@@ -113,6 +113,10 @@ import type { FetchError } from "ofetch";
 import { configKey } from "../../config";
 import type { ErrorLevel } from "../../types";
 
+defineOptions({
+  name: "FaError",
+});
+
 const CAN_PPROCESS_STATUS = [
   401,
   403,

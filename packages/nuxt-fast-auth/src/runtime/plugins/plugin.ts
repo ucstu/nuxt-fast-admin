@@ -59,7 +59,7 @@ export default defineNuxtPlugin({
         let clearTimeArrive: (() => void) | undefined;
         watchEffect(() => {
           clearTimeArrive?.();
-          if (!token.value) return;
+          if (!token.value.create) return;
           clearTimeArrive = setTimeArrive(
             signOut,
             token.value.create +
@@ -77,7 +77,7 @@ export default defineNuxtPlugin({
         let clearTimeArrive: (() => void) | undefined;
         watchEffect(() => {
           clearTimeArrive?.();
-          if (!refreshToken.value) return;
+          if (!refreshToken.value.create) return;
           clearTimeArrive = setTimeArrive(
             signOut,
             refreshToken.value.create +
@@ -90,7 +90,7 @@ export default defineNuxtPlugin({
         let clearTimeArriveToken: (() => void) | undefined;
         watchEffect(() => {
           clearTimeArriveToken?.();
-          if (!token.value) return;
+          if (!token.value.create) return;
           clearTimeArriveToken = setTimeArrive(
             refresh,
             token.value.create +

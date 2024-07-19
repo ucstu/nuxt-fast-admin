@@ -35,7 +35,7 @@ export default defineNuxtPlugin({
         if (option.key === "logout") {
           await signOut({ navigate: true });
         }
-      }
+      },
     );
 
     nuxtApp.hook("fast-fetch:request", (api, options) => {

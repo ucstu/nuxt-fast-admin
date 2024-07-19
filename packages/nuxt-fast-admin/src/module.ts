@@ -62,7 +62,7 @@ export default defineNuxtModule<ModuleOptions>({
 
     addPlugin({
       name: `${name}:config`,
-      src: resolve("./runtime/plugins/config.ts"),
+      src: resolve("./runtime/plugins/config"),
     });
     if (options.features.layouts.full) {
       addLayout(resolve("./runtime/layouts/full.vue"), "full");
@@ -74,7 +74,7 @@ export default defineNuxtModule<ModuleOptions>({
     if (options.modules.includes("@ucstu/nuxt-fast-auth")) {
       addPlugin({
         name: `${name}:auth`,
-        src: resolve("./runtime/plugins/auth.ts"),
+        src: resolve("./runtime/plugins/auth"),
       });
       addComponent({
         filePath: resolve("./runtime/components/fa/pages/auth.vue"),

@@ -10,6 +10,10 @@ import iconifyCollections from "@iconify/collections/collections.json";
 import { computedEager } from "@ucstu/nuxt-fast-utils/exports";
 import { iconProps } from "@ucstu/nuxt-naive-ui/exports";
 
+defineOptions({
+  name: "FaIcon",
+});
+
 function resolveIconName(name = "") {
   let prefix;
   let provider = "";

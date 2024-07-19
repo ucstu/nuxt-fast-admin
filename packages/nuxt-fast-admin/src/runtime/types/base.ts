@@ -37,6 +37,11 @@ export interface LayoutDefaultOptions {
      */
     width?: number;
     /**
+     * 手风琴模式
+     * @default true
+     */
+    accordion?: boolean;
+    /**
      * 折叠默认值
      * @default false
      */

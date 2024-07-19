@@ -24,30 +24,30 @@ const HookNull = Symbol("HookNull");
 function callHook(
   name: keyof PageHooks,
   options: GuardOptions,
-  nuxtApp = useNuxtApp()
+  nuxtApp = useNuxtApp(),
 ) {
   const result = shallowRef<ReturnType<typeof navigateTo> | typeof HookNull>(
-    HookNull
+    HookNull,
   );
   nuxtApp.hooks.callHookWith(
     (hooks, args) => hooks.forEach((hook) => hook(...args)),
     name,
     options,
-    result as ShallowRef<ReturnType<typeof navigateTo> | undefined>
+    result as ShallowRef<ReturnType<typeof navigateTo> | undefined>,
   );
   return result.value;
 }
 
 function getAuthPageFilled(
   page: FastAuthPage,
-  nuxtApp: NuxtApp = useNuxtApp()
+  nuxtApp: NuxtApp = useNuxtApp(),
 ) {
   const result = shallowRef<FastAuthPageFilled>(page as FastAuthPageFilled);
   nuxtApp.hooks.callHookWith(
     (hooks, args) => hooks.forEach((hook) => hook(...args)),
     "fast-auth:get-page",
     page,
-    result
+    result,
   );
   return result.value;
 }
@@ -101,7 +101,7 @@ export default defineNuxtRouteMiddleware(async (_to, _from) => {
       return navigateTo(
         to.auth.redirect.anonymous === true
           ? signIn
-          : to.auth.redirect.anonymous
+          : to.auth.redirect.anonymous,
       );
     }
   } else {
@@ -113,7 +113,7 @@ export default defineNuxtRouteMiddleware(async (_to, _from) => {
         return navigateTo(
           to.auth.redirect.passed === true
             ? authConfig.home
-            : to.auth.redirect.passed
+            : to.auth.redirect.passed,
         );
       }
     } else {
@@ -124,7 +124,7 @@ export default defineNuxtRouteMiddleware(async (_to, _from) => {
         return navigateTo(
           to.auth.redirect.failed === true
             ? authConfig.home
-            : to.auth.redirect.failed
+            : to.auth.redirect.failed,
         );
       }
     }

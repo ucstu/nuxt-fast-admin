@@ -14,7 +14,7 @@ export const configKey = "fastNav";
 export const defaults: ModuleOptionsDefaults = {
   features: {
     check: {
-      parent: true,
+      parent: false,
     },
   },
 };

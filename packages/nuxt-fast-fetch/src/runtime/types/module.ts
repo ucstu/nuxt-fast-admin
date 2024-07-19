@@ -47,10 +47,10 @@ interface ClientResponseOptions {
 export interface ModuleRuntimeHooks {
   "fast-fetch:request": (
     name: string,
-    options: LegacyRequestOptions | ClientRequestOptions
+    options: LegacyRequestOptions | ClientRequestOptions,
   ) => void;
   "fast-fetch:response": (
     name: string,
-    options: LegacyResponseOptions | ClientResponseOptions
+    options: LegacyResponseOptions | ClientResponseOptions,
   ) => void;
 }

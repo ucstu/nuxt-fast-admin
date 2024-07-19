@@ -11,6 +11,7 @@ import {
   useState,
   type MaybeRefOrGetter,
 } from "#imports";
+import type { RouteLocationRaw } from "#vue-router";
 import { computedEager, extendRef } from "@ucstu/nuxt-fast-utils/exports";
 import defu from "defu";
 import { assign, cloneDeep, isEqual } from "lodash-es";
@@ -25,7 +26,6 @@ import { useNavPages } from "./page";
 function compressHistory(history: FastNavHistory): FastNavHistory {
   const clone = cloneDeep(history);
 
-  if (!clone.meta || Object.keys(clone.meta).length === 0) delete clone.meta;
   if (typeof clone.to === "string") return clone;
 
   if (!clone.to.force) delete clone.to.force;
@@ -60,14 +60,9 @@ export const useNavHistories = createNuxtGlobalState(function (
 
   const result = computedEager(
     () =>
-      origin.value.map((item) => {
-        const page = { ...pages.getPage(item.to) };
-        delete page.to;
-        return {
-          ...item,
-          meta: defu(item.meta ?? {}, page),
-        };
-      }) as Array<FastNavHistoryFilled>,
+      origin.value.map((item) =>
+        defu(item, pages.getPage(item.to)),
+      ) as Array<FastNavHistoryFilled>,
   );
 
   /**
@@ -106,13 +101,19 @@ export const useNavHistories = createNuxtGlobalState(function (
    * @param history 历史
    */
   async function close(
-    history: MaybeRefOrGetter<FastNavHistory> | undefined = current.value,
+    history:
+      | MaybeRefOrGetter<FastNavHistory | RouteLocationRaw>
+      | undefined = current.value,
   ) {
     const _history = toValue(history);
 
     if (!_history) return;
     const old = origin.value.find((item) =>
-      toEqual(_history.to, item.to, nuxtApp),
+      toEqual(
+        _history instanceof Object && "to" in _history ? _history.to : _history,
+        item.to,
+        nuxtApp,
+      ),
     );
     if (!old) {
       return console.warn(`[fast-nav] 未找到历史 `, _history, ` 的记录`);
@@ -152,13 +153,19 @@ export const useNavHistories = createNuxtGlobalState(function (
    * @param history 历史
    */
   async function closeOthers(
-    history: MaybeRefOrGetter<FastNavHistory> | undefined = current.value,
+    history:
+      | MaybeRefOrGetter<FastNavHistory | RouteLocationRaw>
+      | undefined = current.value,
   ) {
     const _history = toValue(history);
 
     if (!_history) return;
     const old = origin.value.find((item) =>
-      toEqual(_history.to, item.to, nuxtApp),
+      toEqual(
+        _history instanceof Object && "to" in _history ? _history.to : _history,
+        item.to,
+        nuxtApp,
+      ),
     );
     if (!old) {
       return console.warn(`[fast-nav] 未找到历史 `, _history, ` 的记录`);
@@ -172,7 +179,7 @@ export const useNavHistories = createNuxtGlobalState(function (
     // 如果保留的页面是当前页面就直接返回
     if (toEqual(current.value?.to, old.to, nuxtApp)) return;
     // 否则不是当前页面则进行跳转
-    await navigateTo(_history.to);
+    await navigateTo(old.to);
   }
 
   return extendRef(result, {

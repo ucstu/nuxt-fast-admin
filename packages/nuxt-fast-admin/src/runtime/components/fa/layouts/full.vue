@@ -5,6 +5,12 @@
   </div>
 </template>
 
+<script setup lang="ts">
+defineOptions({
+  name: "FaLayoutesFull",
+});
+</script>
+
 <style>
 .fast-admin-layout-full {
   height: 100%;

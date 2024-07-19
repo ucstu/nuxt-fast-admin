@@ -10,6 +10,6 @@ const route = useRoute();
 
 const options = useAdminCrud(
   () => `$${[route.params.api].flat()[0]}` as keyof typeof apis,
-  () => `$${[route.params.name].flat()[0]}` as `$${string}`
+  () => `$${[route.params.name].flat()[0]}` as `$${string}`,
 );
 </script>

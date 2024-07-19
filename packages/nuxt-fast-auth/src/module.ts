@@ -7,6 +7,7 @@ import {
   installModule,
 } from "@nuxt/kit";
 import { addModuleTypeTemplate } from "@ucstu/nuxt-fast-utils/utils";
+import { genAugmentation, genTypeImport } from "knitwork";
 import { camelCase } from "lodash-es";
 import {
   configKey,
@@ -35,6 +36,13 @@ export default defineNuxtModule<ModuleOptions>({
 
     const options = initModule(_options, nuxt);
 
+    const { resolve } = createResolver(import.meta.url);
+
+    const pageModule = resolve(
+      nuxt.options.appDir,
+      "../pages/runtime/composables",
+    );
+
     addModuleTypeTemplate({
       nuxt,
       name,
@@ -42,17 +50,17 @@ export default defineNuxtModule<ModuleOptions>({
       configKey,
       __dirname,
       getContents({ options: { moduleName } }) {
-        return `import type { FastAuthPage } from "${moduleName}";
-declare module "${resolve(
-          nuxt.options.appDir,
-          "../pages/runtime/composables",
-        )}" {
-  interface PageMeta extends Omit<FastAuthPage, "to"> {}
-}`;
+        return `${genTypeImport(moduleName, ["FastAuthPage"])}
+${genAugmentation(pageModule, {
+  PageMeta: [
+    {},
+    {
+      extends: 'Omit<FastAuthPage, "to">',
+    },
+  ],
+})}`;
       },
     });
-
-    const { resolve } = createResolver(import.meta.url);
 
     addPlugin({
       name: `${name}:config`,

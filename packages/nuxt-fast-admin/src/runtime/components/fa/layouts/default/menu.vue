@@ -25,12 +25,13 @@
       :options="options"
     >
       <n-menu
+        ref="menuInstRef"
+        v-model:value="value"
         class="fast-admin-layout-default-menu-content"
-        :value="getToPath($route)"
-        :collapsed="menuConfig!.collapsed"
+        :collapsed="menuConfig.collapsed"
         :options="options?.children"
         :root-indent="16"
-        accordion
+        :accordion="menuConfig.accordion"
       />
     </slot>
     <slot name="end" />
@@ -38,12 +39,36 @@
 </template>
 
 <script setup lang="ts">
-import { getToPath, useAdminMenuGlobal, useModuleConfig } from "#imports";
+import type { NMenu } from "#components";
+import {
+  getToPath,
+  ref,
+  useAdminMenuGlobal,
+  useModuleConfig,
+  useRouter,
+} from "#imports";
+import { watchImmediate } from "@ucstu/nuxt-fast-utils/exports";
+import type { MenuInst } from "@ucstu/nuxt-naive-ui/exports";
 import { configKey } from "../../../../config";
 
+defineOptions({
+  name: "FaLayoutesDefaultMenu",
+});
+
+const router = useRouter();
+const value = ref<string>("");
 const options = useAdminMenuGlobal();
 const adminConfig = useModuleConfig(configKey);
 const menuConfig = useModuleConfig(configKey, "layouts.default.menu");
+
+const menuInstRef = ref<MenuInst | null>(null);
+watchImmediate(
+  () => router.currentRoute.value,
+  (route) => {
+    value.value = getToPath(route) ?? value.value;
+    menuInstRef.value?.showOption(value.value);
+  },
+);
 </script>
 
 <style>

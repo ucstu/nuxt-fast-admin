@@ -23,9 +23,7 @@ export default defineNuxtPlugin({
       ) {
         const title = `CRUD ${to.params.api}/${to.params.name}`;
         result.merge({
-          meta: {
-            title,
-          },
+          title,
         });
       }
     });
