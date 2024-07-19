@@ -20,11 +20,11 @@ export interface ModulePublicRuntimeConfig {
 export interface ModuleRuntimeHooks extends AuthHooks, PageHooks {
   /**
    * 获取页面信息
-   * @param input 输入
+   * @param origin 原始
    * @param result 结果
    */
   "fast-auth:get-page": (
-    input: FastAuthPage | FastAuthPageFilled,
+    origin: FastAuthPage | FastAuthPageFilled,
     result: ShallowRef<FastAuthPageFilled>,
   ) => void;
 }

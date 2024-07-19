@@ -50,6 +50,7 @@ export default defineNuxtModule<ModuleOptions>({
       imports: [
         "toRefDeep",
         "useNuxtReady",
+        "reactifyEager",
         "useNuxtStorage",
 
         "$useRouter",
@@ -67,8 +68,8 @@ export default defineNuxtModule<ModuleOptions>({
     addImportsSources({
       from: resolve("./runtime/utils"),
       imports: [
-        "fixTo",
         "toEqual",
+        "resolveTo",
         "getToPath",
         "isNuxtApp",
         "cookieStorage",

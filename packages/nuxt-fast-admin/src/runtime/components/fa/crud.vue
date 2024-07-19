@@ -5,8 +5,9 @@
 </template>
 
 <script setup lang="ts" generic="Res extends object">
-import { computed, onMounted, useFs, watch } from "#imports";
+import { onMounted, useFs, watch } from "#imports";
 import type { CrudOptions } from "@ucstu/nuxt-fast-crud/exports";
+import { computedEager } from "@ucstu/nuxt-fast-utils/exports";
 import defu from "defu";
 
 const props = withDefaults(
@@ -30,7 +31,7 @@ const props = withDefaults(
   },
 );
 
-const options = computed(() => defu(props.overrides, props.options));
+const options = computedEager(() => defu(props.overrides, props.options));
 const result = useFs<Res>({
   createCrudOptions() {
     return {

@@ -1,6 +1,9 @@
 import type { NuxtApp } from "#app";
-import { computed, type MaybeRefOrGetter, toValue, useAuth } from "#imports";
-import type { LiteralUnion } from "@ucstu/nuxt-fast-utils/exports";
+import { type MaybeRefOrGetter, toValue, useAuth } from "#imports";
+import {
+  computedEager,
+  type LiteralUnion,
+} from "@ucstu/nuxt-fast-utils/exports";
 import { isEqual } from "lodash-es";
 import { minimatch } from "minimatch";
 import type {
@@ -115,18 +118,18 @@ export function auth(
     nuxtApp = needs.shift() as NuxtApp;
   }
   const { status, roles, permissions } = useAuth(nuxtApp);
-  const _has = computed(() => [
+  const _has = computedEager(() => [
     status.value.authed ?? false,
     ...roles.value,
     ...permissions.value,
   ]);
-  const _needs = computed(() =>
+  const _needs = computedEager(() =>
     (needs as MaybeRefOrGetter<FastAuthBase | FastAuthPage>[]).map((need) => {
       const value = toValue(need);
       return isAuthPage(value) ? getAuthPageFilled(value, nuxtApp).auth : value;
     }),
   );
-  return computed(() => have(_has.value, _needs.value as FastAuthBase));
+  return computedEager(() => have(_has.value, _needs.value as FastAuthBase));
 }
 
 /**

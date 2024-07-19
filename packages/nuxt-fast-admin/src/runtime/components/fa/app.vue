@@ -42,7 +42,6 @@
 
 <script setup lang="tsx">
 import {
-  computed,
   defineComponent,
   navigateTo,
   useHead,
@@ -56,7 +55,10 @@ import {
 } from "#imports";
 import type { RouteLocationRaw } from "#vue-router";
 import { FsUiContext } from "@fast-crud/ui-naive";
-import { createReusableTemplate } from "@ucstu/nuxt-fast-utils/exports";
+import {
+  computedEager,
+  createReusableTemplate,
+} from "@ucstu/nuxt-fast-utils/exports";
 import {
   useDialog,
   useLoadingBar,
@@ -89,13 +91,13 @@ const runtimeConfig = useRuntimeConfig().public[configKey];
 const i18nConfig = useNaiveUiI18n("zh-CN");
 const themeConfig = useNaiveUiTheme();
 
-const config = computed(
+const config = computedEager(
   () =>
     defu(
       props.config,
       themeConfig.value,
-      i18nConfig.value
-    ) as ConfigProviderProps
+      i18nConfig.value,
+    ) as ConfigProviderProps,
 );
 
 const histories = useNavHistories();
@@ -127,7 +129,7 @@ const RegisterGlobalFeedback = defineComponent({
           globalThis.$loadingBar.finish();
         }
       },
-      { immediate: true }
+      { immediate: true },
     );
 
     return () => null;
@@ -136,7 +138,9 @@ const RegisterGlobalFeedback = defineComponent({
 
 function handleClearError(
   optionsAndError: { redirect?: RouteLocationRaw } & Error,
-  clearError: (optionsAndError: { redirect?: RouteLocationRaw } & Error) => void
+  clearError: (
+    optionsAndError: { redirect?: RouteLocationRaw } & Error,
+  ) => void,
 ) {
   clearError(optionsAndError);
   if (optionsAndError.redirect) {

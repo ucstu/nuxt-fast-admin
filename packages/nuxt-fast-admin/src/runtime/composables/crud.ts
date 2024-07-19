@@ -1,6 +1,6 @@
-import { dict } from "#imports";
+import { dict, reactifyEager } from "#imports";
 import type { CompositionColumns } from "@ucstu/nuxt-fast-crud/exports";
-import { reactify, type LiteralUnion } from "@ucstu/nuxt-fast-utils/exports";
+import { type LiteralUnion } from "@ucstu/nuxt-fast-utils/exports";
 import defu from "defu";
 import { cloneDeep } from "lodash-es";
 import type {
@@ -14,12 +14,12 @@ import { useResources } from "../utils";
 export function normalizeReferences<
   Api extends CrudApi,
   Name extends keyof Api & `$${string}`,
-  Res extends Partial<CrudResFromSchema<Api[Name]>>,
+  Res extends Partial<CrudResFromSchema<Api[Name]>>
 >(
   api: Api,
   references: Array<
     LiteralUnion<keyof Res, string> | CrudReference<Api, Name, Res>
-  >,
+  >
 ) {
   return references.map((reference) => {
     if (typeof reference !== "object") {
@@ -41,12 +41,12 @@ export function normalizeReferences<
 export function referencesToColumns<
   Api extends CrudApi,
   Name extends keyof Api & `$${string}`,
-  Res extends Partial<CrudResFromSchema<Api[Name]>>,
+  Res extends Partial<CrudResFromSchema<Api[Name]>>
 >(
   api: Api,
   references: Array<
     LiteralUnion<keyof Res, string> | CrudReference<Api, Name, Res>
-  >,
+  >
 ) {
   return normalizeReferences(api, references).reduce((columns, reference) => {
     columns[reference.field] = {
@@ -72,7 +72,7 @@ export function getAdminCrud<
   Api extends CrudApi,
   Name extends keyof Api & `$${string}`,
   Res extends Partial<CrudResFromSchema<Api[Name]>>,
-  Ret extends $CrudOptions<Api, Name, Res>,
+  Ret extends $CrudOptions<Api, Name, Res>
 >(api: Api, name: Name, options: Partial<Ret> = {}): Ret {
   const resources = useResources();
   const res = cloneDeep(resources.get(api)?.get(name));
@@ -91,8 +91,8 @@ export function getAdminCrud<
     {
       columns: referencesToColumns(api, res.references ?? []),
     },
-    res,
+    res
   ) as Ret;
 }
 
-export const useAdminCrud = reactify(getAdminCrud);
+export const useAdminCrud = reactifyEager(getAdminCrud);

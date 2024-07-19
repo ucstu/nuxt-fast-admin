@@ -3,13 +3,13 @@
     animated
     type="card"
     size="small"
-    :value="current"
+    :value="getToPath($route)"
     :closable="closeable"
     class="fast-admin-layout-default-tabbar"
     @close="closeTab"
     @update:value="openTab"
   >
-    <n-tab v-for="(history, index) in histories" :key="index" :name="index">
+    <n-tab v-for="history in histories" :key="getToPath(history.to)" :name="getToPath(history.to)!">
       <n-flex align="center">
         <fa-icon :name="history.meta.tab.icon || history.meta.icon" />
         <span>{{ history.meta.tab.title || history.meta.title }}</span>
@@ -66,12 +66,13 @@
 <script setup lang="ts">
 import type { NTabs } from "#components";
 import {
-  computed,
+  getToPath,
   navigateTo,
   toEqual,
   useModuleConfig,
   useNavHistories,
 } from "#imports";
+import { computedEager } from "@ucstu/nuxt-fast-utils/exports";
 import type { DropdownOption } from "naive-ui";
 import { configKey } from "../../../../config";
 import { useDefaultLayoutStore } from "./index.vue";
@@ -81,19 +82,15 @@ const { close, closeAll, closeOthers } = histories;
 const { showPage, refreshPage, pageFullscreen } = useDefaultLayoutStore()!;
 const tabbarConfig = useModuleConfig(configKey, "layouts.default.tabbar");
 
-const current = computed(() =>
-  histories.value.findIndex((item) => item === histories.current),
-);
-
-function closeTab(index: number) {
-  close(histories.value[index]);
+async function closeTab(index: number) {
+  await close(histories.value[index]);
 }
 
 async function openTab(index: number) {
   await navigateTo(histories.value[index]?.to);
 }
 
-const closeable = computed(
+const closeable = computedEager(
   () =>
     histories.value.length > 1 ||
     !toEqual(histories.current?.to, histories.value[0]?.to),

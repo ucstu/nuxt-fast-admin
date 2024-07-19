@@ -122,7 +122,6 @@
 
 <script setup lang="ts">
 import {
-  computed,
   handleError,
   ref,
   useAuth,
@@ -130,6 +129,7 @@ import {
   useNuxtApp,
   useRouter,
 } from "#imports";
+import { computedEager } from "@ucstu/nuxt-fast-utils/exports";
 import defu from "defu";
 import type { FormInst, FormRules } from "naive-ui";
 import { FetchError } from "ofetch";
@@ -141,7 +141,7 @@ const adminConfig = useModuleConfig(configKey);
 const authConfig = useModuleConfig(configKey, "pages.auth");
 const { signIn, signUp, status } = useAuth();
 
-const background = computed(() =>
+const background = computedEager(() =>
   authConfig.value!.background
     ? `url(${authConfig.value!.background})`
     : "none",
@@ -200,7 +200,8 @@ async function submitForm() {
   } catch (error) {
     return;
   }
-  const back = router.options.history.state.back as string;
+  let back = router.options.history.state.back;
+  back = typeof back === "string" ? back : undefined;
   const navigate =
     [router.currentRoute.value.query.callback].flat()[0] ||
     (back !== router.currentRoute.value.path ? back : undefined) ||

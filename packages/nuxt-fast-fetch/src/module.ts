@@ -2,6 +2,7 @@ import { createClient, type UserConfig } from "@hey-api/openapi-ts";
 import { extendServerRpc, onDevToolsInitialized } from "@nuxt/devtools-kit";
 import {
   addImports,
+  addPlugin,
   addTemplate,
   createResolver,
   defineNuxtModule,
@@ -24,6 +25,7 @@ import { isFileSystemPath } from "./runtime/utils";
 export type {
   ModuleOptions,
   ModulePublicRuntimeConfig,
+  ModuleRuntimeHooks,
 } from "./runtime/types/module";
 
 interface Document {
@@ -111,6 +113,11 @@ export default defineNuxtModule<ModuleOptions>({
         });
       });
     }
+
+    addPlugin({
+      name,
+      src: resolve("./runtime/plugins/plugin"),
+    });
 
     for (const [name, value] of Object.entries(options.clients)) {
       const config = fillConfig(name, value);

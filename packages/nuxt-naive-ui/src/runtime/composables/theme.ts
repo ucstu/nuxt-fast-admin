@@ -1,14 +1,13 @@
 import type { NuxtApp } from "#app";
 import {
   $useRuntimeConfig,
-  computed,
   createNuxtGlobalState,
   useModuleConfig,
   useNuxtApp,
   useNuxtReady,
   useNuxtStorage,
 } from "#imports";
-import { extendRef } from "@ucstu/nuxt-fast-utils/exports";
+import { computedEager, extendRef } from "@ucstu/nuxt-fast-utils/exports";
 import {
   darkTheme,
   lightTheme,
@@ -59,7 +58,7 @@ export const useNaiveUiTheme = createNuxtGlobalState(function (
 
   const isReady = useNuxtReady();
 
-  const real = computed(() =>
+  const real = computedEager(() =>
     store.value === "auto"
       ? fastUtilsConfig.ssr
         ? isReady.value
@@ -70,7 +69,7 @@ export const useNaiveUiTheme = createNuxtGlobalState(function (
   );
 
   return extendRef(
-    computed(() => ({
+    computedEager(() => ({
       theme: getTheme(
         real.value,
         Object.fromEntries(

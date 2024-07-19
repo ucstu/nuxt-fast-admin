@@ -18,11 +18,11 @@ export interface FastAuthToken {
   /**
    * 值
    */
-  value: string;
+  value?: string;
   /**
    * 创建时间
    */
-  create: number;
+  create?: number;
   /**
    * 过期时间
    */

@@ -39,16 +39,15 @@ export interface ModuleRuntimeHooks {
    * @param result 结果
    */
   "fast-nav:get-menus": (
-    result: ShallowRef<Array<FastNavMenu | FastNavMenuFilled>>
+    result: ShallowRef<Array<FastNavMenu | FastNavMenuFilled>>,
   ) => void;
   /**
    * 获取菜单信息
-   * @param input 输入
-   * @param parent 父级
+   * @param origin 原始
    * @param result 结果
    */
   "fast-nav:get-menu": (
-    input: FastNavMenu | FastNavMenuFilled,
+    origin: FastNavMenu | FastNavMenuFilled,
     result: ShallowRef<
       Omit<FastNavMenuFilled, "children" | "parent"> | undefined
     > & {
@@ -56,28 +55,32 @@ export interface ModuleRuntimeHooks {
       merge(
         value: Partial<
           Omit<FastNavMenu | FastNavMenuFilled, "children" | "parent">
-        >
+        >,
+        order?: "before" | "after",
       ): void;
-    }
+    },
   ) => void;
   /**
    * 获取页面列表
    * @param result 结果
    */
   "fast-nav:get-pages": (
-    result: ShallowRef<Array<FastNavPage | FastNavPageFilled>>
+    result: ShallowRef<Array<FastNavPage | FastNavPageFilled>>,
   ) => void;
   /**
    * 获取页面信息
-   * @param input 输入
+   * @param origin 原始
    * @param result 结果
    */
   "fast-nav:get-page": (
-    input: FastNavPage | FastNavPageFilled,
+    origin: FastNavPage | FastNavPageFilled,
     result: ShallowRef<FastNavPageFilled | undefined> & {
       remove(): void;
-      merge(value: Partial<FastNavPage | FastNavPageFilled>): void;
-    }
+      merge(
+        value: Partial<FastNavPage | FastNavPageFilled>,
+        order?: "before" | "after",
+      ): void;
+    },
   ) => void;
   /**
    * 获取历史记录
@@ -88,7 +91,7 @@ export interface ModuleRuntimeHooks {
     to: RouteLocationNormalizedGeneric,
     result: ShallowRef<FastNavHistory | undefined> & {
       remove(): void;
-      merge(value: Partial<FastNavHistory>): void;
-    }
+      merge(value: Partial<FastNavHistory>, order?: "before" | "after"): void;
+    },
   ) => void;
 }

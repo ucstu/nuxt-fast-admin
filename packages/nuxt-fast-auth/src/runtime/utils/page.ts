@@ -1,5 +1,6 @@
 import type { NuxtApp } from "#app";
-import { $useRouter, fixTo, useModuleConfig, useNuxtApp } from "#imports";
+import { useModuleConfig, useNuxtApp } from "#imports";
+import type { RouteLocationNormalizedGeneric } from "#vue-router";
 import type { RequiredDeep } from "@ucstu/nuxt-fast-utils/exports";
 import defu from "defu";
 import { configKey } from "../config";
@@ -13,13 +14,12 @@ import { isAuthMeta } from "./basic";
 
 export function getAuthPageFilled(
   page: FastAuthPage,
-  nuxtApp: NuxtApp = useNuxtApp()
+  nuxtApp: NuxtApp = useNuxtApp(),
 ): FastAuthPageFilled {
-  const router = $useRouter(nuxtApp);
   const authConfig = useModuleConfig(configKey, nuxtApp);
 
-  const to = router.resolve(fixTo(page.to));
-  const raw = to?.meta.auth as FastAuthMeta | FastAuthBase | undefined;
+  const to = page.to as RouteLocationNormalizedGeneric;
+  const raw = to.meta.auth as FastAuthMeta | FastAuthBase | undefined;
   const rawAuth = isAuthMeta(raw) ? raw.auth : raw;
   const rawRedirect = isAuthMeta(raw) ? raw.redirect : undefined;
 

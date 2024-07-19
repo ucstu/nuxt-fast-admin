@@ -1,7 +1,6 @@
 import type { NuxtApp } from "#app";
 import {
   $useRuntimeConfig,
-  computed,
   cookieStorage,
   navigateTo,
   ref,
@@ -14,6 +13,7 @@ import {
   type MaybeRefOrGetter,
 } from "#imports";
 import {
+  computedEager,
   createGlobalState,
   watchImmediate,
 } from "@ucstu/nuxt-fast-utils/exports";
@@ -109,14 +109,14 @@ export interface SignOutOptions extends NavigateOptions {}
  */
 function getRoles(
   user: FastAuthUser | null | undefined,
-  nuxtApp: NuxtApp = useNuxtApp(),
+  nuxtApp: NuxtApp = useNuxtApp()
 ) {
   const result = ref<Array<FastAuthPer>>([]);
   nuxtApp.hooks.callHookWith(
     (hooks, args) => hooks.forEach((hook) => hook(...args)),
     "fast-auth:get-roles",
     user,
-    result,
+    result
   );
   return result.value;
 }
@@ -131,7 +131,7 @@ function getRoles(
 function getPermissions(
   user: FastAuthUser | null | undefined,
   role: FastAuthPer | null | undefined,
-  nuxtApp: NuxtApp = useNuxtApp(),
+  nuxtApp: NuxtApp = useNuxtApp()
 ) {
   const result = ref<Array<FastAuthPer>>([]);
   nuxtApp.hooks.callHookWith(
@@ -139,7 +139,7 @@ function getPermissions(
     "fast-auth:get-permissions",
     user,
     role,
-    result,
+    result
   );
   return result.value;
 }
@@ -149,7 +149,7 @@ function getPermissions(
  * @returns 认证
  */
 export const useAuth = createGlobalState(function <
-  S extends AuthStatus = AuthStatus,
+  S extends AuthStatus = AuthStatus
 >(nuxtApp: NuxtApp = useNuxtApp()) {
   const authConfig = useModuleConfig(configKey, nuxtApp);
   const fastUtilsConfig = $useRuntimeConfig(nuxtApp).public.fastUtils;
@@ -159,20 +159,20 @@ export const useAuth = createGlobalState(function <
     "fast-auth:remember",
     false,
     undefined,
-    { nuxtApp },
+    { nuxtApp }
   );
-  const _token = useNuxtStorage<FastAuthToken | undefined>(
+  const _token = useNuxtStorage<FastAuthToken>(
     "fast-auth:token",
-    undefined,
+    () => ({}),
     () =>
       fastUtilsConfig.ssr
         ? _remember.value
           ? cookieStorage
           : sessionCookieStorage
         : _remember.value
-          ? localStorage
-          : sessionStorage,
-    { nuxtApp },
+        ? localStorage
+        : sessionStorage,
+    { nuxtApp }
   );
   const _status = useState<S>(
     "fast-auth:status",
@@ -184,17 +184,17 @@ export const useAuth = createGlobalState(function <
         getUser: false,
         authed: false,
         role: null,
-      }) as S,
+      } as S)
   );
-  const roles = computed(() =>
+  const roles = computedEager(() =>
     getRoles(_user.value, nuxtApp).map(
-      (item) => ({ type: "role", value: item }) as FastAuthPerWrapper,
-    ),
+      (item) => ({ type: "role", value: item } as FastAuthPerWrapper)
+    )
   );
-  const permissions = computed(() =>
+  const permissions = computedEager(() =>
     getPermissions(_user.value, _status.value.role, nuxtApp).map(
-      (item) => ({ type: "per", value: item }) as FastAuthPerWrapper,
-    ),
+      (item) => ({ type: "per", value: item } as FastAuthPerWrapper)
+    )
   );
 
   watchImmediate(_user, (user) => (_status.value.authed = !!user));
@@ -204,7 +204,7 @@ export const useAuth = createGlobalState(function <
    * @param token 令牌
    */
   async function refreshUser(
-    token: MaybeRefOrGetter<string | undefined> = _token.value?.value,
+    token: MaybeRefOrGetter<string | undefined> = _token.value.value
   ) {
     try {
       _status.value.getUser = true;
@@ -227,12 +227,12 @@ export const useAuth = createGlobalState(function <
         "fast-auth:sign-out",
         _user,
         _token,
-        undefined as any,
+        undefined as any
       );
       if (navigate) {
         await navigateTo(
           navigate === true ? authConfig.value.signIn : navigate,
-          options.navigateOptions,
+          options.navigateOptions
         );
       }
     } finally {

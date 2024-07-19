@@ -1,11 +1,10 @@
 <template>
   <div>
     <div style="border: 1px solid blue">
-      <div
-        v-for="(history, index) in histories"
-        :key="`${index}-${getToPath(history.to)}`"
-      >
-        <nuxt-link :to="history.to">{{ history.meta.title }}</nuxt-link>
+      <div v-for="history in histories" :key="getToPath(history.to)">
+        <nuxt-link :to="history.to">{{
+          history.meta.tab.title || history.meta.title
+        }}</nuxt-link>
         <button @click="close(history)">关闭</button>
         <button @click="closeOthers(history)">关闭其他</button>
       </div>
@@ -53,7 +52,9 @@ const Menu = defineComponent({
                 {isNavMenuFilled(item) ? (
                   <Menu menu={item} />
                 ) : (
-                  <NuxtLink to={item.to}>{item.title}</NuxtLink>
+                  <NuxtLink to={item.to}>
+                    {item.menu.title || item.title}
+                  </NuxtLink>
                 )}
               </li>
             );

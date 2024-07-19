@@ -21,7 +21,7 @@ export function useNuxtReady() {
 }
 
 export function $useAppConfig(
-  nuxtApp: NuxtApp = useNuxtApp()
+  nuxtApp: NuxtApp = useNuxtApp(),
 ): ReturnType<typeof useAppConfig> {
   try {
     return useAppConfig();
@@ -36,7 +36,7 @@ export function $useAppConfig(
 }
 
 export function $useRouter(
-  nuxtApp: NuxtApp = useNuxtApp()
+  nuxtApp: NuxtApp = useNuxtApp(),
 ): ReturnType<typeof useRouter> {
   try {
     return useRouter();
@@ -46,7 +46,7 @@ export function $useRouter(
 }
 
 export function $useRuntimeConfig(
-  nuxtApp: NuxtApp = useNuxtApp()
+  nuxtApp: NuxtApp = useNuxtApp(),
 ): ReturnType<typeof useRuntimeConfig> {
   try {
     return useRuntimeConfig();

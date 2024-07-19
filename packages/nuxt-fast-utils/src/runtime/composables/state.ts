@@ -4,14 +4,18 @@ import {
   cookieStorage,
   customRef,
   toValue,
+  unref,
   useNuxtApp,
   watch,
 } from "#imports";
 import {
+  computedEager,
   tryOnScopeDispose,
   useStorage,
   type AnyFn,
   type MaybeRefOrGetter,
+  type Reactified,
+  type ReactifyOptions,
   type RemovableRef,
   type StorageLike,
   type UseStorageOptions,
@@ -21,6 +25,7 @@ import { nanoid } from "nanoid";
 import type { Get, Paths } from "type-fest";
 import type { WritableComputedRef } from "vue-demi";
 import { configKey } from "../config";
+import { H3CookieStorage, nuxtApp } from "../utils";
 import { $useRuntimeConfig } from "./nuxt";
 
 /**
@@ -31,7 +36,7 @@ import { $useRuntimeConfig } from "./nuxt";
  */
 export function createNuxtGlobalState<Fn extends AnyFn>(
   stateFactory: Fn,
-  name: string = nanoid(),
+  name: string = nanoid()
 ): Fn {
   return ((...args: any[]) => {
     const nuxtApp = useNuxtApp();
@@ -51,7 +56,7 @@ export function createNuxtGlobalState<Fn extends AnyFn>(
  */
 export function createNuxtSharedComposable<Fn extends AnyFn>(
   composable: Fn,
-  name: string = nanoid(),
+  name: string = nanoid()
 ): Fn {
   let subscribers = 0;
 
@@ -82,32 +87,32 @@ export function useNuxtStorage(
   key: string,
   defaults: MaybeRefOrGetter<string>,
   storage?: MaybeRefOrGetter<StorageLike>,
-  options?: UseNuxtStorageOptions<string>,
+  options?: UseNuxtStorageOptions<string>
 ): RemovableRef<string>;
 export function useNuxtStorage(
   key: string,
   defaults: MaybeRefOrGetter<boolean>,
   storage?: MaybeRefOrGetter<StorageLike>,
-  options?: UseNuxtStorageOptions<boolean>,
+  options?: UseNuxtStorageOptions<boolean>
 ): RemovableRef<boolean>;
 export function useNuxtStorage(
   key: string,
   defaults: MaybeRefOrGetter<number>,
   storage?: MaybeRefOrGetter<StorageLike>,
-  options?: UseNuxtStorageOptions<number>,
+  options?: UseNuxtStorageOptions<number>
 ): RemovableRef<number>;
 export function useNuxtStorage<T>(
   key: string,
   defaults: MaybeRefOrGetter<T>,
   storage?: MaybeRefOrGetter<StorageLike>,
-  options?: UseNuxtStorageOptions<T>,
+  options?: UseNuxtStorageOptions<T>
 ): RemovableRef<T>;
 export function useNuxtStorage<T = unknown>(
   key: string,
   // eslint-disable-next-line @typescript-eslint/unified-signatures
   defaults: MaybeRefOrGetter<null>,
   storage?: MaybeRefOrGetter<StorageLike>,
-  options?: UseNuxtStorageOptions<T>,
+  options?: UseNuxtStorageOptions<T>
 ): RemovableRef<T>;
 
 /**
@@ -119,21 +124,29 @@ export function useNuxtStorage<T>(
   key: string,
   defaults: MaybeRefOrGetter<T>,
   storage?: MaybeRefOrGetter<StorageLike>,
-  options: UseNuxtStorageOptions<T> = {},
+  options: UseNuxtStorageOptions<T> = {}
 ) {
   options.nuxtApp ??= useNuxtApp();
   const runtimeConfig = $useRuntimeConfig(options.nuxtApp).public[configKey];
-  const storageRef = computed(() =>
+  const storageRef = computedEager(() =>
     toValue(storage)
       ? toValue(storage)
       : runtimeConfig.ssr
-        ? cookieStorage
-        : localStorage,
+      ? cookieStorage
+      : localStorage
   );
+
+  if (storageRef.value instanceof H3CookieStorage) {
+    nuxtApp.value ??= options.nuxtApp;
+  }
 
   return customRef((track, trigger) => {
     let storageValue = useStorage(key, defaults, storageRef.value, options);
     watch(storageRef, (newStorage) => {
+      if (newStorage instanceof H3CookieStorage) {
+        nuxtApp.value ??= options.nuxtApp;
+      }
+
       const old = storageValue.value;
       storageValue.value = null;
       storageValue = useStorage(key, defaults, newStorage, options);
@@ -156,7 +169,7 @@ export function useNuxtStorage<T>(
 export function toRefDeep<
   T extends object,
   K extends Paths<T> & string,
-  V extends Get<T, K>,
+  V extends Get<T, K>
 >(obj: T, key: K): WritableComputedRef<V> {
   return computed<V>({
     get() {
@@ -166,4 +179,20 @@ export function toRefDeep<
       set(obj, key, value);
     },
   });
+}
+
+// eslint-disable-next-line @typescript-eslint/ban-types
+export function reactifyEager<T extends Function, K extends boolean = true>(
+  fn: T,
+  options?: ReactifyOptions<K>
+): Reactified<T, K> {
+  const unrefFn = options?.computedGetter === false ? unref : toValue;
+  return function (this: any, ...args: any[]) {
+    return computedEager(() =>
+      fn.apply(
+        this,
+        args.map((i) => unrefFn(i))
+      )
+    );
+  } as any;
 }

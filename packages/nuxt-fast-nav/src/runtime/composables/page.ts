@@ -1,18 +1,18 @@
 import type { NuxtApp } from "#app";
 import {
   $useRouter,
-  computed,
   createNuxtGlobalState,
+  reactifyEager,
   shallowRef,
   toEqual,
   useNuxtApp,
 } from "#imports";
-import { extendRef, reactify } from "@ucstu/nuxt-fast-utils/exports";
+import { computedEager, extendRef } from "@ucstu/nuxt-fast-utils/exports";
 import defu from "defu";
 import type { FastNavPage, FastNavPageFilled } from "../types";
 
 export function getNavPages(
-  nuxtApp: NuxtApp = useNuxtApp()
+  nuxtApp: NuxtApp = useNuxtApp(),
 ): Array<FastNavPage | FastNavPageFilled> {
   const result = shallowRef<Array<FastNavPage | FastNavPageFilled>>([]);
 
@@ -21,7 +21,7 @@ export function getNavPages(
       hooks.forEach((hook) => hook(...args));
     },
     "fast-nav:get-pages",
-    result
+    result,
   );
 
   return result.value;
@@ -29,7 +29,7 @@ export function getNavPages(
 
 export function getNavPage(page: FastNavPage, nuxtApp: NuxtApp = useNuxtApp()) {
   const result = shallowRef<FastNavPageFilled | undefined>(
-    page as FastNavPageFilled
+    page as FastNavPageFilled,
   );
 
   nuxtApp.hooks.callHookWith(
@@ -42,24 +42,31 @@ export function getNavPage(page: FastNavPage, nuxtApp: NuxtApp = useNuxtApp()) {
       remove() {
         result.value = undefined;
       },
-      merge(value: Partial<FastNavPage | FastNavPageFilled>) {
-        result.value = defu(value, result.value) as FastNavPageFilled;
+      merge(
+        value: Partial<FastNavPage | FastNavPageFilled>,
+        order: "before" | "after" = "before",
+      ) {
+        result.value = (
+          order === "before"
+            ? defu(value, result.value)
+            : defu(result.value, value)
+        ) as FastNavPageFilled;
       },
-    })
+    }),
   );
 
   return result.value;
 }
 
 export const useNavPages = createNuxtGlobalState(function (
-  nuxtApp: NuxtApp = useNuxtApp()
+  nuxtApp: NuxtApp = useNuxtApp(),
 ) {
   const { currentRoute } = $useRouter(nuxtApp);
 
-  const result = computed(() =>
+  const result = computedEager(() =>
     getNavPages(nuxtApp)
       .map((page) => getNavPage(page, nuxtApp))
-      .filter((page) => page !== undefined)
+      .filter((page) => page !== undefined),
   );
 
   /**
@@ -71,7 +78,7 @@ export const useNavPages = createNuxtGlobalState(function (
     return result.value.find((page) => toEqual(to, page.to, nuxtApp));
   }
 
-  const usePage = reactify(getPage);
+  const usePage = reactifyEager(getPage);
 
   return extendRef(result, {
     current: usePage(),

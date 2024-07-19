@@ -1,5 +1,9 @@
-import { computed, createNuxtGlobalState, ref } from "#imports";
-import { extendRef, type LiteralUnion } from "@ucstu/nuxt-fast-utils/exports";
+import { createNuxtGlobalState, ref } from "#imports";
+import {
+  computedEager,
+  extendRef,
+  type LiteralUnion,
+} from "@ucstu/nuxt-fast-utils/exports";
 import camelCase from "camelcase";
 import * as locales from "naive-ui";
 
@@ -39,7 +43,7 @@ export const useNaiveUiI18n = createNuxtGlobalState(function (
 ) {
   const _lang = ref<Lang>(lang);
 
-  const result = computed(() => {
+  const result = computedEager(() => {
     return {
       locale: locales[
         camelCase(_lang.value, {

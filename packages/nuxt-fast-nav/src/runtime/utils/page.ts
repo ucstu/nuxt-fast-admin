@@ -1,5 +1,6 @@
 import type { NuxtApp } from "#app";
-import { $useRouter, fixTo, getModuleConfig, useNuxtApp } from "#imports";
+import { getModuleConfig, resolveTo, useNuxtApp } from "#imports";
+import type { RouteLocationAsRelativeGeneric } from "#vue-router";
 import { configKey } from "../config";
 import type { FastNavPage, FastNavPageFilled } from "../types";
 
@@ -19,12 +20,14 @@ function getPageParent(path: string) {
 
 export function getNavPageFilled(
   page: FastNavPage,
-  nuxtApp: NuxtApp = useNuxtApp()
+  nuxtApp: NuxtApp = useNuxtApp(),
 ): FastNavPageFilled {
-  const router = $useRouter(nuxtApp);
   const navConfig = getModuleConfig(configKey, nuxtApp);
 
-  const { name, path } = router.resolve(fixTo(page.to));
+  const to = resolveTo(page.to, nuxtApp);
+
+  const path = to.path!;
+  const name = (to as RouteLocationAsRelativeGeneric).name;
 
   const type = page.type ?? "static";
   const title = page.title ?? name?.toString() ?? path;

@@ -45,6 +45,7 @@
     "@vueuse/core": "^10.11.0",
     "cookie-storage": "^6.1.0",
     "nanoid": "^5.0.7",
+    "query-string": "^9.0.0",
     "type-fest": "^4.21.0"
   },
   "devDependencies": {

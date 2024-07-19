@@ -13,7 +13,7 @@ export const useLocalAuth = createGlobalState(function <
   F extends FastAuthForm = FastAuthForm,
 >(nuxtApp: NuxtApp = useNuxtApp()) {
   const auth = useAuth(nuxtApp);
-  const authConfig = useModuleConfig(configKey);
+  const authConfig = useModuleConfig(configKey, nuxtApp);
 
   const {
     token: _token,
@@ -58,7 +58,7 @@ export const useLocalAuth = createGlobalState(function <
         if (navigate) {
           await navigateTo(
             navigate === true ? authConfig.value.home : navigate,
-            navigateOptions,
+            navigateOptions
           );
         }
       }

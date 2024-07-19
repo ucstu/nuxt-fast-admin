@@ -23,10 +23,17 @@ export default defineNuxtPlugin({
           remove() {
             history.value = undefined;
           },
-          merge(value: Partial<FastNavHistory>) {
-            history.value = defu(value, history.value) as FastNavHistory;
+          merge(
+            value: Partial<FastNavHistory>,
+            order: "before" | "after" = "before",
+          ) {
+            history.value = (
+              order === "before"
+                ? defu(value, history.value)
+                : defu(history.value, value)
+            ) as FastNavHistory;
           },
-        })
+        }),
       );
       if (history.value) histories.open(history.value);
     });

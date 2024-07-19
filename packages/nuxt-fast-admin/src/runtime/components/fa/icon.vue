@@ -1,12 +1,13 @@
 <template>
-  <n-icon v-bind="$props" class="fa-icon">
+  <n-icon v-bind="$props" class="fast-admin-icon">
     <Icon :name="name" />
   </n-icon>
 </template>
 
 <script setup lang="ts">
-import { computed, useNuxtApp } from "#imports";
+import { useNuxtApp } from "#imports";
 import iconifyCollections from "@iconify/collections/collections.json";
+import { computedEager } from "@ucstu/nuxt-fast-utils/exports";
 import { iconProps } from "@ucstu/nuxt-naive-ui/exports";
 
 function resolveIconName(name = "") {
@@ -46,15 +47,16 @@ const props = defineProps({
   name: {
     type: String,
     required: true,
+    default: "",
   },
 });
 
 const nuxtApp = useNuxtApp();
-const resolvedIcon = computed(() => resolveIconName(props.name));
-const iconComponentName = computed(() =>
+const resolvedIcon = computedEager(() => resolveIconName(props.name));
+const iconComponentName = computedEager(() =>
   pascalCase(`icons-${resolvedIcon.value.prefix}-${resolvedIcon.value.name}`),
 );
-const name = computed(() =>
+const name = computedEager(() =>
   nuxtApp.vueApp?.component(iconComponentName.value)
     ? iconComponentName.value
     : props.name,
@@ -62,7 +64,7 @@ const name = computed(() =>
 </script>
 
 <style>
-.fa-icon {
+.fast-admin-icon {
   display: inline-flex;
 }
 </style>

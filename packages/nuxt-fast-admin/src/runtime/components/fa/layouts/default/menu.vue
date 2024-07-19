@@ -20,13 +20,13 @@
       </div>
     </slot>
     <slot
-      :value="getToPath(current?.to)"
+      :value="getToPath($route)"
       :collapsed="menuConfig!.collapsed"
       :options="options"
     >
       <n-menu
         class="fast-admin-layout-default-menu-content"
-        :value="getToPath(current?.to)"
+        :value="getToPath($route)"
         :collapsed="menuConfig!.collapsed"
         :options="options?.children"
         :root-indent="16"
@@ -38,17 +38,9 @@
 </template>
 
 <script setup lang="ts">
-import {
-  computed,
-  getToPath,
-  useAdminMenuGlobal,
-  useModuleConfig,
-  useNavPages,
-} from "#imports";
+import { getToPath, useAdminMenuGlobal, useModuleConfig } from "#imports";
 import { configKey } from "../../../../config";
 
-const pages = useNavPages();
-const current = computed(() => pages.current);
 const options = useAdminMenuGlobal();
 const adminConfig = useModuleConfig(configKey);
 const menuConfig = useModuleConfig(configKey, "layouts.default.menu");

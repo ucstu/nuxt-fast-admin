@@ -32,7 +32,7 @@ importers:
     dependencies:
       "@nuxt/icon":
         specifier: ^1.0.0
-        version: 1.0.0(magicast@0.3.4)(rollup@4.18.1)(vite@5.3.3(@types/node@20.14.10)(terser@5.31.2))(vue@3.4.31(typescript@5.5.3))
+        version: 1.0.0(magicast@0.3.4)(rollup@4.18.1)(vue@3.4.31(typescript@5.5.3))
       "@nuxt/kit":
         specifier: ^3.12.3
         version: 3.12.3(magicast@0.3.4)(rollup@4.18.1)
@@ -72,7 +72,7 @@ importers:
         version: 3.12.3(rollup@4.18.1)
       "@nuxt/test-utils":
         specifier: ^3.13.1
-        version: 3.13.1(h3@1.12.0)(magicast@0.3.4)(nitropack@2.9.7(magicast@0.3.4)(xml2js@0.6.2))(rollup@4.18.1)(vite@5.3.3(@types/node@20.14.10)(terser@5.31.2))(vitest@2.0.2(@types/node@20.14.10)(terser@5.31.2))(vue-router@4.4.0(vue@3.4.31(typescript@5.5.3)))(vue@3.4.31(typescript@5.5.3))
+        version: 3.13.1(h3@1.12.0)(magicast@0.3.4)(nitropack@2.9.7(magicast@0.3.4)(xml2js@0.6.2))(rollup@4.18.1)(vitest@2.0.2(@types/node@20.14.10)(terser@5.31.2))(vue-router@4.4.0(vue@3.4.31(typescript@5.5.3)))(vue@3.4.31(typescript@5.5.3))
       "@types/node":
         specifier: ^20.14.10
         version: 20.14.10
@@ -84,7 +84,7 @@ importers:
         version: 9.7.0
       nuxt:
         specifier: ^3.12.3
-        version: 3.12.3(@parcel/watcher@2.4.1)(@types/node@20.14.10)(eslint@9.7.0)(ioredis@5.4.1)(magicast@0.3.4)(optionator@0.9.4)(rollup@4.18.1)(terser@5.31.2)(typescript@5.5.3)(vite@5.3.3(@types/node@20.14.10)(terser@5.31.2))(xml2js@0.6.2)
+        version: 3.12.3(@parcel/watcher@2.4.1)(@types/node@20.14.10)(eslint@9.7.0)(ioredis@5.4.1)(magicast@0.3.4)(optionator@0.9.4)(rollup@4.18.1)(terser@5.31.2)(typescript@5.5.3)(xml2js@0.6.2)
       vitest:
         specifier: ^2.0.2
         version: 2.0.2(@types/node@20.14.10)(terser@5.31.2)
@@ -349,6 +349,9 @@ importers:
       nanoid:
         specifier: ^5.0.7
         version: 5.0.7
+      query-string:
+        specifier: ^9.0.0
+        version: 9.0.0
       type-fest:
         specifier: ^4.21.0
         version: 4.21.0
@@ -367,7 +370,7 @@ importers:
         version: 3.12.3(rollup@4.18.1)
       "@nuxt/test-utils":
         specifier: ^3.13.1
-        version: 3.13.1(h3@1.12.0)(magicast@0.3.4)(nitropack@2.9.7(magicast@0.3.4)(xml2js@0.6.2))(rollup@4.18.1)(vitest@2.0.2(@types/node@20.14.10)(terser@5.31.2))(vue-router@4.4.0(vue@3.4.31(typescript@5.5.3)))(vue@3.4.31(typescript@5.5.3))
+        version: 3.13.1(h3@1.12.0)(magicast@0.3.4)(nitropack@2.9.7(magicast@0.3.4)(xml2js@0.6.2))(rollup@4.18.1)(vite@5.3.3(@types/node@20.14.10)(terser@5.31.2))(vitest@2.0.2(@types/node@20.14.10)(terser@5.31.2))(vue-router@4.4.0(vue@3.4.31(typescript@5.5.3)))(vue@3.4.31(typescript@5.5.3))
       "@types/node":
         specifier: ^20.14.10
         version: 20.14.10
@@ -379,7 +382,7 @@ importers:
         version: 9.7.0
       nuxt:
         specifier: ^3.12.3
-        version: 3.12.3(@parcel/watcher@2.4.1)(@types/node@20.14.10)(eslint@9.7.0)(ioredis@5.4.1)(magicast@0.3.4)(optionator@0.9.4)(rollup@4.18.1)(terser@5.31.2)(typescript@5.5.3)(xml2js@0.6.2)
+        version: 3.12.3(@parcel/watcher@2.4.1)(@types/node@20.14.10)(eslint@9.7.0)(ioredis@5.4.1)(magicast@0.3.4)(optionator@0.9.4)(rollup@4.18.1)(terser@5.31.2)(typescript@5.5.3)(vite@5.3.3(@types/node@20.14.10)(terser@5.31.2))(xml2js@0.6.2)
       vitest:
         specifier: ^2.0.2
         version: 2.0.2(@types/node@20.14.10)(terser@5.31.2)
@@ -5867,6 +5870,13 @@ packages:
         integrity: sha512-O8x12RzrUF8xyVcY0KJowWsmaJxQbmy0/EtnNtHRpsOcT7dFk5W598coHqBVpmWo1oQQfsCqfCmkZN5DJrZVdg==,
       }
 
+  decode-uri-component@0.4.1:
+    resolution:
+      {
+        integrity: sha512-+8VxcR21HhTy8nOt6jf20w0c9CADrw1O8d+VZ/YzzCt4bJ3uBjw+D1q2osAB8RnpwwaeYBxy0HyKQxD5JBMuuQ==,
+      }
+    engines: { node: ">=14.16" }
+
   deep-eql@5.0.2:
     resolution:
       {
@@ -6736,6 +6746,13 @@ packages:
         integrity: sha512-YsGpe3WHLK8ZYi4tWDg2Jy3ebRz2rXowDxnld4bkQB00cc/1Zw9AWnC0i9ztDJitivtQvaI9KaLyKrc+hBW0yg==,
       }
     engines: { node: ">=8" }
+
+  filter-obj@5.1.0:
+    resolution:
+      {
+        integrity: sha512-qWeTREPoT7I0bifpPUXtxkZJ1XJzxWtfoWWkdVGqa+eCr3SHW/Ocp89o8vLvbUuQnadybJpjOKu4V+RwO6sGng==,
+      }
+    engines: { node: ">=14.16" }
 
   find-up@4.1.0:
     resolution:
@@ -9881,6 +9898,13 @@ packages:
       }
     engines: { node: ">=0.6" }
 
+  query-string@9.0.0:
+    resolution:
+      {
+        integrity: sha512-4EWwcRGsO2H+yzq6ddHcVqkCQ2EFUSfDMEjF8ryp8ReymyZhIuaFRGLomeOQLkrzacMHoyky2HW0Qe30UbzkKw==,
+      }
+    engines: { node: ">=18" }
+
   querystring@0.2.1:
     resolution:
       {
@@ -10651,6 +10675,13 @@ packages:
         integrity: sha512-1POYv7uv2gXoyGFpBCmpDVSNV74IfsWlDW216UPjbWufNf+bSU6GdbDsxdcxtfwb4xlI3yxzOTKClUosxARYrQ==,
       }
     engines: { node: ">=0.10.0" }
+
+  split-on-first@3.0.0:
+    resolution:
+      {
+        integrity: sha512-qxQJTx2ryR0Dw0ITYyekNQWpz6f8dGd7vffGNflQQ3Iqj9NJ6qiZ7ELpZsJ/QBhIVAiDfXdag3+Gp8RvWa62AA==,
+      }
+    engines: { node: ">=12" }
 
   split2@3.2.2:
     resolution:
@@ -14101,7 +14132,7 @@ snapshots:
       - supports-color
       - typescript
 
-  "@nuxt/icon@1.0.0(magicast@0.3.4)(rollup@4.18.1)(vite@5.3.3(@types/node@20.14.10)(terser@5.31.2))(vue@3.4.31(typescript@5.5.3))":
+  "@nuxt/icon@1.0.0(magicast@0.3.4)(rollup@4.18.1)(vue@3.4.31(typescript@5.5.3))":
     dependencies:
       "@iconify/collections": 1.0.439
       "@iconify/types": 2.0.0
@@ -16867,6 +16898,8 @@ snapshots:
     dependencies:
       character-entities: 2.0.2
 
+  decode-uri-component@0.4.1: {}
+
   deep-eql@5.0.2: {}
 
   deep-equal@1.1.2:
@@ -17558,6 +17591,8 @@ snapshots:
   fill-range@7.1.1:
     dependencies:
       to-regex-range: 5.0.1
+
+  filter-obj@5.1.0: {}
 
   find-up@4.1.0:
     dependencies:
@@ -19927,6 +19962,12 @@ snapshots:
     dependencies:
       side-channel: 1.0.6
 
+  query-string@9.0.0:
+    dependencies:
+      decode-uri-component: 0.4.1
+      filter-obj: 5.1.0
+      split-on-first: 3.0.0
+
   querystring@0.2.1: {}
 
   queue-microtask@1.2.3: {}
@@ -20476,6 +20517,8 @@ snapshots:
   spdx-license-ids@3.0.18: {}
 
   speakingurl@14.0.1: {}
+
+  split-on-first@3.0.0: {}
 
   split2@3.2.2:
     dependencies:

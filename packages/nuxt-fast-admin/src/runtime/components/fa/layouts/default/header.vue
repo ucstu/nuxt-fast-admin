@@ -38,7 +38,7 @@
                 </n-flex>
               </template>
               <n-menu
-                :value="getToPath(current?.to)"
+                :value="getToPath($route)"
                 :options="menu.children"
                 :root-indent="16"
                 accordion
@@ -48,9 +48,9 @@
         </template>
         <n-breadcrumb-item v-if="current" :clickable="false">
           <n-flex align="center">
-            <fa-icon :name="current.menu.icon" />
+            <fa-icon :name="current.menu.icon || current.icon" />
             <nuxt-link :to="current.to">
-              {{ current.menu.title }}
+              {{ current.menu.title || current.title }}
             </nuxt-link>
           </n-flex>
         </n-breadcrumb-item>
@@ -98,17 +98,18 @@
 <script setup lang="ts">
 import { FaIcon } from "#components";
 import {
-  computed,
   getAdminMenu,
   getToPath,
   h,
   reloadNuxtApp,
+  toRefDeep,
   useModuleConfig,
   useNaiveUiTheme,
   useNavMenus,
   useNavPages,
   useNuxtApp,
 } from "#imports";
+import { computedEager } from "@ucstu/nuxt-fast-utils/exports";
 import type { DropdownOption } from "@ucstu/nuxt-naive-ui/exports";
 import { configKey } from "../../../../config";
 import { useDefaultLayoutStore } from "./index.vue";
@@ -125,29 +126,22 @@ const menuConfig = useModuleConfig(configKey, "layouts.default.menu");
 const headerConfig = useModuleConfig(configKey, "layouts.default.header");
 const { applicationFullscreen } = useDefaultLayoutStore()!;
 
-const current = computed(() => pages.current);
+const current = toRefDeep(pages, "current");
 
-const breadcrumbs = computed(() => {
+const breadcrumbs = computedEager(() => {
   return menus.current.map((parent) => {
     return getAdminMenu(parent);
   });
 });
 
 const themeConfig = useNaiveUiTheme();
-const naiveUiTheme = computed({
-  get() {
-    return themeConfig.store;
-  },
-  set(value) {
-    themeConfig.store = value;
-  },
-});
+const naiveUiTheme = toRefDeep(themeConfig, "store");
 function changeTheme() {
   const index = Object.keys(ICON_MAP).indexOf(naiveUiTheme.value);
   naiveUiTheme.value = Object.keys(ICON_MAP)[(index + 1) % 3];
 }
 
-const dropdownOptions = computed(() => {
+const dropdownOptions = computedEager(() => {
   return headerConfig.value!.dropdown!.options!.map((option) => {
     return {
       ...option,

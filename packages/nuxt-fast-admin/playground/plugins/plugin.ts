@@ -11,8 +11,16 @@ export default defineNuxtPlugin({
         menu: {
           parent: "$root",
         },
+        title: "CRUD",
+        icon: "ic:sharp-dashboard",
         type: "crud",
-        to: "/crud/1/2",
+        to: {
+          name: "crud-api-name",
+          params: {
+            api: "api",
+            name: "name",
+          },
+        },
       });
     });
   },
