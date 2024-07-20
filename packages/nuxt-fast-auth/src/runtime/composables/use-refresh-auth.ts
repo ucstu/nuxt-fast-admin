@@ -124,7 +124,8 @@ export const useRefreshAuth = createGlobalState(function <
         "fast-auth:sign-out",
         _user,
         _token,
-        _refreshToken,
+        // @ts-ignore
+        _refreshToken
       );
       if (navigate) {
         await navigateTo(

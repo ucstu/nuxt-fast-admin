@@ -24,11 +24,11 @@ export function getAdminMenu(
 
   const title = isNavMenuFilled(menuOrPage)
     ? menu.title
-    : (page.menu.title ?? page.title);
+    : page.menu?.title ?? page.title;
 
   const icon = isNavMenuFilled(menuOrPage)
     ? menu.icon
-    : (page.menu.icon ?? page.icon);
+    : page.menu?.icon ?? page.icon;
 
   const children = isNavMenuFilled(menuOrPage)
     ? menuOrPage.children

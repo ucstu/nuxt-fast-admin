@@ -11,9 +11,12 @@ export default defineNuxtPlugin({
     addRouteMiddleware(async (to) => {
       const history = shallowRef<FastNavHistory | undefined>({
         to: {
+          fullPath: to.fullPath,
+          params: to.params,
           path: to.path,
           query: to.query,
           hash: to.hash,
+          name: to.name,
         },
       });
       await nuxtApp.callHook(

@@ -31,6 +31,7 @@ export function initModule(
 
 declare module "@nuxt/schema" {
   interface CustomAppConfig {
+    // @ts-ignore
     fastFetch?: ModuleConfig;
   }
 }

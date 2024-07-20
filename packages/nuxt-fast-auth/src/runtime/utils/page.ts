@@ -19,7 +19,7 @@ export function getAuthPageFilled(
   const authConfig = useModuleConfig(configKey, nuxtApp);
 
   const to = page.to as RouteLocationNormalizedGeneric;
-  const raw = to.meta.auth as FastAuthMeta | FastAuthBase | undefined;
+  const raw = to.meta?.auth as FastAuthMeta | FastAuthBase | undefined;
   const rawAuth = isAuthMeta(raw) ? raw.auth : raw;
   const rawRedirect = isAuthMeta(raw) ? raw.redirect : undefined;
 

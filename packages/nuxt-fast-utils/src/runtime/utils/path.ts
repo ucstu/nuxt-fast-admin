@@ -19,7 +19,7 @@ export function resolveTo(
 ): RouteLocationAsRelativeGeneric | RouteLocationAsPathGeneric | undefined {
   if (!to) return;
   if (typeof to === "string") {
-    const resut = queryString.parseUrl(to, {
+    const resut = queryString.parseUrl(decodeURIComponent(to), {
       parseFragmentIdentifier: true,
     });
     return {
@@ -40,15 +40,15 @@ export function getToPath(
   nuxtApp: NuxtApp = useNuxtApp(),
 ) {
   if (!to) return;
-  if (typeof to === "string") return to;
+  if (typeof to === "string") return decodeURIComponent(to);
   if ((to as RouteLocationNormalizedGeneric).fullPath)
-    return (to as RouteLocationNormalizedGeneric).fullPath;
+    return decodeURIComponent((to as RouteLocationNormalizedGeneric).fullPath);
   const resolved = resolveTo(to, nuxtApp);
   if (!resolved.path) return to.path;
-  return (
+  return decodeURIComponent(
     queryString.stringifyUrl({
       url: resolved.path,
       query: resolved.query,
-    }) + (resolved.hash ? resolved.hash : "")
+    }) + (resolved.hash ? resolved.hash : ""),
   );
 }

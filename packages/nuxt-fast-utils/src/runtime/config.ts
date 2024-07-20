@@ -14,12 +14,12 @@ export const configKey = "fastUtils";
 export const defaults: ModuleOptionsDefaults = {};
 
 export const configs: ModuleConfigDefaults = {
-  keys: ["path"],
+  keys: ["path", "query"],
 };
 
 export function initModule(
   _options: ModuleOptions,
-  nuxt: Nuxt,
+  nuxt: Nuxt
 ): ModuleOptionsDefaults {
   const options = _options as ModulePublicRuntimeConfig[typeof configKey];
   const { ssr } = nuxt.options;
@@ -35,12 +35,14 @@ export function initModule(
 
 declare module "@nuxt/schema" {
   interface CustomAppConfig {
+    // @ts-ignore
     fastUtils?: ModuleConfig;
   }
 }
 
 declare module "./types" {
   interface ModuleConfigs {
+    // @ts-ignore
     fastUtils: ModuleConfigDefaults;
   }
 }

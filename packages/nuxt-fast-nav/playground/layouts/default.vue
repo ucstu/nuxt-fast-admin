@@ -3,7 +3,7 @@
     <div style="border: 1px solid blue">
       <div v-for="history in histories" :key="getToPath(history.to)">
         <nuxt-link :to="history.to">{{
-          history.meta.tab.title || history.meta.title
+          history.tab?.title || history.title
         }}</nuxt-link>
         <button @click="close(history)">关闭</button>
         <button @click="closeOthers(history)">关闭其他</button>
@@ -53,7 +53,7 @@ const Menu = defineComponent({
                   <Menu menu={item} />
                 ) : (
                   <NuxtLink to={item.to}>
-                    {item.menu.title || item.title}
+                    {item.menu?.title || item.title}
                   </NuxtLink>
                 )}
               </li>

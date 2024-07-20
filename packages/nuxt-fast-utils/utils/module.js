@@ -21,8 +21,8 @@ export function addModuleTypeTemplate(options) {
   const moduleName = !isDev
     ? `${name}/types`
     : nuxt.options.rootDir.endsWith("playground")
-    ? "../../../../src/runtime/types"
-    : "../../../src/runtime/types";
+      ? "../../../../src/runtime/types"
+      : "../../../src/runtime/types";
   if (isDev) {
     nuxt.hook("prepare:types", ({ references }) => {
       references.push({
@@ -40,7 +40,7 @@ export function addModuleTypeTemplate(options) {
       return `export interface _${optionsName} ${JSON.stringify(
         _options,
         null,
-        2
+        2,
       )};`;
     },
   });

@@ -11,7 +11,7 @@ importers:
     devDependencies:
       "@nuxt-themes/docus":
         specifier: ^1.15.0
-        version: 1.15.0(async-validator@4.2.5)(axios@1.7.2)(change-case@5.4.4)(ioredis@5.4.1)(magicast@0.3.4)(nuxt@3.12.4(@parcel/watcher@2.4.1)(@types/node@20.14.11)(eslint@9.7.0)(ioredis@5.4.1)(magicast@0.3.4)(optionator@0.9.4)(rollup@3.29.4)(terser@5.31.3)(typescript@5.5.3)(xml2js@0.6.2))(postcss@8.4.39)(rollup@3.29.4)(sortablejs@1.15.2)(vue@3.4.33(typescript@5.5.3))
+        version: 1.15.0(async-validator@4.2.5)(axios@1.7.2)(change-case@4.1.2)(ioredis@5.4.1)(magicast@0.3.4)(nuxt@3.12.4(@parcel/watcher@2.4.1)(@types/node@20.14.11)(eslint@9.7.0)(ioredis@5.4.1)(magicast@0.3.4)(optionator@0.9.4)(rollup@3.29.4)(terser@5.31.3)(typescript@5.5.3)(xml2js@0.6.2))(postcss@8.4.39)(rollup@3.29.4)(sortablejs@1.15.2)(vue@3.4.33(typescript@5.5.3))
       "@nuxt/devtools":
         specifier: ^1.3.9
         version: 1.3.9(rollup@3.29.4)
@@ -97,6 +97,9 @@ importers:
       "@nuxt/kit":
         specifier: ^3.12.4
         version: 3.12.4(magicast@0.3.4)(rollup@4.18.1)
+      "@ucstu/nuxt-amis":
+        specifier: workspace:^
+        version: link:../nuxt-amis
       "@ucstu/nuxt-fast-auth":
         specifier: workspace:^
         version: link:../nuxt-fast-auth
@@ -297,7 +300,7 @@ importers:
         version: 1.3.9(magicast@0.3.4)(rollup@4.18.1)(vite@5.3.4(@types/node@20.14.11)(terser@5.31.3))
       "@nuxt/devtools-ui-kit":
         specifier: ^1.3.9
-        version: 1.3.9(@nuxt/devtools@1.3.9(rollup@4.18.1))(@unocss/webpack@0.61.5(rollup@4.18.1)(webpack@5.93.0))(@vue/compiler-core@3.4.33)(async-validator@4.2.5)(axios@1.7.2)(change-case@5.4.4)(fuse.js@7.0.0)(magicast@0.3.4)(nuxt@3.12.4(@parcel/watcher@2.4.1)(@types/node@20.14.11)(eslint@9.7.0)(ioredis@5.4.1)(magicast@0.3.4)(optionator@0.9.4)(rollup@4.18.1)(terser@5.31.3)(typescript@5.5.3)(xml2js@0.6.2))(postcss@8.4.39)(rollup@4.18.1)(sortablejs@1.15.2)(vue@3.4.33(typescript@5.5.3))(webpack@5.93.0)
+        version: 1.3.9(@nuxt/devtools@1.3.9(rollup@4.18.1))(@unocss/webpack@0.61.5(rollup@4.18.1)(webpack@5.93.0))(@vue/compiler-core@3.4.33)(async-validator@4.2.5)(axios@1.7.2)(change-case@4.1.2)(fuse.js@6.6.2)(magicast@0.3.4)(nuxt@3.12.4(@parcel/watcher@2.4.1)(@types/node@20.14.11)(eslint@9.7.0)(ioredis@5.4.1)(magicast@0.3.4)(optionator@0.9.4)(rollup@4.18.1)(terser@5.31.3)(typescript@5.5.3)(xml2js@0.6.2))(postcss@8.4.39)(rollup@4.18.1)(sortablejs@1.15.2)(vue@3.4.33(typescript@5.5.3))(webpack@5.93.0)
       "@nuxt/kit":
         specifier: ^3.12.4
         version: 3.12.4(magicast@0.3.4)(rollup@4.18.1)
@@ -5548,12 +5551,6 @@ packages:
         integrity: sha512-bSxY2ws9OtviILG1EiY5K7NNxkqg/JnRnFxLtKQ96JaviiIxi7djMrSd0ECT9AC+lttClmYwKw53BWpOMblo7A==,
       }
 
-  change-case@5.4.4:
-    resolution:
-      {
-        integrity: sha512-HRQyTk2/YPEkt9TnUPbOpr64Uw3KOicFWPVBb+xiHvd6eBx/qPr9xqfBFDT8P2vWsvvz4jbEkfDe71W3VyNu2w==,
-      }
-
   changelogen@0.5.5:
     resolution:
       {
@@ -7417,13 +7414,6 @@ packages:
     resolution:
       {
         integrity: sha512-cJaJkxCCxC8qIIcPBF9yGxY0W/tVZS3uEISDxhYIdtk8OL93pe+6Zj7LjCqVV4dzbqcriOZ+kQ/NE4RXZHsIGA==,
-      }
-    engines: { node: ">=10" }
-
-  fuse.js@7.0.0:
-    resolution:
-      {
-        integrity: sha512-14F4hBIxqKvD4Zz/XjDc3y94mNZN6pRv3U13Udo0lNLCWRBUsrMv2xwcF/y/Z5sV6+FQW+/ow68cHpm4sunt8Q==,
       }
     engines: { node: ">=10" }
 
@@ -15074,14 +15064,14 @@ snapshots:
       "@nodelib/fs.scandir": 2.1.5
       fastq: 1.17.1
 
-  "@nuxt-themes/docus@1.15.0(async-validator@4.2.5)(axios@1.7.2)(change-case@5.4.4)(ioredis@5.4.1)(magicast@0.3.4)(nuxt@3.12.4(@parcel/watcher@2.4.1)(@types/node@20.14.11)(eslint@9.7.0)(ioredis@5.4.1)(magicast@0.3.4)(optionator@0.9.4)(rollup@3.29.4)(terser@5.31.3)(typescript@5.5.3)(xml2js@0.6.2))(postcss@8.4.39)(rollup@3.29.4)(sortablejs@1.15.2)(vue@3.4.33(typescript@5.5.3))":
+  "@nuxt-themes/docus@1.15.0(async-validator@4.2.5)(axios@1.7.2)(change-case@4.1.2)(ioredis@5.4.1)(magicast@0.3.4)(nuxt@3.12.4(@parcel/watcher@2.4.1)(@types/node@20.14.11)(eslint@9.7.0)(ioredis@5.4.1)(magicast@0.3.4)(optionator@0.9.4)(rollup@3.29.4)(terser@5.31.3)(typescript@5.5.3)(xml2js@0.6.2))(postcss@8.4.39)(rollup@3.29.4)(sortablejs@1.15.2)(vue@3.4.33(typescript@5.5.3))":
     dependencies:
       "@nuxt-themes/elements": 0.9.5(magicast@0.3.4)(postcss@8.4.39)(rollup@3.29.4)(vue@3.4.33(typescript@5.5.3))
       "@nuxt-themes/tokens": 1.9.1(magicast@0.3.4)(postcss@8.4.39)(rollup@3.29.4)(vue@3.4.33(typescript@5.5.3))
       "@nuxt-themes/typography": 0.11.0(magicast@0.3.4)(postcss@8.4.39)(rollup@3.29.4)(vue@3.4.33(typescript@5.5.3))
       "@nuxt/content": 2.13.2(ioredis@5.4.1)(magicast@0.3.4)(nuxt@3.12.4(@parcel/watcher@2.4.1)(@types/node@20.14.11)(eslint@9.7.0)(ioredis@5.4.1)(magicast@0.3.4)(optionator@0.9.4)(rollup@3.29.4)(terser@5.31.3)(typescript@5.5.3)(xml2js@0.6.2))(rollup@3.29.4)(vue@3.4.33(typescript@5.5.3))
       "@nuxthq/studio": 1.1.2(magicast@0.3.4)(rollup@3.29.4)
-      "@vueuse/integrations": 10.11.0(async-validator@4.2.5)(axios@1.7.2)(change-case@5.4.4)(focus-trap@7.5.4)(fuse.js@6.6.2)(sortablejs@1.15.2)(vue@3.4.33(typescript@5.5.3))
+      "@vueuse/integrations": 10.11.0(async-validator@4.2.5)(axios@1.7.2)(change-case@4.1.2)(focus-trap@7.5.4)(fuse.js@6.6.2)(sortablejs@1.15.2)(vue@3.4.33(typescript@5.5.3))
       "@vueuse/nuxt": 10.11.0(magicast@0.3.4)(nuxt@3.12.4(@parcel/watcher@2.4.1)(@types/node@20.14.11)(eslint@9.7.0)(ioredis@5.4.1)(magicast@0.3.4)(optionator@0.9.4)(rollup@3.29.4)(terser@5.31.3)(typescript@5.5.3)(xml2js@0.6.2))(rollup@3.29.4)(vue@3.4.33(typescript@5.5.3))
       focus-trap: 7.5.4
       fuse.js: 6.6.2
@@ -15242,7 +15232,7 @@ snapshots:
       - rollup
       - supports-color
 
-  "@nuxt/devtools-ui-kit@1.3.9(@nuxt/devtools@1.3.9(rollup@4.18.1))(@unocss/webpack@0.61.5(rollup@4.18.1)(webpack@5.93.0))(@vue/compiler-core@3.4.33)(async-validator@4.2.5)(axios@1.7.2)(change-case@5.4.4)(fuse.js@7.0.0)(magicast@0.3.4)(nuxt@3.12.4(@parcel/watcher@2.4.1)(@types/node@20.14.11)(eslint@9.7.0)(ioredis@5.4.1)(magicast@0.3.4)(optionator@0.9.4)(rollup@4.18.1)(terser@5.31.3)(typescript@5.5.3)(xml2js@0.6.2))(postcss@8.4.39)(rollup@4.18.1)(sortablejs@1.15.2)(vue@3.4.33(typescript@5.5.3))(webpack@5.93.0)":
+  "@nuxt/devtools-ui-kit@1.3.9(@nuxt/devtools@1.3.9(rollup@4.18.1))(@unocss/webpack@0.61.5(rollup@4.18.1)(webpack@5.93.0))(@vue/compiler-core@3.4.33)(async-validator@4.2.5)(axios@1.7.2)(change-case@4.1.2)(fuse.js@6.6.2)(magicast@0.3.4)(nuxt@3.12.4(@parcel/watcher@2.4.1)(@types/node@20.14.11)(eslint@9.7.0)(ioredis@5.4.1)(magicast@0.3.4)(optionator@0.9.4)(rollup@4.18.1)(terser@5.31.3)(typescript@5.5.3)(xml2js@0.6.2))(postcss@8.4.39)(rollup@4.18.1)(sortablejs@1.15.2)(vue@3.4.33(typescript@5.5.3))(webpack@5.93.0)":
     dependencies:
       "@iconify-json/carbon": 1.1.36
       "@iconify-json/logos": 1.1.43
@@ -15258,7 +15248,7 @@ snapshots:
       "@unocss/preset-mini": 0.61.5
       "@unocss/reset": 0.61.5
       "@vueuse/core": 10.11.0(vue@3.4.33(typescript@5.5.3))
-      "@vueuse/integrations": 10.11.0(async-validator@4.2.5)(axios@1.7.2)(change-case@5.4.4)(focus-trap@7.5.4)(fuse.js@7.0.0)(sortablejs@1.15.2)(vue@3.4.33(typescript@5.5.3))
+      "@vueuse/integrations": 10.11.0(async-validator@4.2.5)(axios@1.7.2)(change-case@4.1.2)(focus-trap@7.5.4)(fuse.js@6.6.2)(sortablejs@1.15.2)(vue@3.4.33(typescript@5.5.3))
       "@vueuse/nuxt": 10.11.0(magicast@0.3.4)(nuxt@3.12.4(@parcel/watcher@2.4.1)(@types/node@20.14.11)(eslint@9.7.0)(ioredis@5.4.1)(magicast@0.3.4)(optionator@0.9.4)(rollup@4.18.1)(terser@5.31.3)(typescript@5.5.3)(xml2js@0.6.2))(rollup@4.18.1)(vue@3.4.33(typescript@5.5.3))
       defu: 6.1.4
       focus-trap: 7.5.4
@@ -17289,7 +17279,7 @@ snapshots:
       "@unhead/vue": 1.9.16(vue@3.4.33(typescript@5.5.3))
       vue: 3.4.33(typescript@5.5.3)
 
-  "@vueuse/integrations@10.11.0(async-validator@4.2.5)(axios@1.7.2)(change-case@5.4.4)(focus-trap@7.5.4)(fuse.js@6.6.2)(sortablejs@1.15.2)(vue@3.4.33(typescript@5.5.3))":
+  "@vueuse/integrations@10.11.0(async-validator@4.2.5)(axios@1.7.2)(change-case@4.1.2)(focus-trap@7.5.4)(fuse.js@6.6.2)(sortablejs@1.15.2)(vue@3.4.33(typescript@5.5.3))":
     dependencies:
       "@vueuse/core": 10.11.0(vue@3.4.33(typescript@5.5.3))
       "@vueuse/shared": 10.11.0(vue@3.4.33(typescript@5.5.3))
@@ -17297,25 +17287,9 @@ snapshots:
     optionalDependencies:
       async-validator: 4.2.5
       axios: 1.7.2
-      change-case: 5.4.4
+      change-case: 4.1.2
       focus-trap: 7.5.4
       fuse.js: 6.6.2
-      sortablejs: 1.15.2
-    transitivePeerDependencies:
-      - "@vue/composition-api"
-      - vue
-
-  "@vueuse/integrations@10.11.0(async-validator@4.2.5)(axios@1.7.2)(change-case@5.4.4)(focus-trap@7.5.4)(fuse.js@7.0.0)(sortablejs@1.15.2)(vue@3.4.33(typescript@5.5.3))":
-    dependencies:
-      "@vueuse/core": 10.11.0(vue@3.4.33(typescript@5.5.3))
-      "@vueuse/shared": 10.11.0(vue@3.4.33(typescript@5.5.3))
-      vue-demi: 0.14.8(vue@3.4.33(typescript@5.5.3))
-    optionalDependencies:
-      async-validator: 4.2.5
-      axios: 1.7.2
-      change-case: 5.4.4
-      focus-trap: 7.5.4
-      fuse.js: 7.0.0
       sortablejs: 1.15.2
     transitivePeerDependencies:
       - "@vue/composition-api"
@@ -18238,9 +18212,6 @@ snapshots:
       sentence-case: 3.0.4
       snake-case: 3.0.4
       tslib: 2.6.3
-
-  change-case@5.4.4:
-    optional: true
 
   changelogen@0.5.5(magicast@0.3.4):
     dependencies:
@@ -19480,9 +19451,6 @@ snapshots:
   functions-have-names@1.2.3: {}
 
   fuse.js@6.6.2: {}
-
-  fuse.js@7.0.0:
-    optional: true
 
   gauge@3.0.2:
     dependencies:

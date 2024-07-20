@@ -15,8 +15,8 @@
       :name="getToPath(history.to)!"
     >
       <n-flex align="center">
-        <fa-icon :name="history.tab.icon || history.icon" />
-        <span>{{ history.tab.title || history.title }}</span>
+        <fa-icon :name="history.tab?.icon || history.icon" />
+        <span>{{ history.tab?.title || history.title }}</span>
       </n-flex>
     </n-tab>
     <template #prefix>

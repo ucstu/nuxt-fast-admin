@@ -143,8 +143,12 @@ export default defineNuxtModule<ModuleOptions>({
       filename: resolve(nuxt.options.buildDir, "fast-fetch/index.ts"),
       getContents() {
         return Object.keys(options.clients)
-          .map((name) =>
-            genExport("./" + name, { name: "*", as: `$${camelCase(name)}` }),
+          .map(
+            (name) =>
+              `// @ts-ignore\n${genExport("./" + name, {
+                name: "*",
+                as: `$${camelCase(name)}`,
+              })}`
           )
           .join("\n");
       },

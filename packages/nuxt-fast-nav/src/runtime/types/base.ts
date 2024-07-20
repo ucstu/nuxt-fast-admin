@@ -1,4 +1,7 @@
-import type { RouteLocationRaw } from "#vue-router";
+import type {
+  RouteLocationNormalizedGeneric,
+  RouteLocationRaw,
+} from "#vue-router";
 import type { AppConfig } from "@nuxt/schema";
 import type {
   LiteralUnion,
@@ -20,28 +23,28 @@ type KeysDeep<
   I extends number = 30,
   IA extends number[] = [],
   D extends number = 10,
-  DA extends number[] = []
+  DA extends number[] = [],
 > = M["length"] extends IA["length"]
   ? never
   : I extends IA["length"]
-  ? never
-  : // 自身
-    | `${P}${Exclude<M[IA["length"]]["name"], symbol>}`
-      // 子级
-      | (M[IA["length"]]["children"] extends Array<FastNavMenu>
-          ? DA["length"] extends D
-            ? never
-            : KeysDeep<
-                M[IA["length"]]["children"],
-                `${P}${Exclude<M[IA["length"]]["name"], symbol>}.`,
-                I,
-                [],
-                D,
-                [0, ...DA]
-              >
-          : never)
-      // 下一个
-      | KeysDeep<M, P, I, [0, ...IA], D, []>;
+    ? never
+    : // 自身
+      | `${P}${Exclude<M[IA["length"]]["name"], symbol>}`
+        // 子级
+        | (M[IA["length"]]["children"] extends Array<FastNavMenu>
+            ? DA["length"] extends D
+              ? never
+              : KeysDeep<
+                  M[IA["length"]]["children"],
+                  `${P}${Exclude<M[IA["length"]]["name"], symbol>}.`,
+                  I,
+                  [],
+                  D,
+                  [0, ...DA]
+                >
+            : never)
+        // 下一个
+        | KeysDeep<M, P, I, [0, ...IA], D, []>;
 
 export interface BaseMeta {
   /**
@@ -155,7 +158,7 @@ export type FastNavPageFilled = RequiredDeep<
  */
 export interface FastNavMenu<
   T extends object = object,
-  N extends keyof T = keyof T
+  N extends keyof T = keyof T,
 > extends Omit<MenuMeta, "has">,
     FastNavExtra {
   /**
@@ -189,7 +192,9 @@ export type FastNavMenuFilled = OverrideProperties<
 /**
  * 导航历史
  */
-export interface FastNavHistory extends Omit<FastNavPage, "menu"> {}
+export interface FastNavHistory extends Omit<FastNavPage, "menu"> {
+  to: RouteLocationRaw | RouteLocationNormalizedGeneric;
+}
 
 /**
  * 导航历史（已填充）

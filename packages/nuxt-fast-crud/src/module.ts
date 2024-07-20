@@ -155,6 +155,11 @@ export default defineNuxtModule<ModuleOptions>({
       });
     });
 
+    addComponent({
+      name: "FcCrud",
+      filePath: resolve("./runtime/components/crud.vue"),
+    });
+
     const composables = [
       "useUi",
       "asyncCompute",
@@ -194,6 +199,11 @@ export default defineNuxtModule<ModuleOptions>({
     addImportsSources({
       from: resolve("./runtime/composables"),
       imports: composables,
+    });
+
+    addImportsSources({
+      from: resolve("./runtime/composables"),
+      imports: ["defineCrudOptions"],
     });
   },
 });

@@ -40,12 +40,14 @@ export function initModule(
 
 declare module "@nuxt/schema" {
   interface CustomAppConfig {
+    // @ts-ignore
     fastCrud?: ModuleConfig;
   }
 }
 
 declare module "@ucstu/nuxt-fast-utils/types" {
   interface ModuleConfigs {
+    // @ts-ignore
     fastCrud: ModuleConfigDefaults;
   }
 }

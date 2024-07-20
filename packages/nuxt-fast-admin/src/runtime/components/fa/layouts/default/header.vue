@@ -48,9 +48,9 @@
         </template>
         <n-breadcrumb-item v-if="current" :clickable="false">
           <n-flex align="center">
-            <fa-icon :name="current.menu.icon || current.icon" />
+            <fa-icon :name="current.menu?.icon || current.icon" />
             <nuxt-link :to="current.to">
-              {{ current.menu.title || current.title }}
+              {{ current.menu?.title || current.title }}
             </nuxt-link>
           </n-flex>
         </n-breadcrumb-item>

@@ -17,6 +17,7 @@ export const defaults: ModuleOptionsDefaults = {
 
 export const configs: ModuleConfigDefaults = {
   provider: {
+    // @ts-ignore
     refreshOnWindowFocus: true,
     refreshTokenExpires: 256 * 24 * 60 * 60 * 1000,
     tokenExpires: 256 * 24 * 60 * 60 * 1000,
@@ -43,7 +44,7 @@ export const configs: ModuleConfigDefaults = {
 
 export function initModule(
   _options: ModuleOptions,
-  nuxt: Nuxt,
+  nuxt: Nuxt
 ): ModuleOptionsDefaults {
   const options = _options as ModulePublicRuntimeConfig[typeof configKey];
 
@@ -55,12 +56,14 @@ export function initModule(
 
 declare module "@nuxt/schema" {
   interface CustomAppConfig {
+    // @ts-ignore
     fastAuth?: ModuleConfig;
   }
 }
 
 declare module "@ucstu/nuxt-fast-utils/types" {
   interface ModuleConfigs {
+    // @ts-ignore
     fastAuth: ModuleConfigDefaults;
   }
 }

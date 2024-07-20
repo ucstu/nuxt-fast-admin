@@ -1,5 +1,5 @@
 <template>
-  <editor style="width: 100%; height: 100%" v-bind="props" test="1212" />
+  <editor v-bind="props" test="1212" />
 </template>
 
 <script lang="ts" setup>
@@ -119,3 +119,10 @@ const props = defineProps<{
 }>();
 const Editor = applyPureReactInVue(_Editor);
 </script>
+
+<style lang="css" scoped>
+:deep(.ae-Editor) {
+  height: 100%;
+  width: 100%;
+}
+</style>

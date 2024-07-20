@@ -80,14 +80,14 @@ export interface LocalAuthHooks extends BaseAuthHooks {
    */
   "fast-auth:sign-in"(
     form: FastAuthForm,
-    result: ShallowRef<string | LocalSignInResult | undefined>,
+    result: ShallowRef<string | LocalSignInResult | undefined>
   ): HookResult;
   /**
    * 注销
    */
   "fast-auth:sign-out"(
-    user: Ref<FastAuthUser>,
-    token: RemovableRef<FastAuthToken>,
+    user: Ref<FastAuthUser | undefined>,
+    token: RemovableRef<FastAuthToken>
   ): HookResult;
 }
 

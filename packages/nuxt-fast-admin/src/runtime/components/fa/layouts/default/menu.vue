@@ -19,11 +19,7 @@
         </h2>
       </div>
     </slot>
-    <slot
-      :value="getToPath($route)"
-      :collapsed="menuConfig!.collapsed"
-      :options="options"
-    >
+    <slot :value="value" :collapsed="menuConfig!.collapsed" :options="options">
       <n-menu
         ref="menuInstRef"
         v-model:value="value"

@@ -57,12 +57,14 @@ export function initModule(
 
 declare module "@nuxt/schema" {
   interface CustomAppConfig {
+    // @ts-ignore
     fastNav?: ModuleConfig;
   }
 }
 
 declare module "@ucstu/nuxt-fast-utils/types" {
   interface ModuleConfigs {
+    // @ts-ignore
     fastNav: ModuleConfigDefaults;
   }
 }

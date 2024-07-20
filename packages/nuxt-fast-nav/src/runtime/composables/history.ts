@@ -28,7 +28,7 @@ function compressHistory(history: FastNavHistory): FastNavHistory {
 
   if (typeof clone.to === "string") return clone;
 
-  if (!clone.to.force) delete clone.to.force;
+  if ("force" in clone.to && !clone.to.force) delete clone.to.force;
   if (!clone.to.hash) delete clone.to.hash;
 
   if ("name" in clone.to) {
@@ -39,15 +39,18 @@ function compressHistory(history: FastNavHistory): FastNavHistory {
 
   if (!clone.to.query || Object.keys(clone.to.query).length === 0)
     delete clone.to.query;
-  if (!clone.to.replace) delete clone.to.replace;
-  if (!clone.to.state || Object.keys(clone.to.state).length === 0)
+  if ("replace" in clone.to && !clone.to.replace) delete clone.to.replace;
+  if (
+    "state" in clone.to &&
+    (!clone.to.state || Object.keys(clone.to.state).length === 0)
+  )
     delete clone.to.state;
 
   return clone;
 }
 
 export const useNavHistories = createNuxtGlobalState(function (
-  nuxtApp: NuxtApp = useNuxtApp(),
+  nuxtApp: NuxtApp = useNuxtApp()
 ) {
   const pages = useNavPages(nuxtApp);
   const { currentRoute } = $useRouter(nuxtApp);
@@ -55,14 +58,14 @@ export const useNavHistories = createNuxtGlobalState(function (
 
   const origin = useState<Array<FastNavHistory>>(
     "fast-nav:histories",
-    () => [],
+    () => []
   );
 
   const result = computedEager(
     () =>
       origin.value.map((item) =>
-        defu(item, pages.getPage(item.to)),
-      ) as Array<FastNavHistoryFilled>,
+        defu(item, pages.getPage(item.to))
+      ) as Array<FastNavHistoryFilled>
   );
 
   /**
@@ -86,7 +89,7 @@ export const useNavHistories = createNuxtGlobalState(function (
     const _history = compressHistory(toValue(history));
 
     const old = origin.value.find((item) =>
-      toEqual(_history.to, item.to, nuxtApp),
+      toEqual(_history.to, item.to, nuxtApp)
     );
     if (old) {
       if (!isEqual(old, _history)) assign(old, _history);
@@ -103,7 +106,7 @@ export const useNavHistories = createNuxtGlobalState(function (
   async function close(
     history:
       | MaybeRefOrGetter<FastNavHistory | RouteLocationRaw>
-      | undefined = current.value,
+      | undefined = current.value
   ) {
     const _history = toValue(history);
 
@@ -112,8 +115,8 @@ export const useNavHistories = createNuxtGlobalState(function (
       toEqual(
         _history instanceof Object && "to" in _history ? _history.to : _history,
         item.to,
-        nuxtApp,
-      ),
+        nuxtApp
+      )
     );
     if (!old) {
       return console.warn(`[fast-nav] 未找到历史 `, _history, ` 的记录`);
@@ -143,7 +146,7 @@ export const useNavHistories = createNuxtGlobalState(function (
   async function closeAll() {
     // 筛除 "首页" 以外的所有历史
     origin.value = origin.value.filter((item) =>
-      toEqual(navConfig.value.home, item.to, nuxtApp),
+      toEqual(navConfig.value.home, item.to, nuxtApp)
     );
     await navigateTo(navConfig.value.home);
   }
@@ -155,7 +158,7 @@ export const useNavHistories = createNuxtGlobalState(function (
   async function closeOthers(
     history:
       | MaybeRefOrGetter<FastNavHistory | RouteLocationRaw>
-      | undefined = current.value,
+      | undefined = current.value
   ) {
     const _history = toValue(history);
 
@@ -164,8 +167,8 @@ export const useNavHistories = createNuxtGlobalState(function (
       toEqual(
         _history instanceof Object && "to" in _history ? _history.to : _history,
         item.to,
-        nuxtApp,
-      ),
+        nuxtApp
+      )
     );
     if (!old) {
       return console.warn(`[fast-nav] 未找到历史 `, _history, ` 的记录`);

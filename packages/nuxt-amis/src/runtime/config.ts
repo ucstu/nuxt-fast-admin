@@ -29,12 +29,14 @@ export function initModule(
 
 declare module "@nuxt/schema" {
   interface CustomAppConfig {
+    // @ts-ignore
     amis?: ModuleConfig;
   }
 }
 
 declare module "@ucstu/nuxt-fast-utils/types" {
   interface ModuleConfigs {
+    // @ts-ignore
     amis: ModuleConfigDefaults;
   }
 }

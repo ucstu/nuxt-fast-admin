@@ -1,9 +1,9 @@
 <template>
-  <fa-pages-auth />
+  <fa-pages-amis />
 </template>
 
 <script setup lang="ts">
 defineOptions({
-  name: "FaPagesAuth",
+  name: "FaPagesAmis",
 });
 </script>

@@ -2,7 +2,7 @@ import type { RouteLocationRaw } from "#vue-router";
 import type { RequiredDeep } from "@ucstu/nuxt-fast-utils/exports";
 import type { FastAuthBase, FastAuthMeta, FastAuthOptions } from "./base";
 
-interface BaseAuthProvider {
+export interface BaseAuthProvider {
   /**
    * 默认令牌有效时间
    * @description 令牌有效时间，单位为毫秒
@@ -11,9 +11,9 @@ interface BaseAuthProvider {
   tokenExpires?: number;
 }
 
-interface LocalAuthProvider extends BaseAuthProvider {}
+export interface LocalAuthProvider extends BaseAuthProvider {}
 
-interface RefreshAuthProvider extends BaseAuthProvider {
+export interface RefreshAuthProvider extends BaseAuthProvider {
   /**
    * 刷新令牌有效时间
    * @description 刷新令牌有效时间，单位为毫秒

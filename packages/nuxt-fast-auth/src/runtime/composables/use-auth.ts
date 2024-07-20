@@ -223,16 +223,12 @@ export const useAuth = createGlobalState(function <
 
     try {
       _status.value.signOut = true;
-      await nuxtApp.callHook(
-        "fast-auth:sign-out",
-        _user,
-        _token,
-        undefined as any,
-      );
+      // @ts-ignore
+      await nuxtApp.callHook("fast-auth:sign-out", _user, _token);
       if (navigate) {
         await navigateTo(
           navigate === true ? authConfig.value.signIn : navigate,
-          options.navigateOptions,
+          options.navigateOptions
         );
       }
     } finally {

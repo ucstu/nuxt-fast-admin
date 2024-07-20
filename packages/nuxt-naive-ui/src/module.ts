@@ -8,8 +8,13 @@ import {
   installModule,
 } from "@nuxt/kit";
 import { addModuleTypeTemplate } from "@ucstu/nuxt-fast-utils/utils";
-import { name, version } from "../package.json";
-import { configKey, defaults, initModule } from "./runtime/config";
+import {
+  configKey,
+  defaults,
+  initModule,
+  name,
+  version,
+} from "./runtime/config";
 import type { ModuleOptions } from "./runtime/types";
 
 export type {

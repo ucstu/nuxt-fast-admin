@@ -1,7 +1,6 @@
-import { defineNuxtPlugin, type NuxtApp } from "#app";
+import { defineNuxtPlugin } from "#app";
 import { useModuleConfig, useRuntimeConfig } from "#imports";
 import { configKey } from "../config";
-import { $auth } from "../utils";
 
 export default defineNuxtPlugin({
   enforce: "pre",
@@ -32,16 +31,6 @@ export default defineNuxtPlugin({
       if (origin.name !== "$root") return;
       result.merge({
         title: adminConfig.value.name,
-      });
-    });
-
-    nuxtApp.hook("fast-nav:get-page", (origin, result) => {
-      const show = $auth(nuxtApp as NuxtApp, origin);
-      result.merge({
-        menu: { show: result.value?.menu?.show && show },
-        tab: {
-          show: result.value?.tab?.show && show,
-        },
       });
     });
   },

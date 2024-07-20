@@ -3,11 +3,18 @@ import {
   addPlugin,
   createResolver,
   defineNuxtModule,
+  extendViteConfig,
   installModule,
 } from "@nuxt/kit";
 import { addModuleTypeTemplate } from "@ucstu/nuxt-fast-utils/utils";
-import { name, version } from "../package.json";
-import { configKey, defaults, initModule } from "./runtime/config";
+import MagicString from "magic-string";
+import {
+  configKey,
+  defaults,
+  initModule,
+  name,
+  version,
+} from "./runtime/config";
 import type { ModuleOptions } from "./runtime/types";
 
 export type {
@@ -37,6 +44,24 @@ export default defineNuxtModule<ModuleOptions>({
     });
 
     const { resolve } = createResolver(import.meta.url);
+
+    extendViteConfig((config) => {
+      config.plugins ??= [];
+      config.plugins.push({
+        name,
+        enforce: "pre",
+        async transform(code: string, id: string) {
+          if (id.match(/amis\/lib\/themes\/default.css/)) {
+            const ms = new MagicString(code);
+            ms.replace("max-width: fill-available", "max-width: stretch");
+            return {
+              code: ms.toString(),
+              map: ms.generateMap(),
+            };
+          }
+        },
+      });
+    });
 
     addPlugin({
       name,

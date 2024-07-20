@@ -25,7 +25,10 @@ export const defaults: ModuleOptionsDefaults = {
       default: true,
     },
     pages: {
+      iframe: true,
       auth: true,
+      crud: true,
+      amis: true,
     },
   },
 };
@@ -112,12 +115,14 @@ export function initModule(_options: ModuleOptions, nuxt: Nuxt) {
 
 declare module "@nuxt/schema" {
   interface CustomAppConfig {
+    // @ts-ignore
     fastAdmin?: ModuleConfig;
   }
 }
 
 declare module "@ucstu/nuxt-fast-utils/types" {
   interface ModuleConfigs {
+    // @ts-ignore
     fastAdmin: ModuleConfigDefaults;
   }
 }
