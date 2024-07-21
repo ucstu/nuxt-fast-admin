@@ -6,9 +6,10 @@ export default defineBuildConfig({
     "#imports",
     "#vue-router",
     "#build/types/app.config",
-
     "defu",
     "knitwork",
     "lodash-es",
+    "magic-string",
+    "@jridgewell/sourcemap-codec",
   ],
 });

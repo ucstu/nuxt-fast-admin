@@ -148,7 +148,7 @@ export default defineNuxtModule<ModuleOptions>({
               `// @ts-ignore\n${genExport("./" + name, {
                 name: "*",
                 as: `$${camelCase(name)}`,
-              })}`
+              })}`,
           )
           .join("\n");
       },

@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import { getCurrentInstance, onMounted, onUnmounted } from "#imports";
+import { getCurrentInstance, onMounted, onBeforeUnmount } from "#imports";
 
 defineOptions({
   name: "FaPagesIframe",
@@ -16,7 +16,7 @@ onMounted(() => {
     old = instance.proxy.$el.parentElement.style.fontSize;
     instance.proxy.$el.parentElement.style.fontSize = "0";
   }
-  onUnmounted(() => {
+  onBeforeUnmount(() => {
     if (instance?.proxy?.$el?.parentElement) {
       instance.proxy.$el.parentElement.style.fontSize = old;
     }

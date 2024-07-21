@@ -14,15 +14,18 @@ import type { RefreshAuthProvider } from "../types";
 function setTimeArrive(fn: () => void, time: number | string | Date) {
   let timer: NodeJS.Timeout | undefined;
   function start() {
-    timer = setTimeout(() => {
-      if (new Date().getTime() >= new Date(time).getTime()) {
-        clearTimeout(timer);
-        fn();
-      } else {
-        clearTimeout(timer);
-        start();
-      }
-    }, Math.min(new Date(time).getTime() - new Date().getTime(), 2147483647));
+    timer = setTimeout(
+      () => {
+        if (new Date().getTime() >= new Date(time).getTime()) {
+          clearTimeout(timer);
+          fn();
+        } else {
+          clearTimeout(timer);
+          start();
+        }
+      },
+      Math.min(new Date(time).getTime() - new Date().getTime(), 2147483647),
+    );
   }
   start();
   return () => clearTimeout(timer);
@@ -61,7 +64,7 @@ export default defineNuxtPlugin({
           clearTimeArrive = setTimeArrive(
             signOut,
             token.value.create +
-              (token.value.expires ?? authConfig.value.provider.tokenExpires)
+              (token.value.expires ?? authConfig.value.provider.tokenExpires),
           );
         });
       }
@@ -81,7 +84,7 @@ export default defineNuxtPlugin({
             refreshToken.value.create +
               (refreshToken.value.expires ??
                 (authConfig.value.provider as RefreshAuthProvider)
-                  .refreshTokenExpires!)
+                  .refreshTokenExpires!),
           );
         });
 
@@ -96,7 +99,7 @@ export default defineNuxtPlugin({
               (token.value.expires ??
                 (authConfig.value.provider as RefreshAuthProvider)
                   .tokenExpires!) -
-              (authConfig.value.provider as RefreshAuthProvider).tokenRefresh!
+              (authConfig.value.provider as RefreshAuthProvider).tokenRefresh!,
           );
         });
 
@@ -122,11 +125,11 @@ export default defineNuxtPlugin({
       // 定时刷新用户
       const { pause, resume } = useIntervalFn(
         refreshUser,
-        () => authConfig.value.session.refreshPeriodically
+        () => authConfig.value.session.refreshPeriodically,
       );
       watchImmediate(
         () => authConfig.value.session.refreshPeriodically,
-        (period) => (period === 0 ? pause() : resume())
+        (period) => (period === 0 ? pause() : resume()),
       );
 
       // 窗口焦点刷新用户

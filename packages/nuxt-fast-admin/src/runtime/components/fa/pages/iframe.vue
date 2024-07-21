@@ -52,7 +52,7 @@ const props = withDefaults(
       "allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-popups allow-popups-to-escape-sandbox allow-presentation allow-same-origin allow-scripts allow-top-navigation allow-top-navigation-by-user-activation",
     width: "100%",
     height: "100%",
-    frameborder: 0
+    frameborder: 0,
   },
 );
 /* eslint-enable vue/require-default-prop */

@@ -2,6 +2,7 @@ import type { HookResult } from "@nuxt/schema";
 import type { RequiredDeep } from "@ucstu/nuxt-fast-utils/exports";
 import type { DropdownOption } from "@ucstu/nuxt-naive-ui/exports";
 import type { ShallowRef } from "vue-demi";
+import type { CrudApi } from "./base";
 
 export interface ModuleOptions {
   /**

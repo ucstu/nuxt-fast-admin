@@ -228,7 +228,7 @@ export const useAuth = createGlobalState(function <
       if (navigate) {
         await navigateTo(
           navigate === true ? authConfig.value.signIn : navigate,
-          options.navigateOptions
+          options.navigateOptions,
         );
       }
     } finally {

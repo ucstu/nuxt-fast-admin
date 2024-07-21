@@ -8,7 +8,7 @@ import type {
 } from "./types";
 
 export const name = "@ucstu/nuxt-fast-auth";
-export const version = "1.1.8";
+export const version = "2.0.0";
 export const configKey = "fastAuth";
 
 export const defaults: ModuleOptionsDefaults = {

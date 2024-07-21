@@ -125,7 +125,7 @@ export const useRefreshAuth = createGlobalState(function <
         _user,
         _token,
         // @ts-ignore
-        _refreshToken
+        _refreshToken,
       );
       if (navigate) {
         await navigateTo(

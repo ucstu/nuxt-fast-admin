@@ -1,9 +1,8 @@
 <template>
-  <div style="position: relative; height: 100vh">
-    <fs-page>
-      <fs-crud ref="crudRef" v-bind="crudBinding" />
-    </fs-page>
-  </div>
+  <fc-crud :options="options">
+    <template #header> header </template>
+    <template #footer> footer </template>
+  </fc-crud>
 </template>
 
 <script setup lang="ts">
@@ -26,57 +25,51 @@ interface Tag {
   name?: string;
 }
 
-const { crudRef, crudBinding } = useFs<Pet>({
-  createCrudOptions() {
-    return {
-      crudOptions: {
-        request: {
-          async pageRequest() {
-            const data = await fetch(
-              "https://petstore.swagger.io/v2/pet/findByStatus?status=available&status=pending&status=sold",
-            ).then<Array<Pet>>((response) => response.json());
-            return {
-              records: data,
-              total: data.length,
-            };
-          },
-        },
-        columns: {
-          id: {
-            title: "ID",
+const options = defineCrudOptions({
+  request: {
+    async pageRequest() {
+      const data = await fetch(
+        "https://petstore.swagger.io/v2/pet/findByStatus?status=available&status=pending&status=sold",
+      ).then<Array<Pet>>((response) => response.json());
+      return {
+        records: data,
+        total: data.length,
+      };
+    },
+  },
+  columns: {
+    id: {
+      title: "ID",
+      width: "50px",
+    },
+    name: {
+      title: "Name",
+      width: "200px",
+    },
+    photoUrls: {
+      title: "Photo",
+      width: "200px",
+      render({ value }: any) {
+        return h("img", {
+          attrs: {
+            src: value[0],
             width: "50px",
+            height: "50px",
           },
-          name: {
-            title: "Name",
-            width: "200px",
-          },
-          photoUrls: {
-            title: "Photo",
-            width: "200px",
-            render({ value }: any) {
-              return h("img", {
-                attrs: {
-                  src: value[0],
-                  width: "50px",
-                  height: "50px",
-                },
-              });
-            },
-          },
-          tags: {
-            title: "Tags",
-            width: "200px",
-            render({ value }: any) {
-              return h("div", value.map((tag: any) => tag.name).join(", "));
-            },
-          },
-          status: {
-            title: "Status",
-            width: "100px",
-          },
-        },
+        });
       },
-    };
+    },
+    tags: {
+      title: "Tags",
+      width: "200px",
+      render({ value }: any) {
+        return h("div", value.map((tag: any) => tag.name).join(", "));
+      },
+    },
+    status: {
+      title: "Status",
+      width: "100px",
+    },
   },
 });
 </script>

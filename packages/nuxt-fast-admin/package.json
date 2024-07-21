@@ -1,6 +1,6 @@
 {
   "name": "@ucstu/nuxt-fast-admin",
-  "version": "1.1.8",
+  "version": "2.0.0",
   "description": "Nuxt fast admin module",
   "homepage": "https://github.com/ucstu/nuxt-fast-admin/tree/master/packages/nuxt-fast-admin#readme",
   "repository": "https://github.com/ucstu/nuxt-fast-admin/tree/master/packages/nuxt-fast-admin",
@@ -50,7 +50,8 @@
     "changelogen": "^0.5.5",
     "eslint": "^9.7.0",
     "nuxt": "^3.12.4",
-    "vitest": "^2.0.3"
+    "vitest": "^2.0.3",
+    "vue-tsc": "^2.0.26"
   },
   "peerDependencies": {
     "@ucstu/nuxt-amis": "workspace:^",

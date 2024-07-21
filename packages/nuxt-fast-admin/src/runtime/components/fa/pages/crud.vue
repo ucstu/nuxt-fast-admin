@@ -28,25 +28,22 @@ const props = defineProps<{
 const route = useRoute();
 const nuxtApp = useNuxtApp();
 
-const { state: options } = useAsyncState(
-  async () => {
-    const result = shallowRef<CrudOptions<any>>({});
-    try {
-      $loadingBar.start();
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      await nuxtApp.callHook(
-        "fast-admin:get-crud-options",
-        (apis as any)[[route.params.api].flat()[0]],
-        [route.params.resource].flat()[0],
-        result
-      );
-      $loadingBar.finish();
-    } catch (error) {
-      $loadingBar.error();
-      throw error;
-    }
-    return result.value;
-  },
-  () => ({})
-);
+const { state: options } = useAsyncState(async () => {
+  const result = shallowRef<CrudOptions<any>>({});
+  try {
+    $loadingBar.start();
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await nuxtApp.callHook(
+      "fast-admin:get-crud-options",
+      (apis as any)[[route.params.api].flat()[0]],
+      [route.params.resource].flat()[0],
+      result,
+    );
+    $loadingBar.finish();
+  } catch (error) {
+    $loadingBar.error();
+    throw error;
+  }
+  return result.value;
+}, {});
 </script>
