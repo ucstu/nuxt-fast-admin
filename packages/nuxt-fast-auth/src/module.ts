@@ -40,7 +40,7 @@ export default defineNuxtModule<ModuleOptions>({
 
     const pageModule = resolve(
       nuxt.options.appDir,
-      "../pages/runtime/composables",
+      "../pages/runtime/composables"
     );
 
     addModuleTypeTemplate({
@@ -61,6 +61,13 @@ ${genAugmentation(pageModule, {
 })}`;
       },
     });
+
+    const transpile = ["minimatch"];
+    for (const item of transpile) {
+      if (!nuxt.options.build.transpile.includes(item)) {
+        nuxt.options.build.transpile.push(item);
+      }
+    }
 
     addPlugin({
       name: `${name}:config`,

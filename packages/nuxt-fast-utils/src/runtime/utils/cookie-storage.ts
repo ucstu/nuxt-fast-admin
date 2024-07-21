@@ -30,9 +30,13 @@ export class H3CookieStorage extends CookieStorage {
   override getItem(key: string): string | null {
     const event = useRequestEvent(nuxtApp.value);
     if (event) {
-      return getCookie(event, encodeURIComponent(key)) ?? null;
+      const value = getCookie(event, encodeURIComponent(key));
+      return value === undefined || value === null
+        ? null
+        : decodeURIComponent(value);
     }
-    return super.getItem(key);
+    const value = super.getItem(key);
+    return value === null ? null : decodeURIComponent(value);
   }
 
   override removeItem(
