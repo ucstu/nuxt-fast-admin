@@ -1,6 +1,6 @@
 {
   "name": "@ucstu/nuxt-fast-fetch",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Nuxt fast fetch module",
   "homepage": "https://github.com/ucstu/nuxt-fast-admin/tree/master/packages/nuxt-fast-fetch#readme",
   "repository": "https://github.com/ucstu/nuxt-fast-admin/tree/master/packages/nuxt-fast-fetch",
