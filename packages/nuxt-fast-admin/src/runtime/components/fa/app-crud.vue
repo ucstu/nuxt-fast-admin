@@ -10,18 +10,20 @@
           <n-modal-provider v-bind="modal">
             <n-notification-provider v-bind="notification">
               <register-global-feedback />
-              <nuxt-layout>
-                <nuxt-error-boundary v-if="adminConfig.app.boundary">
-                  <nuxt-page />
-                  <template #error="{ error, clearError }">
-                    <fa-error
-                      :error="error.value"
-                      @clear-error="handleClearError($event, clearError)"
-                    />
-                  </template>
-                </nuxt-error-boundary>
-                <nuxt-page v-else />
-              </nuxt-layout>
+              <fs-ui-context>
+                <nuxt-layout>
+                  <nuxt-error-boundary v-if="adminConfig.app.boundary">
+                    <nuxt-page />
+                    <template #error="{ error, clearError }">
+                      <fa-error
+                        :error="error.value"
+                        @clear-error="handleClearError($event, clearError)"
+                      />
+                    </template>
+                  </nuxt-error-boundary>
+                  <nuxt-page v-else />
+                </nuxt-layout>
+              </fs-ui-context>
             </n-notification-provider>
           </n-modal-provider>
         </n-message-provider>
@@ -43,6 +45,7 @@ import {
   watch
 } from "#imports";
 import type { RouteLocationRaw } from "#vue-router";
+import { FsUiContext } from "@fast-crud/ui-naive";
 import {
   computedEager
 } from "@ucstu/nuxt-fast-utils/exports";

@@ -8,7 +8,7 @@ import type {
 } from "./types";
 
 export const name = "@ucstu/nuxt-fast-nav";
-export const version = "2.0.1";
+export const version = "2.0.2";
 export const configKey = "fastNav";
 
 export const defaults: ModuleOptionsDefaults = {

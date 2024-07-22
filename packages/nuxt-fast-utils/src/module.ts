@@ -3,6 +3,7 @@ import {
   addPlugin,
   createResolver,
   defineNuxtModule,
+  extendViteConfig,
 } from "@nuxt/kit";
 import { addModuleTypeTemplate } from "../utils";
 import {
@@ -39,6 +40,32 @@ export default defineNuxtModule<ModuleOptions>({
     });
 
     const { resolve } = createResolver(import.meta.url);
+
+    if (process.env.NODE_ENV === "development") {
+      const optimizeDeps = ["cookie-storage"];
+      extendViteConfig((config) => {
+        config.optimizeDeps ||= {};
+        config.optimizeDeps.include ||= [];
+        for (const item of optimizeDeps) {
+          if (!config.optimizeDeps.include.includes(item)) {
+            config.optimizeDeps.include.push(`${name} > ${item}`);
+          }
+        }
+      });
+      const transpile = ["cookie-storage"];
+      for (const item of transpile) {
+        if (!nuxt.options.build.transpile.includes(item)) {
+          nuxt.options.build.transpile.push(item);
+        }
+      }
+    } else {
+      const transpile = ["cookie-storage"];
+      for (const item of transpile) {
+        if (!nuxt.options.build.transpile.includes(item)) {
+          nuxt.options.build.transpile.push(item);
+        }
+      }
+    }
 
     addPlugin({
       name,

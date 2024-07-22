@@ -10,7 +10,7 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@ucstu/nuxt-fast-admin": "^2.0.1",
+    "@ucstu/nuxt-fast-admin": "^2.0.2",
     "nuxt": "^3.12.3",
     "vue": "latest"
   }

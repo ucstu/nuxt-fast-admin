@@ -4,6 +4,7 @@ import {
   addRouteMiddleware,
   createResolver,
   defineNuxtModule,
+  extendViteConfig,
   installModule,
 } from "@nuxt/kit";
 import { addModuleTypeTemplate } from "@ucstu/nuxt-fast-utils/utils";
@@ -62,10 +63,29 @@ ${genAugmentation(pageModule, {
       },
     });
 
-    const transpile = ["minimatch"];
-    for (const item of transpile) {
-      if (!nuxt.options.build.transpile.includes(item)) {
-        nuxt.options.build.transpile.push(item);
+    if (process.env.NODE_ENV === "development") {
+      const optimizeDeps = ["minimatch"];
+      extendViteConfig((config) => {
+        config.optimizeDeps ||= {};
+        config.optimizeDeps.include ||= [];
+        for (const item of optimizeDeps) {
+          if (!config.optimizeDeps.include.includes(item)) {
+            config.optimizeDeps.include.push(`${name} > ${item}`);
+          }
+        }
+      });
+      const transpile = ["minimatch"];
+      for (const item of transpile) {
+        if (!nuxt.options.build.transpile.includes(item)) {
+          nuxt.options.build.transpile.push(item);
+        }
+      }
+    } else {
+      const transpile = ["minimatch"];
+      for (const item of transpile) {
+        if (!nuxt.options.build.transpile.includes(item)) {
+          nuxt.options.build.transpile.push(item);
+        }
       }
     }
 

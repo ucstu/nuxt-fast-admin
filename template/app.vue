@@ -1,0 +1,3 @@
+<template>
+  <fa-app />
+</template>

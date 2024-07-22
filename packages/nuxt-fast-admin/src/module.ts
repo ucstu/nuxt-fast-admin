@@ -212,8 +212,20 @@ export default defineNuxtModule<ModuleOptions>({
 
     addComponentsDir({
       path: resolve("./runtime/components"),
-      ignore: ["fa/pages/*.vue"],
+      ignore: ["fa/pages/*.vue", "fa/app.vue", "fa/app-crud.vue"],
     });
+
+    if (options.modules.includes("@ucstu/nuxt-fast-crud")) {
+      addComponent({
+        filePath: resolve("./runtime/components/fa/app-crud.vue"),
+        name: "FaApp",
+      });
+    } else {
+      addComponent({
+        filePath: resolve("./runtime/components/fa/app.vue"),
+        name: "FaApp",
+      });
+    }
 
     addImportsSources({
       from: resolve("./runtime/composables/menu"),

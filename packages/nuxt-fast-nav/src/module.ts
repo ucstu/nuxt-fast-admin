@@ -4,6 +4,7 @@ import {
   addTemplate,
   createResolver,
   defineNuxtModule,
+  extendViteConfig,
   installModule,
   updateTemplates,
 } from "@nuxt/kit";
@@ -41,7 +42,7 @@ export default defineNuxtModule<ModuleOptions>({
 
     const pageModule = resolve(
       nuxt.options.appDir,
-      "../pages/runtime/composables",
+      "../pages/runtime/composables"
     );
 
     addModuleTypeTemplate({
@@ -99,7 +100,7 @@ ${genAugmentation(pageModule, {
         }
         const _interface = JSON.stringify(result, null, 2).replaceAll(
           "{}",
-          "never",
+          "never"
         );
         return `export interface _FastNavMenuKeys ${
           _interface === "never" ? "{}" : _interface
@@ -117,6 +118,32 @@ ${genAugmentation(pageModule, {
         });
       }
     });
+
+    if (process.env.NODE_ENV === "development") {
+      const optimizeDeps = ["minimatch"];
+      extendViteConfig((config) => {
+        config.optimizeDeps ||= {};
+        config.optimizeDeps.include ||= [];
+        for (const item of optimizeDeps) {
+          if (!config.optimizeDeps.include.includes(item)) {
+            config.optimizeDeps.include.push(`${name} > ${item}`);
+          }
+        }
+      });
+      const transpile = ["minimatch"];
+      for (const item of transpile) {
+        if (!nuxt.options.build.transpile.includes(item)) {
+          nuxt.options.build.transpile.push(item);
+        }
+      }
+    } else {
+      const transpile = ["minimatch"];
+      for (const item of transpile) {
+        if (!nuxt.options.build.transpile.includes(item)) {
+          nuxt.options.build.transpile.push(item);
+        }
+      }
+    }
 
     addPlugin({
       name: `${name}:config`,
