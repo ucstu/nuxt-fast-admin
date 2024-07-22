@@ -44,8 +44,8 @@ export default defineNuxtModule<ModuleOptions>({
 
     const { resolve } = createResolver(import.meta.url);
 
-    if (process.env.NODE_ENV === "development") {
-      const optimizeDeps = ["naive-ui", "camelcase"];
+    if (nuxt.options.dev) {
+      const optimizeDeps = ["naive-ui"];
       extendViteConfig((config) => {
         config.optimizeDeps ||= {};
         config.optimizeDeps.include ||= [];
@@ -55,21 +55,8 @@ export default defineNuxtModule<ModuleOptions>({
           }
         }
       });
-      const transpile = ["@juggle/resize-observer", "camelcase"];
-      for (const item of transpile) {
-        if (!nuxt.options.build.transpile.includes(item)) {
-          nuxt.options.build.transpile.push(item);
-        }
-      }
     } else {
-      const transpile = [
-        "camelcase",
-        "naive-ui",
-        "vueuc",
-        "@css-render/vue3-ssr",
-        "@juggle/resize-observer",
-        "@iconify/vue",
-      ];
+      const transpile = ["naive-ui", "vueuc"];
       for (const item of transpile) {
         if (!nuxt.options.build.transpile.includes(item)) {
           nuxt.options.build.transpile.push(item);

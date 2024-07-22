@@ -6,6 +6,7 @@ import {
   addTemplate,
   createResolver,
   defineNuxtModule,
+  extendViteConfig,
   installModule,
 } from "@nuxt/kit";
 import { addModuleTypeTemplate } from "@ucstu/nuxt-fast-utils/utils";
@@ -64,6 +65,25 @@ export default defineNuxtModule<ModuleOptions>({
     const resolver = createResolver(import.meta.url);
     const { resolve } = resolver;
 
+    if (nuxt.options.dev) {
+      const optimizeDeps = ["@hey-api/client-fetch", "@hey-api/client-axios"];
+      extendViteConfig((config) => {
+        config.optimizeDeps ||= {};
+        config.optimizeDeps.include ||= [];
+        for (const item of optimizeDeps) {
+          if (!config.optimizeDeps.include.includes(item)) {
+            config.optimizeDeps.include.push(`${name} > ${item}`);
+          }
+        }
+      });
+    }
+    const transpile = ["@hey-api/client-fetch", "@hey-api/client-axios"];
+    for (const item of transpile) {
+      if (!nuxt.options.build.transpile.includes(item)) {
+        nuxt.options.build.transpile.push(item);
+      }
+    }
+
     function fillConfig(
       name: string,
       config: Pick<
@@ -83,6 +103,15 @@ export default defineNuxtModule<ModuleOptions>({
         ...config,
         input,
         output,
+        client: config.client
+          ? {
+              bundle: true,
+              name:
+                typeof config.client === "string"
+                  ? config.client
+                  : config.client.name,
+            }
+          : undefined,
       };
     }
 

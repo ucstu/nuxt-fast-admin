@@ -13,7 +13,14 @@ export default defineNuxtPlugin({
 
       if (!token.value?.value) return;
 
-      if (options.type === "legacy") {
+      if (options.type === "fetch") {
+        const { request } = options;
+        request.headers.set(name, `${type} ${token.value.value}`);
+      } else if (options.type === "axios") {
+        if ("request" in options) {
+          options.request.headers.set(name, `${type} ${token.value.value}`);
+        }
+      } else {
         const { request } = options;
         if (Array.isArray(request.headers)) {
           request.headers.push([name, `${type} ${token.value.value}`]);
@@ -23,9 +30,6 @@ export default defineNuxtPlugin({
           request.headers ??= {};
           request.headers[name] = `${type} ${token.value.value}`;
         }
-      } else {
-        const { request } = options;
-        request.headers.set(name, `${type} ${token.value.value}`);
       }
     });
   },

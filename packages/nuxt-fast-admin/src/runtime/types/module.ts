@@ -75,7 +75,7 @@ export interface ModuleRuntimeHooks {
    */
   "fast-admin:layout-default-header-dropdown-select": (
     value: string | number,
-    option: DropdownOption
+    option: DropdownOption,
   ) => HookResult;
   /**
    * 改变认证类型
@@ -87,13 +87,13 @@ export interface ModuleRuntimeHooks {
   "fast-admin:get-crud-options": (
     api: CrudApi | undefined,
     resource: string,
-    result: ShallowRef<any>
+    result: ShallowRef<any>,
   ) => HookResult;
   /**
    * 获取 Amis 配置
    */
   "fast-admin:get-amis-options": (
     key: string,
-    result: ShallowRef<any>
+    result: ShallowRef<any>,
   ) => HookResult;
 }

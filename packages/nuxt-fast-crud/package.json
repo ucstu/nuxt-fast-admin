@@ -1,6 +1,6 @@
 {
   "name": "@ucstu/nuxt-fast-crud",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "Nuxt fast CRUD module",
   "homepage": "https://github.com/ucstu/nuxt-fast-admin/tree/master/packages/nuxt-fast-crud#readme",
   "repository": "https://github.com/ucstu/nuxt-fast-admin/tree/master/packages/nuxt-fast-crud",

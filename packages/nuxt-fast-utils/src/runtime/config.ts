@@ -8,7 +8,7 @@ import type {
 } from "./types";
 
 export const name = "@ucstu/nuxt-fast-utils";
-export const version = "2.0.2";
+export const version = "2.0.3";
 export const configKey = "fastUtils";
 
 export const defaults: ModuleOptionsDefaults = {};

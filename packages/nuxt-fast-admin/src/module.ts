@@ -48,7 +48,7 @@ export default defineNuxtModule<ModuleOptions>({
     const options = initModule(_options, nuxt);
     options.modules ??= [];
     options.modules.push(
-      ...nuxt.options._installedModules.map((m) => m.meta.name)
+      ...nuxt.options._installedModules.map((m) => m.meta.name),
     );
 
     addModuleTypeTemplate({

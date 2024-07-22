@@ -40,9 +40,8 @@ export default defineNuxtModule<ModuleOptions>({
     });
 
     const { resolve } = createResolver(import.meta.url);
-
-    if (process.env.NODE_ENV === "development") {
-      const optimizeDeps = ["cookie-storage"];
+    if (nuxt.options.dev) {
+      const optimizeDeps = ["cookie-storage", "nanoid", "query-string"];
       extendViteConfig((config) => {
         config.optimizeDeps ||= {};
         config.optimizeDeps.include ||= [];
@@ -52,18 +51,11 @@ export default defineNuxtModule<ModuleOptions>({
           }
         }
       });
-      const transpile = ["cookie-storage"];
-      for (const item of transpile) {
-        if (!nuxt.options.build.transpile.includes(item)) {
-          nuxt.options.build.transpile.push(item);
-        }
-      }
-    } else {
-      const transpile = ["cookie-storage"];
-      for (const item of transpile) {
-        if (!nuxt.options.build.transpile.includes(item)) {
-          nuxt.options.build.transpile.push(item);
-        }
+    }
+    const transpile = ["cookie-storage", "nanoid", "query-string"];
+    for (const item of transpile) {
+      if (!nuxt.options.build.transpile.includes(item)) {
+        nuxt.options.build.transpile.push(item);
       }
     }
 

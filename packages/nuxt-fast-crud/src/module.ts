@@ -45,41 +45,25 @@ export default defineNuxtModule<ModuleOptions>({
 
     const { resolve } = createResolver(import.meta.url);
 
-    if (options.framework === "naive") {
-      if (process.env.NODE_ENV === "development") {
-        const optimizeDeps = ["naive-ui"];
-        extendViteConfig((config) => {
-          config.optimizeDeps ||= {};
-          config.optimizeDeps.include ||= [];
-          for (const item of optimizeDeps) {
-            if (!config.optimizeDeps.include.includes(item)) {
-              config.optimizeDeps.include.push(`${name} > ${item}`);
-            }
-          }
-        });
-        const transpile = ["@juggle/resize-observer"];
-        for (const item of transpile) {
-          if (!nuxt.options.build.transpile.includes(item)) {
-            nuxt.options.build.transpile.push(item);
+    if (nuxt.options.dev) {
+      const optimizeDeps = [
+        "@fast-crud/fast-crud",
+        "@fast-crud/fast-extends",
+        "@fast-crud/ui-interface",
+        `@fast-crud/ui-${options.framework}`,
+      ];
+      extendViteConfig((config) => {
+        config.optimizeDeps ||= {};
+        config.optimizeDeps.include ||= [];
+        for (const item of optimizeDeps) {
+          if (!config.optimizeDeps.include.includes(item)) {
+            config.optimizeDeps.include.push(`${name} > ${item}`);
           }
         }
-      } else {
-        const transpile = [
-          "naive-ui",
-          "vueuc",
-          "@css-render/vue3-ssr",
-          "@juggle/resize-observer",
-          "@iconify/vue",
-        ];
-        for (const item of transpile) {
-          if (!nuxt.options.build.transpile.includes(item)) {
-            nuxt.options.build.transpile.push(item);
-          }
-        }
-      }
+      });
     }
-
     const transpile = [
+      "@ant-design/icons-vue",
       "@fast-crud/fast-crud",
       "@fast-crud/fast-extends",
       "@fast-crud/ui-interface",

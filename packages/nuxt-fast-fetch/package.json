@@ -1,6 +1,6 @@
 {
   "name": "@ucstu/nuxt-fast-fetch",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "Nuxt fast fetch module",
   "homepage": "https://github.com/ucstu/nuxt-fast-admin/tree/master/packages/nuxt-fast-fetch#readme",
   "repository": "https://github.com/ucstu/nuxt-fast-admin/tree/master/packages/nuxt-fast-fetch",
@@ -37,8 +37,9 @@
     "test:watch": "vitest watch"
   },
   "dependencies": {
-    "@hey-api/client-fetch": "^0.1.10",
-    "@hey-api/openapi-ts": "^0.49.0",
+    "@hey-api/client-axios": "^0.1.0",
+    "@hey-api/client-fetch": "^0.1.11",
+    "@hey-api/openapi-ts": "^0.50.0",
     "@nuxt/devtools-kit": "^1.3.9",
     "@nuxt/devtools-ui-kit": "^1.3.9",
     "@nuxt/kit": "^3.12.4",

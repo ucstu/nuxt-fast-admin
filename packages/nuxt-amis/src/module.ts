@@ -45,6 +45,25 @@ export default defineNuxtModule<ModuleOptions>({
 
     const { resolve } = createResolver(import.meta.url);
 
+    if (nuxt.options.dev) {
+      const optimizeDeps = ["amis", "amis-editor", "veaury"];
+      extendViteConfig((config) => {
+        config.optimizeDeps ||= {};
+        config.optimizeDeps.include ||= [];
+        for (const item of optimizeDeps) {
+          if (!config.optimizeDeps.include.includes(item)) {
+            config.optimizeDeps.include.push(`${name} > ${item}`);
+          }
+        }
+      });
+    }
+    const transpile = ["amis", "amis-editor", "veaury"];
+    for (const item of transpile) {
+      if (!nuxt.options.build.transpile.includes(item)) {
+        nuxt.options.build.transpile.push(item);
+      }
+    }
+
     extendViteConfig((config) => {
       config.plugins ??= [];
       config.plugins.push({

@@ -2,16 +2,16 @@
   <n-layout has-sider class="fast-admin-layout-default">
     <n-layout-sider
       ref="sider"
-      v-model:collapsed="layoutConfig.menu.collapsed"
-      :collapsed-width="layoutConfig.menu.collapsedWidth"
-      :width="layoutConfig.menu.width"
+      v-model:collapsed="layoutConfig!.menu!.collapsed"
+      :collapsed-width="layoutConfig!.menu!.collapsedWidth"
+      :width="layoutConfig!.menu!.width"
       collapse-mode="width"
       bordered
     >
       <slot name="menu">
         <fa-layouts-default-menu />
         <div
-          v-if="!layoutConfig.menu.collapsed"
+          v-if="!layoutConfig!.menu!.collapsed"
           ref="resizer"
           class="fast-admin-layout-default-resizer"
           :style="{
@@ -22,12 +22,12 @@
     </n-layout-sider>
     <n-layout content-style="display: flex; flex-direction: column">
       <n-layout-header
-        v-if="layoutConfig.header.show || layoutConfig.tabbar.show"
+        v-if="layoutConfig!.header!.show || layoutConfig!.tabbar!.show"
       >
-        <slot v-if="layoutConfig.header.show" name="header">
+        <slot v-if="layoutConfig!.header!.show" name="header">
           <fa-layouts-default-header />
         </slot>
-        <slot v-if="layoutConfig.tabbar.show" name="tabber">
+        <slot v-if="layoutConfig!.tabbar!.show" name="tabber">
           <fa-layouts-default-tabbar />
         </slot>
       </n-layout-header>
@@ -45,42 +45,13 @@
   </n-layout>
 </template>
 
-<script>
-import { nextTick, ref, useModuleConfig } from "#imports";
-import {
-  createInjectionState,
-  useDraggable,
-  useElementSize,
-  useFullscreen,
-} from "@ucstu/nuxt-fast-utils/exports";
+<script setup lang="ts">
+import type { NLayoutSider } from "#components";
+import { ref, useModuleConfig } from "#imports";
+import { useDraggable, useElementSize } from "@ucstu/nuxt-fast-utils/exports";
 import { configKey } from "../../../../config";
+import { useProvideDefaultLayoutStore } from "./store";
 
-const [useProvideDefaultLayoutStore, useDefaultLayoutStore] =
-  createInjectionState(() => {
-    const content = ref(null);
-    const pageFullscreen = useFullscreen(content);
-    const applicationFullscreen = useFullscreen();
-    const showPage = ref(true);
-    async function refreshPage() {
-      showPage.value = false;
-      await nextTick(() => {
-        showPage.value = true;
-      });
-    }
-
-    return {
-      content,
-      pageFullscreen,
-      applicationFullscreen,
-      showPage,
-      refreshPage,
-    };
-  });
-
-export { useDefaultLayoutStore };
-</script>
-
-<script setup>
 const { content, showPage } = useProvideDefaultLayoutStore();
 const layoutConfig = useModuleConfig(configKey, "layouts.default");
 
@@ -89,10 +60,10 @@ defineOptions({
 });
 
 // #region 菜单栏
-const resizer = ref();
-const sider = ref();
+const resizer = ref<HTMLElement>();
+const sider = ref<InstanceType<typeof NLayoutSider>>();
 const { width: siderRealTimeWidth } = useElementSize(sider);
-let handler;
+let handler: number;
 useDraggable(resizer, {
   onMove(position) {
     cancelAnimationFrame(handler);
@@ -103,7 +74,7 @@ useDraggable(resizer, {
       if (position.x >= 400) {
         return false;
       }
-      layoutConfig.value.menu.width = position.x;
+      layoutConfig.value!.menu!.width = position.x;
     });
   },
 });

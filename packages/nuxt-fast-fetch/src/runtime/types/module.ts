@@ -1,5 +1,6 @@
 import type { Options } from "@hey-api/client-fetch";
 import type { UserConfig } from "@hey-api/openapi-ts";
+import type { AxiosResponse, InternalAxiosRequestConfig } from "axios";
 
 export interface ModuleOptions {
   clients?: {
@@ -26,10 +27,20 @@ interface LegacyRequestOptions {
   request: RequestInit;
 }
 
-interface ClientRequestOptions {
-  type: "client";
+interface FetchRequestOptions {
+  type: "fetch";
   request: Request;
   options: Options;
+}
+
+interface AxiosRequestOptions {
+  type: "axios";
+  request: InternalAxiosRequestConfig<any>;
+}
+
+interface AxiosRequestErrorOptions {
+  type: "axios";
+  error: any;
 }
 
 interface LegacyResponseOptions {
@@ -37,20 +48,38 @@ interface LegacyResponseOptions {
   response: Response;
 }
 
-interface ClientResponseOptions {
-  type: "client";
+interface FetchResponseOptions {
+  type: "fetch";
   request: Request;
   response: Response;
   options: Options;
 }
 
+interface AxiosResponseOptions {
+  type: "axios";
+  response: AxiosResponse<any, any>;
+}
+
+interface AxiosResponseErrorOptions {
+  type: "axios";
+  error: any;
+}
+
 export interface ModuleRuntimeHooks {
   "fast-fetch:request": (
     name: string,
-    options: LegacyRequestOptions | ClientRequestOptions,
+    options:
+      | LegacyRequestOptions
+      | FetchRequestOptions
+      | AxiosRequestOptions
+      | AxiosRequestErrorOptions,
   ) => void;
   "fast-fetch:response": (
     name: string,
-    options: LegacyResponseOptions | ClientResponseOptions,
+    options:
+      | LegacyResponseOptions
+      | FetchResponseOptions
+      | AxiosResponseOptions
+      | AxiosResponseErrorOptions,
   ) => void;
 }

@@ -27,7 +27,6 @@ const props = defineProps<{
   isSubEditor?: boolean;
   autoFocus?: boolean;
   className?: string;
-  $schemaUrl?: string;
   schemas?: Array<any>;
   theme?: string;
   /** 工具栏模式 */

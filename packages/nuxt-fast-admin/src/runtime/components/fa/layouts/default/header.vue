@@ -112,7 +112,7 @@ import {
 import { computedEager } from "@ucstu/nuxt-fast-utils/exports";
 import type { DropdownOption } from "@ucstu/nuxt-naive-ui/exports";
 import { configKey } from "../../../../config";
-import { useDefaultLayoutStore } from "./index.vue";
+import { useDefaultLayoutStore } from "./store";
 
 defineOptions({
   name: "FaLayoutesDefaultHeader",

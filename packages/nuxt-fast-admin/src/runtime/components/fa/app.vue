@@ -40,12 +40,10 @@ import {
   useNaiveUiI18n,
   useNaiveUiTheme,
   useNavHistories,
-  watch
+  watch,
 } from "#imports";
 import type { RouteLocationRaw } from "#vue-router";
-import {
-  computedEager
-} from "@ucstu/nuxt-fast-utils/exports";
+import { computedEager } from "@ucstu/nuxt-fast-utils/exports";
 import {
   useDialog,
   useLoadingBar,
@@ -86,8 +84,8 @@ const config = computedEager(
     defu(
       props.config,
       themeConfig.value,
-      i18nConfig.value
-    ) as ConfigProviderProps
+      i18nConfig.value,
+    ) as ConfigProviderProps,
 );
 
 const histories = useNavHistories();
@@ -117,7 +115,7 @@ const RegisterGlobalFeedback = defineComponent({
           globalThis.$loadingBar.finish();
         }
       },
-      { immediate: true }
+      { immediate: true },
     );
 
     return () => null;
@@ -126,7 +124,9 @@ const RegisterGlobalFeedback = defineComponent({
 
 function handleClearError(
   optionsAndError: { redirect?: RouteLocationRaw } & Error,
-  clearError: (optionsAndError: { redirect?: RouteLocationRaw } & Error) => void
+  clearError: (
+    optionsAndError: { redirect?: RouteLocationRaw } & Error,
+  ) => void,
 ) {
   clearError(optionsAndError);
   if (optionsAndError.redirect) {

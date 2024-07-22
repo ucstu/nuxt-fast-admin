@@ -16,9 +16,15 @@
 
 <script setup lang="ts" generic="Res extends object">
 import { useFs, watch } from "#imports";
-import type { CrudOptions, FsFormWrapper } from "@ucstu/nuxt-fast-crud/exports";
+import type { CrudOptions } from "@ucstu/nuxt-fast-crud/exports";
 import { computedEager, type Paths } from "@ucstu/nuxt-fast-utils/exports";
 import defu from "defu";
+import type {
+  GlobalFormScope,
+  SearchScope,
+  CellScope,
+  FormScope,
+} from "../types";
 
 defineOptions({
   name: "FcCrud",
@@ -45,28 +51,6 @@ const props = withDefaults(
   },
 );
 
-interface GlobalFormScope {
-  index: number;
-  mode: "add" | "view" | "edit";
-  _self: InstanceType<typeof FsFormWrapper>;
-  getFormData: () => Res;
-}
-interface SearchScope {
-  index: number;
-  mode: "search";
-  row: Res;
-  form: Partial<Res>;
-}
-interface CellScope {
-  index: number;
-  row: Res;
-}
-interface FormScope {
-  index: number;
-  mode: "add" | "view" | "edit";
-  row: Res;
-  form: Partial<Res>;
-}
 const slots = defineSlots<
   {
     "header"(): any;
@@ -81,21 +65,21 @@ const slots = defineSlots<
     "pagination-right"(): any;
     "footer-top"(): any;
     "footer-bottom"(): any;
-    "form-header-left"(scope: GlobalFormScope): any;
-    "form-header-right"(scope: GlobalFormScope): any;
-    "form-header-action-left"(scope: GlobalFormScope): any;
-    "form-header-action-right"(scope: GlobalFormScope): any;
-    "form-body-top"(scope: GlobalFormScope): any;
-    "form-body-bottom"(scope: GlobalFormScope): any;
-    "form-footer-left"(scope: GlobalFormScope): any;
-    "form-footer-right"(scope: GlobalFormScope): any;
+    "form-header-left"(scope: GlobalFormScope<Res>): any;
+    "form-header-right"(scope: GlobalFormScope<Res>): any;
+    "form-header-action-left"(scope: GlobalFormScope<Res>): any;
+    "form-header-action-right"(scope: GlobalFormScope<Res>): any;
+    "form-body-top"(scope: GlobalFormScope<Res>): any;
+    "form-body-bottom"(scope: GlobalFormScope<Res>): any;
+    "form-footer-left"(scope: GlobalFormScope<Res>): any;
+    "form-footer-right"(scope: GlobalFormScope<Res>): any;
     "footer"(): any;
   } & {
-    [key in `search_${Paths<Res>}`]: (scope: SearchScope) => any;
+    [key in `search_${Paths<Res>}`]: (scope: SearchScope<Res>) => any;
   } & {
-    [key in `cell_${Paths<Res>}`]: (scope: CellScope) => any;
+    [key in `cell_${Paths<Res>}`]: (scope: CellScope<Res>) => any;
   } & {
-    [key in `form_${Paths<Res>}`]: (scope: FormScope) => any;
+    [key in `form_${Paths<Res>}`]: (scope: FormScope<Res>) => any;
   }
 >();
 

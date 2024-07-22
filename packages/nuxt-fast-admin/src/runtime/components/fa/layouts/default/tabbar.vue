@@ -79,7 +79,7 @@ import {
 import { computedEager } from "@ucstu/nuxt-fast-utils/exports";
 import type { DropdownOption } from "naive-ui";
 import { configKey } from "../../../../config";
-import { useDefaultLayoutStore } from "./index.vue";
+import { useDefaultLayoutStore } from "./store";
 
 defineOptions({
   name: "FaLayoutesDefaultTabbar",
