@@ -63,7 +63,7 @@ export interface ModulePublicRuntimeConfig {
       | "@ucstu/nuxt-amis"
       | "@ucstu/nuxt-fast-auth"
       | "@ucstu/nuxt-fast-crud"
-      | "@ucstu/nuxt-fast-fetch"
+      | "nuxt-open-fetch"
     >;
   };
 }

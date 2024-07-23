@@ -5,10 +5,10 @@
 </template>
 
 <script lang="ts" setup>
-import * as apis from "#fast-fetch";
 import { shallowRef, useNuxtApp, useRoute } from "#imports";
 import type { CrudOptions } from "@ucstu/nuxt-fast-crud/exports";
 import { useAsyncState } from "@ucstu/nuxt-fast-utils/exports";
+import type { CrudApi } from "~/src/runtime/types";
 
 defineOptions({
   name: "FaPagesCrud",
@@ -35,7 +35,7 @@ const { state: options } = useAsyncState(async () => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     await nuxtApp.callHook(
       "fast-admin:get-crud-options",
-      (apis as any)[[route.params.api].flat()[0]],
+      nuxtApp[`$${[route.params.api].flat()[0]}`] as CrudApi,
       [route.params.resource].flat()[0],
       result,
     );

@@ -1,8 +1,9 @@
 export default defineNuxtConfig({
   modules: [
+    "@ucstu/nuxt-amis",
     "@ucstu/nuxt-fast-auth",
     "@ucstu/nuxt-fast-crud",
-    "@ucstu/nuxt-fast-fetch",
+    "nuxt-open-fetch",
     "../src/module",
   ],
   devtools: { enabled: true },
@@ -11,7 +12,6 @@ export default defineNuxtConfig({
       petStore: {
         baseUrl: "https://petstore3.swagger.io/api/v3",
         input: "https://petstore3.swagger.io/api/v3/openapi.json",
-        client: "@hey-api/client-fetch",
       },
     },
   },

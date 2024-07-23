@@ -1,8 +1,15 @@
 import type { NuxtApp, NuxtError } from "#app";
 import { isNuxtError, showError, useModuleConfig, useNuxtApp } from "#imports";
 import defu from "defu";
+import { FetchError } from "ofetch";
 import { configKey } from "../config";
 import type { ErrorOptions } from "../types";
+
+export function isFetchError(
+  error: Error | undefined | null
+): error is FetchError {
+  return error instanceof FetchError;
+}
 
 const MessageMap: Partial<Record<number, string>> = {
   401: "没有认证",
@@ -31,6 +38,7 @@ export function handleError(
   const { handler, level, duration, interval, propagate } = defu(
     config,
     _error && isNuxtError(_error) ? { level: _error.data?.level } : {},
+    isFetchError(_error) ? adminConfig.value.fetch.error : {},
     adminConfig.value.error
   );
   if (!_error) return propagate ? false : true;
@@ -41,7 +49,15 @@ export function handleError(
         : _error
       : _error
     : _error;
-  const code = (realError as NuxtError).statusCode || 0;
+  const code = isFetchError(realError)
+    ? Number.parseInt(
+        (realError as FetchError).response?._data[
+          adminConfig.value.fetch.status
+        ]
+      ) ||
+      (realError as FetchError).statusCode ||
+      0
+    : (realError as NuxtError).statusCode || 0;
   const message =
     MessageMap[code] ||
     (realError instanceof TypeError && realError.message === "Failed to fetch"
@@ -58,7 +74,10 @@ export function handleError(
       : realError instanceof DOMException &&
         realError.message === "signal is aborted without reason"
       ? "请求已取消，可能因为连续发起了重复请求"
-      : (realError as NuxtError).message ||
+      : ((realError as FetchError).response?._data[
+          adminConfig.value.fetch.message
+        ] as string) ||
+        (realError as NuxtError).message ||
         (realError as NuxtError).statusMessage);
   const title = code
     ? message

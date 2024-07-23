@@ -42,7 +42,7 @@ export default defineNuxtModule<ModuleOptions>({
       await installModule("@ucstu/nuxt-amis");
       await installModule("@ucstu/nuxt-fast-auth");
       await installModule("@ucstu/nuxt-fast-crud");
-      await installModule("@ucstu/nuxt-fast-fetch");
+      await installModule("nuxt-open-fetch");
     }
 
     const options = initModule(_options, nuxt);
@@ -73,13 +73,6 @@ export default defineNuxtModule<ModuleOptions>({
         name: `${name}:auth-nav`,
         src: resolve("./runtime/plugins/auth-nav"),
       });
-      // 如果同时安装了 fast-fetch 模块，则添加 auth-fetch 插件
-      if (options.modules.includes("@ucstu/nuxt-fast-fetch")) {
-        addPlugin({
-          name: `${name}:auth-fetch`,
-          src: resolve("./runtime/plugins/auth-fetch"),
-        });
-      }
       // 注册 auth 页面组件
       addComponent({
         filePath: resolve("./runtime/components/fa/pages/auth.vue"),
@@ -111,39 +104,39 @@ export default defineNuxtModule<ModuleOptions>({
 
     // 如果安装了 fast-crud 模块
     if (options.modules.includes("@ucstu/nuxt-fast-crud")) {
-      // 如果同时安装了 fast-fetch 模块，则添加 CRUD 页面
-      if (options.modules.includes("@ucstu/nuxt-fast-fetch")) {
-        // 添加 CRUD 页面组件
-        addComponent({
-          filePath: resolve("./runtime/components/fa/pages/crud.vue"),
-          name: "FaPagesCrud",
-          mode: "client",
-        });
-        // 如果开启了 CRUD 页面，则添加 CRUD 页面
-        if (options.features.pages.crud) {
-          extendPages((pages) => {
-            if (pages.length === 0) return;
-            pages.push({
-              file: resolve("./runtime/pages/crud.vue"),
-              path: "/crud/:api()/:resource()",
-              name: "crud-api-resource",
-              meta: {
-                title: "资源",
-                menu: {
-                  show: false,
-                },
-                tab: {
-                  show: false,
-                },
+      // 添加 CRUD 页面组件
+      addComponent({
+        filePath: resolve("./runtime/components/fa/pages/crud.vue"),
+        name: "FaPagesCrud",
+        mode: "client",
+      });
+      // 如果开启了 CRUD 页面，则添加 CRUD 页面
+      if (options.features.pages.crud) {
+        extendPages((pages) => {
+          if (pages.length === 0) return;
+          pages.push({
+            file: resolve("./runtime/pages/crud.vue"),
+            path: "/crud/:api()/:resource()",
+            name: "crud-api-resource",
+            meta: {
+              title: "资源",
+              menu: {
+                show: false,
               },
-            });
+              tab: {
+                show: false,
+              },
+            },
           });
-        }
+        });
       }
     }
 
-    // 如果安装了 fast-fetch 模块
-    if (options.modules.includes("@ucstu/nuxt-fast-fetch")) {
+    // 如果安装了 open-fetch 模块
+    if (options.modules.includes("nuxt-open-fetch")) {
+      (nuxt.options as any).openFetch ??= {};
+      (nuxt.options as any).openFetch.disableNuxtPlugin = true;
+      (nuxt.options as any).openFetch.disableNitroPlugin = true;
       // 添加 fetch 插件
       addPlugin({
         name: `${name}:fetch`,
@@ -243,7 +236,7 @@ export default defineNuxtModule<ModuleOptions>({
 
     addImportsSources({
       from: resolve("./runtime/utils"),
-      imports: ["handleError"],
+      imports: ["isFetchError", "handleError"],
     });
   },
 });

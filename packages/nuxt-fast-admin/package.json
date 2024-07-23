@@ -55,7 +55,7 @@
     "@ucstu/nuxt-amis": "workspace:^",
     "@ucstu/nuxt-fast-auth": "workspace:^",
     "@ucstu/nuxt-fast-crud": "workspace:^",
-    "@ucstu/nuxt-fast-fetch": "workspace:^"
+    "nuxt-open-fetch": "*"
   },
   "peerDependenciesMeta": {
     "@ucstu/nuxt-amis": {
@@ -67,7 +67,7 @@
     "@ucstu/nuxt-fast-crud": {
       "optional": true
     },
-    "@ucstu/nuxt-fast-fetch": {
+    "nuxt-open-fetch": {
       "optional": true
     }
   },

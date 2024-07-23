@@ -9,6 +9,9 @@ export default defineAppConfig({
         },
       },
     },
+    fetch: {
+      // message: "message",
+    },
   },
   fastNav: {
     menus: [

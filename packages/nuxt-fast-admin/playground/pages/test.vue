@@ -7,19 +7,17 @@ const options = defineCrudOptions({
   request: {
     async pageRequest() {
       return await $petStore.findPetsByStatus({
-        query: {
-          status: "available1"
-        }
-      })
+        status: "available1",
+      });
     },
     transformRes({ res }) {
       return {
         currentPage: 1,
         pageSize: 10,
         records: res.data ?? [],
-        total: res.data?.length ?? 0
-      }
-    }
+        total: res.data?.length ?? 0,
+      };
+    },
   },
   columns: {
     id: {
@@ -30,7 +28,7 @@ const options = defineCrudOptions({
     },
     status: {
       title: "Status",
-    }
-  }
-})
+    },
+  },
+});
 </script>
