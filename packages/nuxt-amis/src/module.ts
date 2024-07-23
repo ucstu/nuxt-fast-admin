@@ -65,6 +65,14 @@ export default defineNuxtModule<ModuleOptions>({
     }
 
     extendViteConfig((config) => {
+      config.build ??= {};
+      config.build.rollupOptions ??= {};
+      config.build.rollupOptions.onwarn = (warning, warn) => {
+        if (["MODULE_LEVEL_DIRECTIVE", "EVAL"].includes(warning.code!)) {
+          return;
+        }
+        warn(warning);
+      };
       config.plugins ??= [];
       config.plugins.push({
         name,

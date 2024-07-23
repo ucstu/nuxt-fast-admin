@@ -13,10 +13,10 @@ export default defineNuxtPlugin({
 
       if (!token.value?.value) return;
 
-      if (options.type === "fetch") {
+      if (options.type === "client-fetch") {
         const { request } = options;
         request.headers.set(name, `${type} ${token.value.value}`);
-      } else if (options.type === "axios") {
+      } else if (options.type === "client-axios") {
         if ("request" in options) {
           options.request.headers.set(name, `${type} ${token.value.value}`);
         }

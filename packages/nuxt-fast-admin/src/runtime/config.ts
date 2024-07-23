@@ -5,7 +5,6 @@ import type { MessageApiInjection } from "naive-ui/lib/message/src/MessageProvid
 import type { ModalApiInjection } from "naive-ui/lib/modal/src/ModalProvider";
 import type { NotificationApiInjection } from "naive-ui/lib/notification/src/NotificationProvider";
 import type {
-  FetchOptions as _FetchOptions,
   ErrorLevel,
   ModuleConfig,
   ModuleConfigDefaults,
@@ -138,11 +137,6 @@ declare global {
   var $modal: ModalApiInjection;
   var $notification: NotificationApiInjection;
   /* eslint-enable no-var */
-}
-declare module "ofetch" {
-  interface FetchOptions {
-    config?: _FetchOptions;
-  }
 }
 
 declare module "#app" {

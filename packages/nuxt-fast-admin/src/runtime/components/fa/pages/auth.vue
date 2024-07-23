@@ -132,7 +132,6 @@ import {
 import { computedEager } from "@ucstu/nuxt-fast-utils/exports";
 import defu from "defu";
 import type { FormInst, FormRules } from "naive-ui";
-import { FetchError } from "ofetch";
 import { configKey } from "../../../config";
 
 defineOptions({
@@ -217,7 +216,7 @@ async function submitForm() {
       options,
     );
   } catch (error) {
-    if (error instanceof FetchError) {
+    if (error instanceof Error) {
       handleError(error);
     }
   }

@@ -19,7 +19,7 @@ export const configs: ModuleConfigDefaults = {
 
 export function initModule(
   _options: ModuleOptions,
-  nuxt: Nuxt
+  nuxt: Nuxt,
 ): ModuleOptionsDefaults {
   const options = _options as ModulePublicRuntimeConfig[typeof configKey];
   const { ssr } = nuxt.options;

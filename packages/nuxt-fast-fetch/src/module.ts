@@ -12,6 +12,7 @@ import {
 import { addModuleTypeTemplate } from "@ucstu/nuxt-fast-utils/utils";
 import { genExport } from "knitwork";
 import { camelCase } from "lodash-es";
+import * as shelljs from "shelljs";
 import { setupDevToolsUI } from "./devtools";
 import {
   configKey,
@@ -89,14 +90,14 @@ export default defineNuxtModule<ModuleOptions>({
       config: Pick<
         UserConfig,
         "input" | "schemas" | "services" | "types" | "client"
-      > = options.clients[name],
+      > = options.clients[name]
     ) {
       const input =
         config.input instanceof Object
           ? config.input
           : isFileSystemPath(config.input)
-            ? resolve(nuxt.options.rootDir, config.input)
-            : config.input;
+          ? resolve(nuxt.options.rootDir, config.input)
+          : config.input;
       const output = resolve(nuxt.options.buildDir, "fast-fetch", name);
 
       return {
@@ -112,7 +113,7 @@ export default defineNuxtModule<ModuleOptions>({
                   : config.client.name,
             }
           : undefined,
-      };
+      } satisfies UserConfig;
     }
 
     if (nuxt.options.devtools) {
@@ -134,6 +135,7 @@ export default defineNuxtModule<ModuleOptions>({
           async refreshDocument(name) {
             const config = fillConfig(name);
             try {
+              shelljs.rm("-rf", config.output);
               await createClient(config);
             } catch (e) {
               console.error(`Failed to refresh document ${name}`, e);
@@ -158,6 +160,7 @@ export default defineNuxtModule<ModuleOptions>({
         from: output,
       });
       try {
+        shelljs.rm("-rf", output);
         await createClient(config);
       } catch (e) {
         console.error(`Failed to create client ${name}`, e);
@@ -166,7 +169,7 @@ export default defineNuxtModule<ModuleOptions>({
 
     nuxt.options.alias["#fast-fetch"] = resolve(
       nuxt.options.buildDir,
-      "fast-fetch",
+      "fast-fetch"
     );
     addTemplate({
       filename: resolve(nuxt.options.buildDir, "fast-fetch/index.ts"),
@@ -174,10 +177,40 @@ export default defineNuxtModule<ModuleOptions>({
         return Object.keys(options.clients)
           .map(
             (name) =>
-              `// @ts-ignore\n${genExport("./" + name, {
-                name: "*",
-                as: `$${camelCase(name)}`,
-              })}`,
+              `// @ts-ignore
+${genExport("./" + name, {
+  name: "*",
+  as: `$${camelCase(name)}`,
+})}`
+          )
+          .join("\n");
+      },
+      write: true,
+    });
+    nuxt.options.alias["#fast-fetch-core"] = resolve(
+      nuxt.options.buildDir,
+      "fast-fetch/core"
+    );
+    addTemplate({
+      filename: resolve(nuxt.options.buildDir, "fast-fetch/core.ts"),
+      getContents() {
+        return Object.keys(options.clients)
+          .map(
+            (name) =>
+              `// @ts-ignore
+${
+  ["@hey-api/client-axios", "@hey-api/client-fetch"].includes(
+    options.clients[name].client!
+  )
+    ? `${genExport("./" + name + "/core", {
+        name: "*",
+        as: `$${camelCase(name)}`,
+      })}`
+    : `${genExport("./" + name + "/core/OpenAPI", {
+        name: "*",
+        as: `$${camelCase(name)}`,
+      })}`
+}`
           )
           .join("\n");
       },

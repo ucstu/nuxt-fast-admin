@@ -2,6 +2,15 @@ import type { Options } from "@hey-api/client-fetch";
 import type { UserConfig } from "@hey-api/openapi-ts";
 import type { AxiosResponse, InternalAxiosRequestConfig } from "axios";
 
+type Client =
+  | "@hey-api/client-axios"
+  | "@hey-api/client-fetch"
+  | "angular"
+  | "axios"
+  | "fetch"
+  | "node"
+  | "xhr";
+
 export interface ModuleOptions {
   clients?: {
     [key: string]: Pick<
@@ -12,6 +21,10 @@ export interface ModuleOptions {
        * The base URL of the client.
        */
       baseUrl?: string;
+      /**
+       * The type of client to use.
+       */
+      client?: Client;
     };
   };
 }
@@ -27,19 +40,19 @@ interface LegacyRequestOptions {
   request: RequestInit;
 }
 
-interface FetchRequestOptions {
-  type: "fetch";
+interface ClientFetchRequestOptions {
+  type: "client-fetch";
   request: Request;
   options: Options;
 }
 
-interface AxiosRequestOptions {
-  type: "axios";
+interface ClientAxiosRequestOptions {
+  type: "client-axios";
   request: InternalAxiosRequestConfig<any>;
 }
 
-interface AxiosRequestErrorOptions {
-  type: "axios";
+interface ClientAxiosRequestErrorOptions {
+  type: "client-axios";
   error: any;
 }
 
@@ -48,20 +61,20 @@ interface LegacyResponseOptions {
   response: Response;
 }
 
-interface FetchResponseOptions {
-  type: "fetch";
+interface ClientFetchResponseOptions {
+  type: "client-fetch";
   request: Request;
   response: Response;
   options: Options;
 }
 
-interface AxiosResponseOptions {
-  type: "axios";
+interface ClientAxiosResponseOptions {
+  type: "client-axios";
   response: AxiosResponse<any, any>;
 }
 
-interface AxiosResponseErrorOptions {
-  type: "axios";
+interface ClientAxiosResponseErrorOptions {
+  type: "client-axios";
   error: any;
 }
 
@@ -70,16 +83,16 @@ export interface ModuleRuntimeHooks {
     name: string,
     options:
       | LegacyRequestOptions
-      | FetchRequestOptions
-      | AxiosRequestOptions
-      | AxiosRequestErrorOptions,
+      | ClientFetchRequestOptions
+      | ClientAxiosRequestOptions
+      | ClientAxiosRequestErrorOptions,
   ) => void;
   "fast-fetch:response": (
     name: string,
     options:
       | LegacyResponseOptions
-      | FetchResponseOptions
-      | AxiosResponseOptions
-      | AxiosResponseErrorOptions,
+      | ClientFetchResponseOptions
+      | ClientAxiosResponseOptions
+      | ClientAxiosResponseErrorOptions,
   ) => void;
 }

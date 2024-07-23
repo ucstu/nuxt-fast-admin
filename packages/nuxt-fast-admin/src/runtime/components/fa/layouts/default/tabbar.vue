@@ -89,6 +89,7 @@ const histories = useNavHistories();
 const { close, closeAll, closeOthers } = histories;
 const { showPage, refreshPage, pageFullscreen } = useDefaultLayoutStore()!;
 const tabbarConfig = useModuleConfig(configKey, "layouts.default.tabbar");
+const navConfig = useModuleConfig("fastNav");
 
 async function closeTab(fullPath: string) {
   await close(fullPath);
@@ -101,7 +102,7 @@ async function openTab(fullPath: string) {
 const closeable = computedEager(
   () =>
     histories.value.length > 1 ||
-    !toEqual(histories.current?.to, histories.value[0]?.to),
+    !toEqual(navConfig.value.home, histories.value[0]?.to),
 );
 
 const options: DropdownOption[] = [

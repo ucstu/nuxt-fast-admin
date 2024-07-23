@@ -48,7 +48,7 @@ export default defineNuxtModule<ModuleOptions>({
     const options = initModule(_options, nuxt);
     options.modules ??= [];
     options.modules.push(
-      ...nuxt.options._installedModules.map((m) => m.meta.name),
+      ...nuxt.options._installedModules.map((m) => m.meta.name)
     );
 
     addModuleTypeTemplate({
@@ -140,6 +140,15 @@ export default defineNuxtModule<ModuleOptions>({
           });
         }
       }
+    }
+
+    // 如果安装了 fast-fetch 模块
+    if (options.modules.includes("@ucstu/nuxt-fast-fetch")) {
+      // 添加 fetch 插件
+      addPlugin({
+        name: `${name}:fetch`,
+        src: resolve("./runtime/plugins/fetch"),
+      });
     }
 
     // 如果安装了 amis 模块
@@ -234,7 +243,7 @@ export default defineNuxtModule<ModuleOptions>({
 
     addImportsSources({
       from: resolve("./runtime/utils"),
-      imports: ["isFetchError", "handleError"],
+      imports: ["handleError"],
     });
   },
 });
