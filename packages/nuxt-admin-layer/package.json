@@ -13,6 +13,7 @@
     "build": "nuxt build .playground",
     "generate": "nuxt generate .playground",
     "preview": "nuxt preview .playground",
+    "release": "pnpm run lint && pnpm publish",
     "lint": "eslint ."
   },
   "dependencies": {
