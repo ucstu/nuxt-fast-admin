@@ -3,11 +3,15 @@
 </template>
 
 <script setup lang="ts">
+const { $petStore } = useNuxtApp();
+
 const options = defineCrudOptions({
   request: {
     async pageRequest() {
-      return await $petStore.findPetsByStatus({
-        status: "available1",
+      return await $petStore("/pet/findByStatus", {
+        query: {
+          status: "available1",
+        },
       });
     },
     transformRes({ res }) {

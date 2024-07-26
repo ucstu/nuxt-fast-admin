@@ -61,17 +61,28 @@ export default defineNuxtModule<ModuleOptions>({
           }
         }
       });
-    }
-    const transpile = [
-      "@ant-design/icons-vue",
-      "@fast-crud/fast-crud",
-      "@fast-crud/fast-extends",
-      "@fast-crud/ui-interface",
-      `@fast-crud/ui-${options.framework}`,
-    ];
-    for (const item of transpile) {
-      if (!nuxt.options.build.transpile.includes(item)) {
-        nuxt.options.build.transpile.push(item);
+      const transpile = [
+        "@fast-crud/fast-crud",
+        "@fast-crud/fast-extends",
+        "@fast-crud/ui-interface",
+        `@fast-crud/ui-${options.framework}`,
+      ];
+      for (const item of transpile) {
+        if (!nuxt.options.build.transpile.includes(item)) {
+          nuxt.options.build.transpile.push(item);
+        }
+      }
+    } else {
+      const transpile = [
+        "@fast-crud/fast-crud",
+        "@fast-crud/fast-extends",
+        "@fast-crud/ui-interface",
+        `@fast-crud/ui-${options.framework}`,
+      ];
+      for (const item of transpile) {
+        if (!nuxt.options.build.transpile.includes(item)) {
+          nuxt.options.build.transpile.push(item);
+        }
       }
     }
 
@@ -141,6 +152,7 @@ export default defineNuxtModule<ModuleOptions>({
 
     addComponent({
       name: "FcCrud",
+      mode: "client",
       filePath: resolve("./runtime/components/crud.vue"),
     });
 

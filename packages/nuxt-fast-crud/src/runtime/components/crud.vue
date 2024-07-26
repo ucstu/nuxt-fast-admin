@@ -99,7 +99,11 @@ if (
   props.initFetch === true ||
   (props.initFetch === "auto" && options.value.request?.pageRequest)
 ) {
-  await crudExpose.doRefresh();
+  try {
+    await crudExpose.doRefresh();
+  } catch (error) {
+    /* empty */
+  }
 }
 
 watch(options, resetCrudOptions);

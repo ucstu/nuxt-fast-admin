@@ -1,6 +1,6 @@
 {
   "name": "@ucstu/nuxt-fast-auth",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "description": "Nuxt fast auth module",
   "homepage": "https://github.com/ucstu/nuxt-fast-admin/tree/master/packages/nuxt-fast-auth#readme",
   "repository": "https://github.com/ucstu/nuxt-fast-admin/tree/master/packages/nuxt-fast-auth",
@@ -43,11 +43,13 @@
     "@nuxt/module-builder": "^0.8.1",
     "@nuxt/schema": "^3.12.4",
     "@nuxt/test-utils": "^3.13.1",
-    "@types/node": "^20.14.11",
+    "@types/node": "^20.14.12",
     "changelogen": "^0.5.5",
     "eslint": "^9.7.0",
     "nuxt": "^3.12.4",
-    "vitest": "^2.0.3"
+    "typescript": "latest",
+    "vitest": "^2.0.4",
+    "vue-tsc": "^2.0.28"
   },
   "publishConfig": {
     "access": "public"

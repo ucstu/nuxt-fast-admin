@@ -7,11 +7,12 @@ export default defineNuxtConfig({
     "../src/module",
   ],
   devtools: { enabled: true },
-  fastFetch: {
+  openFetch: {
+    disableNuxtPlugin: true,
     clients: {
       petStore: {
-        baseUrl: "https://petstore3.swagger.io/api/v3",
-        input: "https://petstore3.swagger.io/api/v3/openapi.json",
+        baseURL: "https://petstore3.swagger.io/api/v3",
+        schema: "https://petstore3.swagger.io/api/v3/openapi.json",
       },
     },
   },

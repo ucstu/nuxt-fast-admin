@@ -10,7 +10,7 @@ export default defineAppConfig({
       },
     },
     fetch: {
-      // message: "message",
+      message: "message",
     },
   },
   fastNav: {

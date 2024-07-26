@@ -3,7 +3,7 @@
   "version": "2.0.1",
   "private": true,
   "scripts": {
-    "dev": "pnpm run --filter @ucstu/nuxt-fast-admin dev",
+    "dev": "pnpm run --filter @ucstu/nuxt-admin-layer dev",
     "dev:doc": "pnpm run --filter @ucstu/nuxt-fast-admin-doc dev",
     "prepare": "pnpm run --no-bail --filter \"./packages/**\" dev:prepare",
     "prepack": "pnpm run --no-bail --filter \"./packages/**\" prepack",

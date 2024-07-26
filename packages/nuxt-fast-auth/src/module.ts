@@ -50,11 +50,12 @@ export default defineNuxtModule<ModuleOptions>({
           }
         }
       });
-    }
-    const transpile = ["minimatch"];
-    for (const item of transpile) {
-      if (!nuxt.options.build.transpile.includes(item)) {
-        nuxt.options.build.transpile.push(item);
+    } else {
+      const transpile = ["minimatch"];
+      for (const item of transpile) {
+        if (!nuxt.options.build.transpile.includes(item)) {
+          nuxt.options.build.transpile.push(item);
+        }
       }
     }
 

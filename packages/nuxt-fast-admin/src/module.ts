@@ -134,14 +134,15 @@ export default defineNuxtModule<ModuleOptions>({
 
     // 如果安装了 open-fetch 模块
     if (options.modules.includes("nuxt-open-fetch")) {
-      (nuxt.options as any).openFetch ??= {};
-      (nuxt.options as any).openFetch.disableNuxtPlugin = true;
-      (nuxt.options as any).openFetch.disableNitroPlugin = true;
-      // 添加 fetch 插件
-      addPlugin({
-        name: `${name}:fetch`,
-        src: resolve("./runtime/plugins/fetch"),
-      });
+      // 如果禁用了 open-fetch 插件，则添加 admin-fetch 插件
+      // @ts-ignore
+      if (nuxt.options.openFetch?.disableNuxtPlugin) {
+        // 添加 fetch 插件
+        addPlugin({
+          name: `${name}:fetch`,
+          src: resolve("./runtime/plugins/fetch"),
+        });
+      }
     }
 
     // 如果安装了 amis 模块

@@ -11,10 +11,11 @@ import type {
   ModuleOptions,
   ModuleOptionsDefaults,
   ModulePublicRuntimeConfig,
+  FetchOptions as _FetchOptions,
 } from "./types";
 
 export const name = "@ucstu/nuxt-fast-admin";
-export const version = "2.0.3";
+export const version = "2.0.4";
 export const configKey = "fastAdmin";
 
 export const defaults: ModuleOptionsDefaults = {
@@ -105,7 +106,7 @@ export const configs: ModuleConfigDefaults = {
 
 export function initModule(
   _options: ModuleOptions,
-  nuxt: Nuxt
+  nuxt: Nuxt,
 ): ModulePublicRuntimeConfig[typeof configKey] {
   const options = _options as ModulePublicRuntimeConfig[typeof configKey];
 
@@ -137,6 +138,12 @@ declare global {
   var $modal: ModalApiInjection;
   var $notification: NotificationApiInjection;
   /* eslint-enable no-var */
+}
+
+declare module "ofetch" {
+  interface FetchOptions {
+    options?: _FetchOptions;
+  }
 }
 
 declare module "#app" {

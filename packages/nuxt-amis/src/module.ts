@@ -56,11 +56,12 @@ export default defineNuxtModule<ModuleOptions>({
           }
         }
       });
-    }
-    const transpile = ["amis", "amis-editor", "veaury"];
-    for (const item of transpile) {
-      if (!nuxt.options.build.transpile.includes(item)) {
-        nuxt.options.build.transpile.push(item);
+    } else {
+      const transpile = ["amis", "amis-editor", "veaury"];
+      for (const item of transpile) {
+        if (!nuxt.options.build.transpile.includes(item)) {
+          nuxt.options.build.transpile.push(item);
+        }
       }
     }
 
