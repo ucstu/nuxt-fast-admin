@@ -25,5 +25,8 @@
     "nuxt": "^3.12.4",
     "typescript": "^5.5.4",
     "vue": "latest"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
