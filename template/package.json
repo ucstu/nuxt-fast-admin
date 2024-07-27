@@ -10,7 +10,7 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@ucstu/nuxt-admin-layer": "2.0.4",
+    "@ucstu/nuxt-admin-layer": "2.0.5",
     "nuxt": "^3.12.4"
   }
 }

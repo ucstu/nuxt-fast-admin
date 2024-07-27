@@ -45,7 +45,7 @@ export default defineNuxtModule<ModuleOptions>({
     const { resolve } = createResolver(import.meta.url);
 
     if (nuxt.options.dev) {
-      const optimizeDeps = ["naive-ui"];
+      const optimizeDeps = ["naive-ui", "camelcase"];
       extendViteConfig((config) => {
         config.optimizeDeps ||= {};
         config.optimizeDeps.include ||= [];

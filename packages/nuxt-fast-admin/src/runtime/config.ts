@@ -15,7 +15,7 @@ import type {
 } from "./types";
 
 export const name = "@ucstu/nuxt-fast-admin";
-export const version = "2.0.4";
+export const version = "2.0.5";
 export const configKey = "fastAdmin";
 
 export const defaults: ModuleOptionsDefaults = {
