@@ -258,7 +258,3 @@ export interface ErrorOptions {
   propagate?: boolean;
 }
 // #endregion
-
-export interface CrudApi {
-  [key: string]: object;
-}

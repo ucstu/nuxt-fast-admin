@@ -20,12 +20,6 @@ import {
 } from "./runtime/config";
 import type { ModuleOptions } from "./runtime/types";
 
-export type {
-  ModuleOptions,
-  ModulePublicRuntimeConfig,
-  ModuleRuntimeHooks,
-} from "./runtime/types/module";
-
 export default defineNuxtModule<ModuleOptions>({
   meta: {
     name,
@@ -80,7 +74,7 @@ ${genAugmentation(pageModule, {
       write: true,
       filename: "types/ucstu/nuxt-fast-nav/menu-key.ts",
       getContents({ app }) {
-        const result: Record<string, any> = {};
+        const result: Record<string, unknown> = {};
         const pages = app.pages || [];
         for (const page of pages) {
           if (page.children?.length) {
@@ -94,7 +88,7 @@ ${genAugmentation(pageModule, {
               if (!parent[_path]) {
                 parent[_path] = {};
               }
-              parent = parent[_path];
+              parent = parent[_path] as Record<string, unknown>;
             }
           }
         }

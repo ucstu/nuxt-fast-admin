@@ -10,7 +10,7 @@ export function installFsatCrud(nuxtApp: NuxtApp = useNuxtApp()) {
   if (nuxtApp.$i18n instanceof Object && nuxtApp.$i18n !== null) {
     let hasZh = false;
     let hasEn = false;
-    const i18n = nuxtApp.$i18n as any;
+    const i18n = nuxtApp.$i18n as object;
     if ("availableLocales" in i18n && Array.isArray(i18n.availableLocales)) {
       for (const locale of i18n.availableLocales) {
         if (locale.startsWith("zh")) {

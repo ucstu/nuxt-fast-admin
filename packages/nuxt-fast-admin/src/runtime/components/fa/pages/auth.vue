@@ -184,7 +184,7 @@ const authFormRules = defineModel<FormRules>("authFormRules", {
           trigger: "blur",
         },
         {
-          validator: (rule: any, value: string) => {
+          validator: (rule: unknown, value: string) => {
             if (value !== authForm.value.password) {
               return Promise.reject("两次输入的密码不一致，请重新输入");
             }
@@ -200,6 +200,7 @@ const authFormRules = defineModel<FormRules>("authFormRules", {
 async function submitForm() {
   try {
     await authFormRef.value?.validate();
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
     return;
   }

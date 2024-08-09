@@ -49,7 +49,7 @@ const options = defineCrudOptions({
     photoUrls: {
       title: "Photo",
       width: "200px",
-      render({ value }: any) {
+      render({ value }) {
         return h("img", {
           attrs: {
             src: value[0],
@@ -62,8 +62,8 @@ const options = defineCrudOptions({
     tags: {
       title: "Tags",
       width: "200px",
-      render({ value }: any) {
-        return h("div", value.map((tag: any) => tag.name).join(", "));
+      render({ value }) {
+        return h("div", value.map((tag) => tag.name).join(", "));
       },
     },
     status: {

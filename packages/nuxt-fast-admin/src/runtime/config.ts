@@ -1,12 +1,5 @@
 import type { Nuxt } from "@nuxt/schema";
-import type { DialogApiInjection } from "naive-ui/lib/dialog/src/DialogProvider";
-import type { LoadingBarApiInjection } from "naive-ui/lib/loading-bar/src/LoadingBarProvider";
-import type { MessageApiInjection } from "naive-ui/lib/message/src/MessageProvider";
-import type { ModalApiInjection } from "naive-ui/lib/modal/src/ModalProvider";
-import type { NotificationApiInjection } from "naive-ui/lib/notification/src/NotificationProvider";
 import type {
-  ErrorLevel,
-  ModuleConfig,
   ModuleConfigDefaults,
   ModuleOptions,
   ModuleOptionsDefaults,
@@ -15,7 +8,7 @@ import type {
 } from "./types";
 
 export const name = "@ucstu/nuxt-fast-admin";
-export const version = "2.0.5";
+export const version = "2.0.6";
 export const configKey = "fastAdmin";
 
 export const defaults: ModuleOptionsDefaults = {
@@ -106,61 +99,13 @@ export const configs: ModuleConfigDefaults = {
 
 export function initModule(
   _options: ModuleOptions,
-  nuxt: Nuxt,
+  nuxt: Nuxt
 ): ModulePublicRuntimeConfig[typeof configKey] {
   const options = _options as ModulePublicRuntimeConfig[typeof configKey];
 
-  nuxt.options.runtimeConfig.public[configKey] = options as any;
+  nuxt.options.runtimeConfig.public[configKey] =
+    options as (typeof nuxt.options.runtimeConfig.public)[typeof configKey];
   nuxt.options.appConfig[configKey] = configs;
 
   return options;
-}
-
-declare module "@nuxt/schema" {
-  interface CustomAppConfig {
-    // @ts-ignore
-    fastAdmin?: ModuleConfig;
-  }
-}
-
-declare module "@ucstu/nuxt-fast-utils/types" {
-  interface ModuleConfigs {
-    // @ts-ignore
-    fastAdmin: ModuleConfigDefaults;
-  }
-}
-
-declare global {
-  /* eslint-disable no-var */
-  var $dialog: DialogApiInjection;
-  var $loadingBar: LoadingBarApiInjection;
-  var $message: MessageApiInjection;
-  var $modal: ModalApiInjection;
-  var $notification: NotificationApiInjection;
-  /* eslint-enable no-var */
-}
-
-declare module "ofetch" {
-  interface FetchOptions {
-    options?: _FetchOptions;
-  }
-}
-
-declare module "#app" {
-  interface NuxtError {
-    /**
-     * 错误数据
-     */
-    data?: {
-      /**
-       * 错误等级
-       * @default error
-       */
-      level?: ErrorLevel;
-      /**
-       * 错误详情
-       */
-      detail?: string;
-    };
-  }
 }

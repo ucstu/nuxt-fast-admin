@@ -19,12 +19,6 @@ import {
 } from "./runtime/config";
 import type { ModuleOptions } from "./runtime/types";
 
-export type {
-  ModuleOptions,
-  ModulePublicRuntimeConfig,
-  ModuleRuntimeHooks,
-} from "./runtime/types/module";
-
 export default defineNuxtModule<ModuleOptions>({
   meta: {
     name,
@@ -48,7 +42,7 @@ export default defineNuxtModule<ModuleOptions>({
     const options = initModule(_options, nuxt);
     options.modules ??= [];
     options.modules.push(
-      ...nuxt.options._installedModules.map((m) => m.meta.name)
+      ...nuxt.options._installedModules.map((m) => m.meta.name),
     );
 
     addModuleTypeTemplate({
@@ -135,8 +129,12 @@ export default defineNuxtModule<ModuleOptions>({
     // 如果安装了 open-fetch 模块
     if (options.modules.includes("nuxt-open-fetch")) {
       // 如果禁用了 open-fetch 插件，则添加 admin-fetch 插件
-      // @ts-ignore
-      if (nuxt.options.openFetch?.disableNuxtPlugin) {
+      if (
+        "openFetch" in nuxt.options &&
+        nuxt.options.openFetch instanceof Object &&
+        "disableNuxtPlugin" in nuxt.options.openFetch &&
+        nuxt.options.openFetch.disableNuxtPlugin
+      ) {
         // 添加 fetch 插件
         addPlugin({
           name: `${name}:fetch`,

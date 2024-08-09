@@ -3,7 +3,7 @@
     animated
     type="card"
     size="small"
-    :value="getToPath($route)"
+    :value="getToPath(route)"
     :closable="closeable"
     class="fast-admin-layout-default-tabbar"
     @close="closeTab"
@@ -75,16 +75,18 @@ import {
   toEqual,
   useModuleConfig,
   useNavHistories,
+  useRoute,
 } from "#imports";
 import { computedEager } from "@ucstu/nuxt-fast-utils/exports";
 import type { DropdownOption } from "naive-ui";
+import { useDefaultLayoutStore } from "../../../../composables/store";
 import { configKey } from "../../../../config";
-import { useDefaultLayoutStore } from "./store";
 
 defineOptions({
   name: "FaLayoutesDefaultTabbar",
 });
 
+const route = useRoute();
 const histories = useNavHistories();
 const { close, closeAll, closeOthers } = histories;
 const { showPage, refreshPage, pageFullscreen } = useDefaultLayoutStore()!;

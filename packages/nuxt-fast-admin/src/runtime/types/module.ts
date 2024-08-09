@@ -1,8 +1,13 @@
+import type { OpenFetchClient } from "#imports";
 import type { HookResult } from "@nuxt/schema";
-import type { RequiredDeep } from "@ucstu/nuxt-fast-utils/exports";
+import type { Schema } from "@ucstu/nuxt-amis/exports";
+import type { CrudOptions } from "@ucstu/nuxt-fast-crud/exports";
+import type {
+  RequiredDeep,
+  UnknownRecord,
+} from "@ucstu/nuxt-fast-utils/exports";
 import type { DropdownOption } from "@ucstu/nuxt-naive-ui/exports";
 import type { ShallowRef } from "vue-demi";
-import type { CrudApi } from "./base";
 
 export interface ModuleOptions {
   /**
@@ -75,7 +80,7 @@ export interface ModuleRuntimeHooks {
    */
   "fast-admin:layout-default-header-dropdown-select": (
     value: string | number,
-    option: DropdownOption,
+    option: DropdownOption
   ) => HookResult;
   /**
    * 改变认证类型
@@ -85,15 +90,32 @@ export interface ModuleRuntimeHooks {
    * 获取 CRUD 配置
    */
   "fast-admin:get-crud-options": (
-    api: CrudApi | undefined,
+    api: OpenFetchClient<{
+      [key: string]: {
+        parameters: {
+          query?: UnknownRecord;
+          header?: UnknownRecord;
+          path?: UnknownRecord;
+          cookie?: UnknownRecord;
+        };
+        get: UnknownRecord;
+        put: UnknownRecord;
+        post: UnknownRecord;
+        delete: UnknownRecord;
+        options: UnknownRecord;
+        head: UnknownRecord;
+        patch: UnknownRecord;
+        trace: UnknownRecord;
+      };
+    }>,
     resource: string,
-    result: ShallowRef<any>,
+    result: ShallowRef<CrudOptions<unknown>>
   ) => HookResult;
   /**
    * 获取 Amis 配置
    */
   "fast-admin:get-amis-options": (
     key: string,
-    result: ShallowRef<any>,
+    result: ShallowRef<Schema>
   ) => HookResult;
 }

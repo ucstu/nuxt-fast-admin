@@ -49,8 +49,8 @@
 import type { NLayoutSider } from "#components";
 import { ref, useModuleConfig } from "#imports";
 import { useDraggable, useElementSize } from "@ucstu/nuxt-fast-utils/exports";
+import { useProvideDefaultLayoutStore } from "../../../../composables/store";
 import { configKey } from "../../../../config";
-import { useProvideDefaultLayoutStore } from "./store";
 
 const { content, showPage } = useProvideDefaultLayoutStore();
 const layoutConfig = useModuleConfig(configKey, "layouts.default");

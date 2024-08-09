@@ -34,7 +34,7 @@ export const useLocalAuth = createGlobalState(function <
     try {
       _status.value.signIn = true;
       const result = shallowRef<string | LocalSignInResult | undefined>();
-      await nuxtApp.callHook("fast-auth:sign-in", form, result as any);
+      await nuxtApp.callHook("fast-auth:sign-in", form, result);
       if (result.value) {
         if (typeof result.value === "string") {
           _token.value = {

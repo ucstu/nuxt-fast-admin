@@ -99,6 +99,7 @@ export interface SignUpOptions extends SignInOptions {
 /**
  * 退出登录选项
  */
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface SignOutOptions extends NavigateOptions {}
 
 /**
@@ -223,7 +224,6 @@ export const useAuth = createGlobalState(function <
 
     try {
       _status.value.signOut = true;
-      // @ts-ignore
       await nuxtApp.callHook("fast-auth:sign-out", _user, _token);
       if (navigate) {
         await navigateTo(

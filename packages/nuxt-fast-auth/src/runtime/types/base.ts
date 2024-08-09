@@ -5,6 +5,7 @@ import type {
   RequiredDeep,
 } from "@ucstu/nuxt-fast-utils/exports";
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface FastAuthOptions {}
 
 export interface FastAuthExtra {
@@ -121,14 +122,14 @@ export interface FastAuthMeta {
 export interface FastAuthForm {
   username?: string;
   password?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 /**
  * 认证用户
  */
 export interface FastAuthUser {
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 /**

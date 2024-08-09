@@ -2,21 +2,22 @@ import { defineNuxtPlugin, type NuxtApp } from "#app";
 import {
   createOpenFetch,
   handleError,
-  useAuth,
   useModuleConfig,
   useRequestFetch,
   useRuntimeConfig,
-  type Ref,
 } from "#imports";
 import defu from "defu";
 import { FetchError, type FetchOptions } from "ofetch";
 import { configKey } from "../config";
+import { _token } from "../utils";
 
 export default defineNuxtPlugin({
   enforce: "pre",
   setup(nuxtApp) {
-    const { token } = useAuth() as { token: Ref<{ value: string }> };
-    const clients = useRuntimeConfig().public.openFetch;
+    const clients = useRuntimeConfig().public.openFetch as Record<
+      string,
+      FetchOptions
+    >;
     const localFetch = useRequestFetch();
     const adminConfig = useModuleConfig(configKey);
 
@@ -30,10 +31,10 @@ export default defineNuxtPlugin({
                 localOptions,
                 options as FetchOptions,
                 {
-                  headers: token.value.value
+                  headers: _token.value?.value
                     ? {
                         [adminConfig.value.fetch.token.name]:
-                          `${adminConfig.value.fetch.token.type} ${token.value.value}`,
+                          `${adminConfig.value.fetch.token.type} ${_token.value.value}`,
                       }
                     : undefined,
                   onRequestError(ctx) {

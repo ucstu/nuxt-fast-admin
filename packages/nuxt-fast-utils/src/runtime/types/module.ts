@@ -2,6 +2,7 @@ import type { RouteLocationRaw } from "#vue-router";
 import type { RequiredDeep } from "type-fest";
 import type { ShallowRef } from "vue-demi";
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface ModuleOptions {}
 
 export type ModuleOptionsDefaults = RequiredDeep<ModuleOptions>;

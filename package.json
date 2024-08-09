@@ -10,7 +10,7 @@
     "release": "pnpm run --no-bail --filter \"./packages/**\" release",
     "lint": "pnpm run --no-bail --filter \"./packages/**\" lint",
     "test": "pnpm run --no-bail --filter \"./packages/**\" test",
-    "check": "pnpm --no-bail --filter \"./packages/**\" exec tsc --noEmit",
+    "test:types": "pnpm run --no-bail --filter \"./packages/**\" test:types",
     "format": "pnpx prettier --write .",
     "clean": "pnpx shx rm -rf ./**/dist & pnpx shx rm -rf ./**/.nuxt & pnpx shx rm -rf ./**/node_modules"
   },

@@ -20,6 +20,7 @@ export class H3CookieStorage extends CookieStorage {
         event,
         encodeURIComponent(key),
         encodeURIComponent(data),
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-expect-error
         defu(options, this._defaultOptions),
       );
@@ -48,6 +49,7 @@ export class H3CookieStorage extends CookieStorage {
       return deleteCookie(
         event,
         encodeURIComponent(key),
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-expect-error
         defu(cookieOptions, this._defaultOptions),
       );

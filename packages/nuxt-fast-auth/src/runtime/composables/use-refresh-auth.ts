@@ -124,6 +124,7 @@ export const useRefreshAuth = createGlobalState(function <
         "fast-auth:sign-out",
         _user,
         _token,
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         _refreshToken,
       );
@@ -170,7 +171,9 @@ export const useRefreshAuth = createGlobalState(function <
       _status.value.refresh = true;
       const result = shallowRef<RefreshSignInResult | undefined>();
       await nuxtApp.callHook(
-        "fast-auth:refresh-token" as any,
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        "fast-auth:refresh-token",
         token,
         refreshToken,
         result,

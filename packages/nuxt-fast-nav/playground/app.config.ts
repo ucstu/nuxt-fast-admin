@@ -1,5 +1,3 @@
-import { defineAppConfig } from "#imports";
-
 export default defineAppConfig({
   fastNav: {
     menus: [

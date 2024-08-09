@@ -1,5 +1,5 @@
 import type { RouteLocationNormalizedGeneric } from "#vue-router";
-import { type RequiredDeep } from "@ucstu/nuxt-fast-utils/exports";
+import type { RequiredDeep } from "@ucstu/nuxt-fast-utils/exports";
 import type { ShallowRef } from "vue-demi";
 import type {
   FastNavHistory,

@@ -34,11 +34,12 @@
               <template #trigger>
                 <n-flex align="center" style="cursor: pointer">
                   <v-node :node="menu.icon" />
-                  <v-node :node="menu.label as string" />
+                  <!-- @vue-ignore -->
+                  <v-node :node="menu.label" />
                 </n-flex>
               </template>
               <n-menu
-                :value="getToPath($route)"
+                :value="getToPath(route)"
                 :options="menu.children"
                 :root-indent="16"
                 accordion
@@ -102,17 +103,19 @@ import {
   getToPath,
   h,
   reloadNuxtApp,
+  toRef,
   toRefDeep,
   useModuleConfig,
   useNaiveUiTheme,
   useNavMenus,
   useNavPages,
   useNuxtApp,
+  useRoute,
 } from "#imports";
 import { computedEager } from "@ucstu/nuxt-fast-utils/exports";
 import type { DropdownOption } from "@ucstu/nuxt-naive-ui/exports";
 import { configKey } from "../../../../config";
-import { useDefaultLayoutStore } from "./store";
+import { useDefaultLayoutStore } from "../../../../composables/store";
 
 defineOptions({
   name: "FaLayoutesDefaultHeader",
@@ -124,6 +127,7 @@ const ICON_MAP: Record<string, string> = {
   dark: "material-symbols:dark-mode",
 };
 
+const route = useRoute();
 const pages = useNavPages();
 const menus = useNavMenus();
 const menuConfig = useModuleConfig(configKey, "layouts.default.menu");
@@ -139,10 +143,10 @@ const breadcrumbs = computedEager(() => {
 });
 
 const themeConfig = useNaiveUiTheme();
-const naiveUiTheme = toRefDeep(themeConfig, "store");
+const naiveUiTheme = toRef(themeConfig, "store");
 function changeTheme() {
-  const index = Object.keys(ICON_MAP).indexOf(naiveUiTheme.value);
-  naiveUiTheme.value = Object.keys(ICON_MAP)[(index + 1) % 3];
+  const index = Object.keys(ICON_MAP).indexOf(themeConfig.store);
+  themeConfig.store = Object.keys(ICON_MAP)[(index + 1) % 3];
 }
 
 const dropdownOptions = computedEager(() => {

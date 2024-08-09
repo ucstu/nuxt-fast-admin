@@ -8,7 +8,8 @@ export default defineNuxtPlugin({
       result.value = getAuthPageFilled(origin, nuxtApp as NuxtApp);
     });
 
-    // @ts-expect-error
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     nuxtApp.hook("fast-auth:sign-out", async (user, token, refreshToken) => {
       if (user) user.value = undefined;
       if (token) token.value = {};

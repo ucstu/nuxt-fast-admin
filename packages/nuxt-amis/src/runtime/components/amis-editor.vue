@@ -1,9 +1,9 @@
 <template>
-  <editor v-bind="props" test="1212" />
+  <editor v-bind="props" />
 </template>
 
 <script lang="ts" setup>
-import type { RenderOptions, SchemaObject } from "amis";
+import type { RenderOptions, Schema, SchemaObject } from "amis";
 import {
   Editor as _Editor,
   type EditorManager,
@@ -27,7 +27,7 @@ const props = defineProps<{
   isSubEditor?: boolean;
   autoFocus?: boolean;
   className?: string;
-  schemas?: Array<any>;
+  schemas?: Array<Schema>;
   theme?: string;
   /** 工具栏模式 */
   toolbarMode?: "default" | "mini";
@@ -39,27 +39,27 @@ const props = defineProps<{
   i18nEnabled?: boolean;
   showCustomRenderersPanel?: boolean;
   amisDocHost?: string;
-  superEditorData?: any;
+  superEditorData?: unknown;
   withSuperDataSchema?: boolean;
   /** 当前 Editor 为 SubEditor 时触发的宿主节点 */
   hostManager?: EditorManager;
   hostNode?: EditorNodeType;
   dataBindingChange?: (
     value: string,
-    data: any,
+    data: unknown,
     manager?: EditorManager,
   ) => void;
   /**
    * Preview 预览前可以修改配置。
    * 比如把api地址替换成 proxy 地址。
    */
-  schemaFilter?: (schema: any, isPreview?: boolean) => any;
+  schemaFilter?: (schema: unknown, isPreview?: boolean) => unknown;
   amisEnv?: RenderOptions;
   /**
    * 上下文数据，设置后，面板和脚手架表单里面可以取到这些值。
    */
-  ctx?: any;
-  data?: any;
+  ctx?: unknown;
+  data?: unknown;
   /**
    * 是否禁用内置插件
    */
@@ -73,12 +73,12 @@ const props = defineProps<{
     | ((id: string, plugin: PluginClass) => boolean);
   plugins?: Array<
     | PluginClass
-    | [PluginClass, Record<string, any> | (() => Record<string, any>)]
+    | [PluginClass, Record<string, unknown> | (() => Record<string, unknown>)]
   >;
   /**
    * 传给预览器的其他属性
    */
-  previewProps?: any;
+  previewProps?: unknown;
   isHiddenProps?: (key: string) => boolean;
   /**
    * 事件动作面板相关配置
@@ -106,15 +106,15 @@ const props = defineProps<{
   onFormulaEditorOpen?: (
     node: EditorNodeType,
     manager: EditorManager,
-    ctx: Record<string, any>,
+    ctx: Record<string, unknown>,
     host?: {
       node?: EditorNodeType;
       manager?: EditorManager;
     },
     // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
   ) => Promise<void | boolean>;
-  getHostNodeDataSchema?: () => Promise<any>;
-  getAvaiableContextFields?: (node: EditorNodeType) => Promise<any>;
+  getHostNodeDataSchema?: () => Promise<unknown>;
+  getAvaiableContextFields?: (node: EditorNodeType) => Promise<unknown>;
 }>();
 const Editor = applyPureReactInVue(_Editor);
 </script>

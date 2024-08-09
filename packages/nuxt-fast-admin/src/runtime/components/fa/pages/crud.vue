@@ -5,10 +5,14 @@
 </template>
 
 <script lang="ts" setup>
-import { shallowRef, useNuxtApp, useRoute } from "#imports";
+import {
+  shallowRef,
+  useNuxtApp,
+  useRoute,
+  type OpenFetchClient,
+} from "#imports";
 import type { CrudOptions } from "@ucstu/nuxt-fast-crud/exports";
 import { useAsyncState } from "@ucstu/nuxt-fast-utils/exports";
-import type { CrudApi } from "~/src/runtime/types";
 
 defineOptions({
   name: "FaPagesCrud",
@@ -22,20 +26,20 @@ const props = defineProps<{
   /**
    * 覆盖及扩展 Crud 选项
    */
-  overrides?: Partial<CrudOptions<any>>;
+  overrides?: Partial<CrudOptions<unknown>>;
 }>();
 
 const route = useRoute();
 const nuxtApp = useNuxtApp();
 
 const { state: options } = useAsyncState(async () => {
-  const result = shallowRef<CrudOptions<any>>({});
+  const result = shallowRef<CrudOptions<unknown>>({});
   try {
     $loadingBar.start();
     await new Promise((resolve) => setTimeout(resolve, 1000));
     await nuxtApp.callHook(
       "fast-admin:get-crud-options",
-      nuxtApp[`$${[route.params.api].flat()[0]}`] as CrudApi,
+      nuxtApp[`$${[route.params.api].flat()[0]}`] as OpenFetchClient<unknown>,
       [route.params.resource].flat()[0],
       result,
     );

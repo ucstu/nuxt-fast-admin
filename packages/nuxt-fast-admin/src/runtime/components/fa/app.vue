@@ -76,7 +76,7 @@ const props = defineProps<{
 
 const adminConfig = useModuleConfig(configKey);
 
-const i18nConfig = useNaiveUiI18n("zh-CN");
+const i18nConfig = useNaiveUiI18n("zhCN");
 const themeConfig = useNaiveUiTheme();
 
 const config = computedEager(

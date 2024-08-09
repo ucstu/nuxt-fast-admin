@@ -19,12 +19,6 @@ import {
 } from "./runtime/config";
 import type { ModuleOptions } from "./runtime/types";
 
-export type {
-  ModuleOptions,
-  ModulePublicRuntimeConfig,
-  ModuleRuntimeHooks,
-} from "./runtime/types/module";
-
 export default defineNuxtModule<ModuleOptions>({
   meta: {
     name,

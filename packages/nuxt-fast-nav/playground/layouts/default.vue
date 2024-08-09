@@ -19,7 +19,6 @@
 
 <script setup lang="tsx">
 import { NuxtLink } from "#components";
-import { getToPath } from "#imports";
 import type { FastNavMenuFilled } from "../../src/runtime/types";
 
 const menus = useNavMenus();

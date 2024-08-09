@@ -11,7 +11,7 @@ interface AddModuleTypeTemplateOptions {
   /**
    * 模块选项
    */
-  options: any;
+  options: unknown;
   /**
    * 配置键
    */

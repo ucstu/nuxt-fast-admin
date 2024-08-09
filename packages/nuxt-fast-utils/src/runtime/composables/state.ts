@@ -3,13 +3,13 @@ import {
   computed,
   cookieStorage,
   customRef,
-  toValue,
   unref,
   useNuxtApp,
   watch,
 } from "#imports";
 import {
   computedEager,
+  toValue,
   tryOnScopeDispose,
   useStorage,
   type AnyFn,
@@ -38,7 +38,7 @@ export function createNuxtGlobalState<Fn extends AnyFn>(
   stateFactory: Fn,
   name: string = nanoid(),
 ): Fn {
-  return ((...args: any[]) => {
+  return ((...args: unknown[]) => {
     const nuxtApp = useNuxtApp();
     if (!nuxtApp[`$${name}`]) {
       const result = stateFactory(...args);
@@ -141,7 +141,7 @@ export function useNuxtStorage<T>(
   }
 
   return customRef((track, trigger) => {
-    let storageValue = useStorage(key, defaults, storageRef.value, options);
+    let storageValue = useStorage<T>(key, defaults, storageRef.value, options);
     watch(storageRef, (newStorage) => {
       if (newStorage instanceof H3CookieStorage) {
         nuxtApp.value ??= options.nuxtApp;
@@ -181,18 +181,18 @@ export function toRefDeep<
   });
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-types
+// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
 export function reactifyEager<T extends Function, K extends boolean = true>(
   fn: T,
   options?: ReactifyOptions<K>,
 ): Reactified<T, K> {
   const unrefFn = options?.computedGetter === false ? unref : toValue;
-  return function (this: any, ...args: any[]) {
+  return function (this: unknown, ...args: unknown[]) {
     return computedEager(() =>
       fn.apply(
         this,
         args.map((i) => unrefFn(i)),
       ),
     );
-  } as any;
+  } as Reactified<T, K>;
 }

@@ -1,6 +1,6 @@
 {
   "name": "@ucstu/nuxt-admin-layer",
-  "version": "2.0.5",
+  "version": "2.0.6",
   "description": "Nuxt admin layer",
   "homepage": "https://github.com/ucstu/nuxt-fast-admin/tree/master/packages/nuxt-admin#readme",
   "repository": "https://github.com/ucstu/nuxt-fast-admin/tree/master/packages/nuxt-admin",
@@ -14,14 +14,15 @@
     "generate": "nuxt generate .playground",
     "preview": "nuxt preview .playground",
     "release": "pnpm run lint && pnpm publish",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test:types": "vue-tsc --noEmit && cd .playground && vue-tsc --noEmit"
   },
   "dependencies": {
     "@ucstu/nuxt-fast-admin": "workspace:^"
   },
   "devDependencies": {
     "@nuxt/eslint": "latest",
-    "eslint": "^9.7.0",
+    "eslint": "^9.8.0",
     "nuxt": "^3.12.4",
     "typescript": "^5.5.4",
     "vue": "latest"
