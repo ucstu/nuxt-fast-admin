@@ -24,6 +24,7 @@
     "@nuxt/eslint": "latest",
     "eslint": "^9.8.0",
     "nuxt": "^3.12.4",
+    "spring-filter-query-builder": "^1.1.0",
     "typescript": "^5.5.4",
     "vue": "latest"
   },

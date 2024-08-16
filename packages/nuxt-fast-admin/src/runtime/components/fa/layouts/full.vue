@@ -1,6 +1,8 @@
 <template>
   <div class="fast-admin-layout-full">
-    <slot />
+    <suspense>
+      <slot />
+    </suspense>
     <n-back-top />
   </div>
 </template>

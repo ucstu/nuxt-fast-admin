@@ -45,7 +45,6 @@ export default defineNuxtPlugin({
         });
     });
     nuxtApp.hook("fast-nav:get-page", (origin, result) => {
-      if (origin.type !== "static") return;
       try {
         result.value ??= origin as FastNavPageFilled;
         result.merge(getNavPageFilled(result.value, nuxtApp as NuxtApp));
@@ -54,7 +53,7 @@ export default defineNuxtPlugin({
           `[fast-nav] 解析页面 `,
           origin,
           ` 时出错，该页面已被忽略`,
-          e,
+          e
         );
         result.remove();
       }

@@ -38,7 +38,9 @@
         bordered
         embedded
       >
-        <slot />
+        <suspense>
+          <slot />
+        </suspense>
         <n-back-top />
       </n-layout-content>
     </n-layout>

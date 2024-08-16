@@ -17,7 +17,7 @@
 <script setup lang="ts" generic="Res">
 import { useFs, watch } from "#imports";
 import type { CrudOptions } from "@ucstu/nuxt-fast-crud/exports";
-import { computedEager, type Paths } from "@ucstu/nuxt-fast-utils/exports";
+import type { Paths } from "@ucstu/nuxt-fast-utils/exports";
 import defu from "defu";
 import type {
   GlobalFormScope,
@@ -86,7 +86,7 @@ const slots = defineSlots<
   }
 >();
 
-const options = computedEager(() => defu(props.overrides, props.options));
+const options = computed(() => defu(props.overrides, props.options));
 const result = useFs<Res>({
   createCrudOptions() {
     return {
