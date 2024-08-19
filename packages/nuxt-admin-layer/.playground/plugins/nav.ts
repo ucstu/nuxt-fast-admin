@@ -30,7 +30,7 @@ export default defineNuxtPlugin({
     });
     nuxtApp.hook("fast-nav:get-page", (page, result) => {
       const remote = pages.value?.content?.find(
-        (p) => p.path === getToPath(page.to)
+        (p) => p.path === getToPath(page.to),
       );
       result.merge({
         title: remote?.name,

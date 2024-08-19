@@ -38,11 +38,19 @@ const props = withDefaults(
      * 覆盖及扩展 Crud 选项
      */
     overrides?: Partial<CrudOptions<Res>>;
+    /**
+     * API
+     */
+    api?: OpenFetchClient<unknown>;
+    /**
+     * 资源
+     */
+    resource?: string;
   }>(),
   {
     initFetch: "auto",
     overrides: () => ({}),
-  }
+  },
 );
 
 const slots = defineSlots<
@@ -90,11 +98,14 @@ const { data: options } = await useAsyncData(
       $loadingBar.start();
       await nuxtApp.callHook(
         "fast-admin:get-crud-options",
-        nuxtApp[
-          `$${[route.params.api].flat()[0] ?? route.path.split("/")[2]}`
-        ] as OpenFetchClient<unknown>,
-        [route.params.resource].flat()[0] ?? route.path.split("/")[3],
-        result
+        props.api ??
+          (nuxtApp[
+            `$${[route.params.api].flat()[0] ?? route.path.split("/")[2]}`
+          ] as OpenFetchClient<unknown>),
+        props.resource ??
+          [route.params.resource].flat()[0] ??
+          route.path.split("/")[3],
+        result,
       );
       $loadingBar.finish();
     } catch (error) {
@@ -107,6 +118,6 @@ const { data: options } = await useAsyncData(
     default() {
       return {};
     },
-  }
+  },
 );
 </script>

@@ -23,7 +23,7 @@ const { data: schema } = await useAsyncData(
       await nuxtApp.callHook(
         "fast-admin:get-amis-options",
         [route.params.key].flat()[0],
-        result
+        result,
       );
       $loadingBar.finish();
     } catch (error) {
@@ -38,6 +38,6 @@ const { data: schema } = await useAsyncData(
         type: "page",
       };
     },
-  }
+  },
 );
 </script>

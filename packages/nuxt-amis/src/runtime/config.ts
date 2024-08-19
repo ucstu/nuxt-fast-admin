@@ -4,10 +4,10 @@ import type {
   ModuleOptions,
   ModuleOptionsDefaults,
   ModulePublicRuntimeConfig,
-} from "./types";
+} from "./types/index";
 
 export const name = "@ucstu/nuxt-amis";
-export const version = "2.0.6";
+export const version = "2.0.7";
 export const configKey = "amis";
 
 export const defaults: ModuleOptionsDefaults = {};

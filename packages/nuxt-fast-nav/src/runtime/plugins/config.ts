@@ -53,7 +53,7 @@ export default defineNuxtPlugin({
           `[fast-nav] 解析页面 `,
           origin,
           ` 时出错，该页面已被忽略`,
-          e
+          e,
         );
         result.remove();
       }

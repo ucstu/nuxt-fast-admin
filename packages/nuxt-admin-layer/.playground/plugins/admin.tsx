@@ -38,7 +38,7 @@ export default defineNuxtPlugin({
                     ...(user.value?.roles?.map((role) => ({
                       label: role.name,
                       value: role.code,
-                    })) ?? [])
+                    })) ?? []),
                   )}
                   onChange={(role) => {
                     changeRole(role);
@@ -49,7 +49,7 @@ export default defineNuxtPlugin({
             },
           });
         }
-      }
+      },
     );
 
     if (import.meta.dev) {
@@ -74,7 +74,7 @@ export default defineNuxtPlugin({
             }
             await refreshPages();
           }
-        }
+        },
       );
     }
   },

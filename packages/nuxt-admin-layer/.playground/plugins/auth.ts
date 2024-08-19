@@ -55,19 +55,19 @@ export default defineNuxtPlugin({
           .concat(
             (
               user.roles?.filter(
-                (role) => role.code === _role || _role === "*"
+                (role) => role.code === _role || _role === "*",
               ) ?? []
             )
               .flatMap((role) => role.permissions)
-              .filter((permission) => permission !== undefined)
+              .filter((permission) => permission !== undefined),
           )
-          .map((permission) => permission.code)
+          .map((permission) => permission.code),
       );
     });
     nuxtApp.hook("fast-auth:get-page", (page, result) => {
       if (result.value.auth.auth === false) return;
       const remote = pages.value?.content?.find(
-        (p) => p.path === getToPath(page.to)
+        (p) => p.path === getToPath(page.to),
       );
       result.value.auth.auth = [
         "|",

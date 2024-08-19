@@ -23,7 +23,7 @@ export const useCrudOptions = createNuxtGlobalState(
     function set(
       api: OpenFetchClient<unknown>,
       resource: string,
-      options: CrudOptions<unknown>
+      options: CrudOptions<unknown>,
     ) {
       if (!crudOptions.has(api)) {
         crudOptions.set(api, new Map());
@@ -34,7 +34,7 @@ export const useCrudOptions = createNuxtGlobalState(
     function get(
       api: OpenFetchClient<unknown>,
       resource: string,
-      override?: CrudOptions<unknown>
+      override?: CrudOptions<unknown>,
     ) {
       if (!crudOptions.has(api)) {
         return undefined;
@@ -54,5 +54,5 @@ export const useCrudOptions = createNuxtGlobalState(
       use,
       value,
     };
-  }
+  },
 );

@@ -4,9 +4,7 @@ definePageMeta({
     auth: true,
   },
   title: "系统看板",
-})
+});
 </script>
 
-<template>
-  1111
-</template>
+<template>1111</template>

@@ -9,5 +9,5 @@ export const usePages = createNuxtGlobalState(
         size: 99999999,
       },
     });
-  }
+  },
 );

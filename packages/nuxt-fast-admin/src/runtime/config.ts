@@ -4,11 +4,10 @@ import type {
   ModuleOptions,
   ModuleOptionsDefaults,
   ModulePublicRuntimeConfig,
-  FetchOptions as _FetchOptions,
-} from "./types";
+} from "./types/index";
 
 export const name = "@ucstu/nuxt-fast-admin";
-export const version = "2.0.6";
+export const version = "2.0.7";
 export const configKey = "fastAdmin";
 
 export const defaults: ModuleOptionsDefaults = {

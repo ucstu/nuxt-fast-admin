@@ -29,7 +29,7 @@ type Methods =
 
 function resolveSchemaObject(
   doc: OpenAPIObject,
-  schema: SchemaObject | ReferenceObject | undefined
+  schema: SchemaObject | ReferenceObject | undefined,
 ) {
   if (schema && "$ref" in schema) {
     const ref = schema.$ref;
@@ -48,7 +48,7 @@ const AutoColumns = ["id", "createdBy", "createdAt", "updatedBy", "updatedAt"];
 function resolveColumnCompositionProps(
   doc: OpenAPIObject,
   schema: SchemaObject | ReferenceObject | undefined,
-  key: string
+  key: string,
 ): ColumnCompositionProps<unknown> {
   const resolved = resolveSchemaObject(doc, schema);
   if (!resolved) {
@@ -77,12 +77,12 @@ function resolveColumnCompositionProps(
         }
       : {},
     resolveColumnTypeProps(resolved),
-    { column: { sorter: "custom" } }
+    { column: { sorter: "custom" } },
   );
 }
 
 function resolveColumnTypeProps(
-  schema: SchemaObject
+  schema: SchemaObject,
 ): ColumnCompositionProps<unknown> {
   switch (schema.type) {
     case "array":
@@ -154,7 +154,7 @@ export default defineNuxtPlugin({
 
     try {
       const doc = await $fetch<OpenAPIObject>(
-        config.fims.baseURL + "/v3/api-docs"
+        config.fims.baseURL + "/v3/api-docs",
       );
 
       const api = nuxtApp.$fims as OpenFetchClient<any>;
@@ -227,7 +227,7 @@ export default defineNuxtPlugin({
                         ? {
                             sort: `${sort.prop},${sort.asc ? "asc" : "desc"}`,
                           }
-                        : undefined
+                        : undefined,
                     ),
                   });
                 };
@@ -252,7 +252,7 @@ export default defineNuxtPlugin({
                           items.push(
                             Array.isArray(value)
                               ? sfIn(key, value)
-                              : sfEqual(key, value)
+                              : sfEqual(key, value),
                           );
                           break;
                         case "time":
@@ -264,7 +264,7 @@ export default defineNuxtPlugin({
                                   sfGe(key, value[0]),
                                   sfLe(key, value[1]),
                                 ])
-                              : sfEqual(key, value)
+                              : sfEqual(key, value),
                           );
                           break;
                         default:
@@ -303,7 +303,7 @@ export default defineNuxtPlugin({
 
             const schema = resolveSchemaObject(
               doc,
-              doc.components?.schemas?.[operation["x-crud-resource"]]
+              doc.components?.schemas?.[operation["x-crud-resource"]],
             );
             if (schema) {
               resource.description = schema.description;
@@ -314,9 +314,9 @@ export default defineNuxtPlugin({
                     ([key, value]) => [
                       key,
                       resolveColumnCompositionProps(doc, value, key),
-                    ]
-                  )
-                )
+                    ],
+                  ),
+                ),
               );
             }
 
@@ -329,7 +329,7 @@ export default defineNuxtPlugin({
         if (resources.has(api, resource)) {
           result.value = defu(result.value, resources.get(api, resource));
           for (const [key, value] of Object.entries(
-            result.value.columns ?? {}
+            result.value.columns ?? {},
           )) {
             const schema = (value as any).schema as
               | SchemaObject
@@ -340,10 +340,10 @@ export default defineNuxtPlugin({
               "$ref" in schema
                 ? schema.$ref.split("/").slice(-1)[0]
                 : schema.type === "array" &&
-                  schema.items &&
-                  "$ref" in schema.items
-                ? schema.items.$ref.split("/").slice(-1)[0]
-                : "undefined"
+                    schema.items &&
+                    "$ref" in schema.items
+                  ? schema.items.$ref.split("/").slice(-1)[0]
+                  : "undefined",
             );
 
             if (resource) {
@@ -390,7 +390,7 @@ export default defineNuxtPlugin({
                     value: "id",
                     label:
                       Object.keys(resource.columns ?? {}).find((key) =>
-                        ["name", "title", "code"].includes(key)
+                        ["name", "title", "code"].includes(key),
                       ) ?? "id",
                     getNodesByValues: async (values: any[]) => {
                       return (
@@ -423,7 +423,7 @@ export default defineNuxtPlugin({
                   },
                 },
                 // @ts-ignore
-                result.value.columns[key]
+                result.value.columns[key],
               );
 
               result.value = defu<
@@ -436,7 +436,7 @@ export default defineNuxtPlugin({
                       show: $auth(
                         "|",
                         role("developer"),
-                        `${schema.description}:add`
+                        `${schema.description}:add`,
                       ),
                     },
                   },
@@ -447,21 +447,21 @@ export default defineNuxtPlugin({
                       show: $auth(
                         "|",
                         role("developer"),
-                        `${schema.description}:edit`
+                        `${schema.description}:edit`,
                       ),
                     },
                     view: {
                       show: $auth(
                         "|",
                         role("developer"),
-                        `${schema.description}:view`
+                        `${schema.description}:view`,
                       ),
                     },
                     remove: {
                       show: $auth(
                         "|",
                         role("developer"),
-                        `${schema.description}:remove`
+                        `${schema.description}:remove`,
                       ),
                     },
                   },

@@ -1,5 +1,5 @@
 <template>
-  <fa-pages-crud :api="nuxtApp.$fims" resource="Page"/>
+  <fa-pages-crud :api="nuxtApp.$fims" resource="Page" />
 </template>
 
 <script setup lang="ts">

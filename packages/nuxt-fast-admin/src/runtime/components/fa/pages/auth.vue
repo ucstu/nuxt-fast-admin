@@ -25,6 +25,7 @@
           class="fast-admin-page-auth-box-form"
           :model="authForm"
           :rules="authFormRules"
+          @submit="submitForm"
         >
           <slot
             name="form-header"
