@@ -6,5 +6,4 @@
 import type { FaPagesCrud } from "#components";
 
 const nuxtApp = useNuxtApp();
-const options = defineCrudOptions({});
 </script>

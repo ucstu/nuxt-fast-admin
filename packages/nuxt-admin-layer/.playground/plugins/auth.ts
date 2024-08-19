@@ -3,6 +3,7 @@ import type { components } from "#open-fetch-schemas/fims";
 type User = components["schemas"]["User"];
 
 declare module "@ucstu/nuxt-fast-auth/types" {
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   interface FastAuthUser extends User {}
 }
 

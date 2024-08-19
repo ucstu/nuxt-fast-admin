@@ -8,13 +8,13 @@
     <template #="{ authType, model }">
       <n-form-item label="用户名" path="username">
         <n-select
+          v-model:value="model.username"
           tag
           filterable
           :loading="status === 'pending'"
-          v-model:value="model.username"
           :options="codeOptions"
-          @scroll="loadMore"
           placeholder="请选择用户名"
+          @scroll="loadMore"
         />
       </n-form-item>
       <n-form-item label="密码" path="password">
@@ -42,8 +42,8 @@
           :src="config.logo"
           alt="logo"
           width="40px"
-        />
-        <img :src="picture" alt="pic" class="w-full" />
+        >
+        <img :src="picture" alt="pic" class="w-full" >
         <span class="absolute left-2 bottom-1"> 版本号: 3.0.1 </span>
       </div>
     </template>

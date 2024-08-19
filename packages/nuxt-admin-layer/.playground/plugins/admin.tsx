@@ -17,7 +17,7 @@ export default defineNuxtPlugin({
 
     nuxtApp.hook(
       "fast-admin:layout-default-header-dropdown-select",
-      async (value, option) => {
+      async (value) => {
         if (value === "switch-role") {
           const modal = $modal.create({
             title: "切换角色",
@@ -38,7 +38,7 @@ export default defineNuxtPlugin({
                     ...(user.value?.roles?.map((role) => ({
                       label: role.name,
                       value: role.code,
-                    })) ?? []),
+                    })) ?? [])
                   )}
                   onChange={(role) => {
                     changeRole(role);
@@ -49,7 +49,7 @@ export default defineNuxtPlugin({
             },
           });
         }
-      },
+      }
     );
 
     if (import.meta.dev) {
@@ -60,7 +60,7 @@ export default defineNuxtPlugin({
       });
       nuxtApp.hook(
         "fast-admin:layout-default-header-dropdown-select",
-        async (value, option) => {
+        async (value) => {
           if (value === "register-page") {
             const options = useCrudOptions().value(nuxtApp.$fims)?.entries();
             for (const [key, option] of options ?? []) {
@@ -74,7 +74,7 @@ export default defineNuxtPlugin({
             }
             await refreshPages();
           }
-        },
+        }
       );
     }
   },
