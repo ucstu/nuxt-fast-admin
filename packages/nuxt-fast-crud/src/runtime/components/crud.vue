@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts" generic="Res">
-import { useFs, watch } from "#imports";
+import { computed, useFs, watch } from "#imports";
 import type { CrudOptions } from "@ucstu/nuxt-fast-crud/exports";
 import { type Paths, watchImmediate } from "@ucstu/nuxt-fast-utils/exports";
 import defu from "defu";
