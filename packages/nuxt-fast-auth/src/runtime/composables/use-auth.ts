@@ -3,8 +3,8 @@ import {
   $useRuntimeConfig,
   cookieStorage,
   navigateTo,
-  ref,
   sessionCookieStorage,
+  shallowRef,
   toValue,
   useModuleConfig,
   useNuxtApp,
@@ -112,7 +112,7 @@ function getRoles(
   user: FastAuthUser | null | undefined,
   nuxtApp: NuxtApp = useNuxtApp(),
 ) {
-  const result = ref<Array<FastAuthPer>>([]);
+  const result = shallowRef<Array<FastAuthPer>>([]);
   nuxtApp.hooks.callHookWith(
     (hooks, args) => hooks.forEach((hook) => hook(...args)),
     "fast-auth:get-roles",
@@ -134,7 +134,7 @@ function getPermissions(
   role: FastAuthPer | null | undefined,
   nuxtApp: NuxtApp = useNuxtApp(),
 ) {
-  const result = ref<Array<FastAuthPer>>([]);
+  const result = shallowRef<Array<FastAuthPer>>([]);
   nuxtApp.hooks.callHookWith(
     (hooks, args) => hooks.forEach((hook) => hook(...args)),
     "fast-auth:get-permissions",

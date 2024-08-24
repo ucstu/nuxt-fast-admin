@@ -19,7 +19,7 @@ export function resolveTo(
 ): RouteLocationAsRelativeGeneric | RouteLocationAsPathGeneric | undefined {
   if (!to) return;
   if (typeof to === "string") {
-    const resut = queryString.parseUrl(decodeURIComponent(to), {
+    const resut = queryString.parseUrl(to, {
       parseFragmentIdentifier: true,
     });
     return {
@@ -49,6 +49,7 @@ export function getToPath(
     queryString.stringifyUrl({
       url: resolved.path,
       query: resolved.query,
-    }) + (resolved.hash ? resolved.hash : ""),
+      fragmentIdentifier: resolved.hash,
+    }),
   );
 }

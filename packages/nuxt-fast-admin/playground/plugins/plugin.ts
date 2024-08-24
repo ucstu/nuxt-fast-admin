@@ -15,7 +15,7 @@ export default defineNuxtPlugin({
           to: {
             path: "/iframe",
             query: {
-              url: "https://www.baidu.com",
+              url: "https://www.baidu.com/?foo=foo#/foo/bar?test=test#ok",
             },
           },
           menu: {
@@ -57,7 +57,7 @@ export default defineNuxtPlugin({
           menu: {
             parent: "$root",
           },
-        },
+        }
       );
     });
   },

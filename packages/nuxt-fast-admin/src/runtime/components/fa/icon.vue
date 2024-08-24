@@ -1,5 +1,5 @@
 <template>
-  <n-icon v-bind="$props" class="fast-admin-icon">
+  <n-icon v-bind="$props" style="vertical-align: middle">
     <Icon :name="name" />
   </n-icon>
 </template>
@@ -66,9 +66,3 @@ const name = computedEager(() =>
     : props.name,
 );
 </script>
-
-<style>
-.fast-admin-icon {
-  display: inline-flex;
-}
-</style>

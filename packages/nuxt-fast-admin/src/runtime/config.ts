@@ -7,7 +7,7 @@ import type {
 } from "./types/index";
 
 export const name = "@ucstu/nuxt-fast-admin";
-export const version = "2.0.7";
+export const version = "2.0.8";
 export const configKey = "fastAdmin";
 
 export const defaults: ModuleOptionsDefaults = {
@@ -98,7 +98,7 @@ export const configs: ModuleConfigDefaults = {
 
 export function initModule(
   _options: ModuleOptions,
-  nuxt: Nuxt
+  nuxt: Nuxt,
 ): ModulePublicRuntimeConfig[typeof configKey] {
   const options = _options as ModulePublicRuntimeConfig[typeof configKey];
 

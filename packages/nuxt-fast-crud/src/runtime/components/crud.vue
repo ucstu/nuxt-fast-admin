@@ -17,7 +17,7 @@
 <script setup lang="ts" generic="Res">
 import { useFs, watch } from "#imports";
 import type { CrudOptions } from "@ucstu/nuxt-fast-crud/exports";
-import type { Paths } from "@ucstu/nuxt-fast-utils/exports";
+import { type Paths, watchImmediate } from "@ucstu/nuxt-fast-utils/exports";
 import defu from "defu";
 import type {
   GlobalFormScope,
@@ -37,16 +37,16 @@ const props = withDefaults(
      */
     options: CrudOptions<Res>;
     /**
-     * 开启初始请求
+     * 自动请求
      */
-    initFetch?: boolean | "auto";
+    autoFetch?: boolean;
     /**
      * 覆盖及扩展 Crud 选项
      */
     overrides?: Partial<CrudOptions<Res>>;
   }>(),
   {
-    initFetch: "auto",
+    autoFetch: true,
     overrides: () => ({}),
   },
 );
@@ -98,17 +98,13 @@ defineExpose(result);
 
 const { crudBinding, crudRef, crudExpose, resetCrudOptions } = result;
 
-if (
-  props.initFetch === true ||
-  (props.initFetch === "auto" && options.value.request?.pageRequest)
-) {
-  try {
-    await crudExpose.doRefresh();
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  } catch (error) {
-    /* empty */
-  }
-}
-
 watch(options, resetCrudOptions);
+watchImmediate(
+  [() => props.autoFetch, () => options.value],
+  ([autoFetch, options]) => {
+    if (autoFetch && options.request?.pageRequest) {
+      crudExpose.doRefresh();
+    }
+  },
+);
 </script>

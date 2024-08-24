@@ -7,17 +7,18 @@
     :closable="closeable"
     class="fast-admin-layout-default-tabbar"
     @close="closeTab"
-    @update:value="openTab"
   >
     <n-tab
       v-for="history in histories"
       :key="getToPath(history.to)"
       :name="getToPath(history.to)!"
     >
-      <n-flex align="center">
-        <fa-icon :name="history.tab?.icon || history.icon" />
-        <span>{{ history.tab?.title || history.title }}</span>
-      </n-flex>
+      <nuxt-link :to="history.to">
+        <n-text>
+          <fa-icon :name="history.tab?.icon || history.icon" />
+          {{ history.tab?.title || history.title }}
+        </n-text>
+      </nuxt-link>
     </n-tab>
     <template #prefix>
       <n-space item-style="display: flex; align-items: center">
@@ -71,7 +72,6 @@
 import type { NTabs } from "#components";
 import {
   getToPath,
-  navigateTo,
   toEqual,
   useModuleConfig,
   useNavHistories,
@@ -95,10 +95,6 @@ const navConfig = useModuleConfig("fastNav");
 
 async function closeTab(fullPath: string) {
   await close(fullPath);
-}
-
-async function openTab(fullPath: string) {
-  await navigateTo(fullPath);
 }
 
 const closeable = computedEager(
@@ -128,7 +124,7 @@ async function handleSelect(value: string) {
 }
 </script>
 
-<style>
+<style scoped>
 .fast-admin-layout-default-tabbar {
   height: 39px;
 }
@@ -143,5 +139,9 @@ async function handleSelect(value: string) {
 
 .fast-admin-layout-default-tabbar .n-tabs-nav__suffix {
   padding-right: 16px;
+}
+
+.n-tabs-tab--active .n-text {
+  color: var(--n-tab-text-color-active);
 }
 </style>

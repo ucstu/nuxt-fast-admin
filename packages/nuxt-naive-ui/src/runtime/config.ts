@@ -7,7 +7,7 @@ import type {
 } from "./types/index";
 
 export const name = "@ucstu/nuxt-naive-ui";
-export const version = "2.0.7";
+export const version = "2.0.8";
 export const configKey = "naiveUi";
 
 export const defaults: ModuleOptionsDefaults = {};

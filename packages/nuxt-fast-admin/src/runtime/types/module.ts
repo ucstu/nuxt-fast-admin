@@ -7,6 +7,7 @@ import type {
   UnknownRecord,
 } from "@ucstu/nuxt-fast-utils/exports";
 import type { DropdownOption } from "@ucstu/nuxt-naive-ui/exports";
+import type { FetchOptions } from "ofetch";
 import type { ShallowRef } from "vue-demi";
 
 export interface ModuleOptions {
@@ -87,6 +88,16 @@ export interface ModuleRuntimeHooks {
    */
   "fast-admin:page-auth-forget-password": () => HookResult;
   /**
+   * 获取 fetch 配置
+   */
+  "fast-admin:get-fetch-options": (
+    name: string,
+    options: FetchOptions,
+    result: ShallowRef<FetchOptions> & {
+      merge(value: Partial<FetchOptions>, order?: "before" | "after"): void;
+    },
+  ) => HookResult;
+  /**
    * 获取 CRUD 配置
    */
   "fast-admin:get-crud-options": (
@@ -109,13 +120,18 @@ export interface ModuleRuntimeHooks {
       };
     }>,
     resource: string,
-    result: ShallowRef<CrudOptions<unknown>>,
+    result: ShallowRef<CrudOptions<unknown>> & {
+      merge(
+        value: Partial<CrudOptions<unknown>>,
+        order?: "before" | "after",
+      ): void;
+    },
   ) => HookResult;
   /**
    * 获取 Amis 配置
    */
   "fast-admin:get-amis-options": (
-    key: string,
+    name: string,
     result: ShallowRef<Schema>,
   ) => HookResult;
 }

@@ -6,7 +6,9 @@ export default defineNuxtConfig({
     "nuxt-open-fetch",
     "../src/module",
   ],
+
   devtools: { enabled: true },
+
   openFetch: {
     disableNuxtPlugin: true,
     clients: {
@@ -16,4 +18,6 @@ export default defineNuxtConfig({
       },
     },
   },
+
+  compatibilityDate: "2024-08-24",
 });

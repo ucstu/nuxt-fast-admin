@@ -27,7 +27,14 @@
         </template>
       </n-button>
       <slot name="prefix-end" />
-      <n-breadcrumb v-if="headerConfig!.breadcrumb">
+      <n-h3
+        v-if="isMobile"
+        style="margin: 0"
+        @click="menuConfig!.collapsed = !menuConfig!.collapsed"
+      >
+        {{ adminConfig.name }}
+      </n-h3>
+      <n-breadcrumb v-else-if="headerConfig!.breadcrumb">
         <template v-for="menu in breadcrumbs">
           <n-breadcrumb-item v-if="menu" :key="menu.key" :clickable="false">
             <n-popover trigger="hover" class="!p-0">
@@ -114,8 +121,8 @@ import {
 } from "#imports";
 import { computedEager } from "@ucstu/nuxt-fast-utils/exports";
 import type { DropdownOption } from "@ucstu/nuxt-naive-ui/exports";
-import { configKey } from "../../../../config";
 import { useDefaultLayoutStore } from "../../../../composables/store";
+import { configKey } from "../../../../config";
 
 defineOptions({
   name: "FaLayoutesDefaultHeader",
@@ -130,9 +137,10 @@ const ICON_MAP: Record<string, string> = {
 const route = useRoute();
 const pages = useNavPages();
 const menus = useNavMenus();
+const adminConfig = useModuleConfig(configKey);
 const menuConfig = useModuleConfig(configKey, "layouts.default.menu");
 const headerConfig = useModuleConfig(configKey, "layouts.default.header");
-const { applicationFullscreen } = useDefaultLayoutStore()!;
+const { applicationFullscreen, isMobile } = useDefaultLayoutStore()!;
 
 const current = toRefDeep(pages, "current");
 

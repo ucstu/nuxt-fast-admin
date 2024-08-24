@@ -1,14 +1,35 @@
 <template>
-  <amis-render :schema="schema" />
+  <amis-render
+    :schema="schema"
+    :options="options"
+    :props="props.props"
+    :path-prefix="pathPrefix"
+  />
 </template>
 
 <script lang="ts" setup>
 import { shallowRef, useAsyncData, useNuxtApp, useRoute } from "#imports";
-import type { Schema } from "@ucstu/nuxt-amis/exports";
+import type { RenderOptions, Schema } from "@ucstu/nuxt-amis/exports";
 
 defineOptions({
   name: "FaPagesAmis",
 });
+
+const props = defineProps<{
+  /**
+   * 资源
+   */
+  name?: string;
+  props?: {
+    location?: Location;
+    theme?: string;
+    data?: Record<string, unknown>;
+    locale?: string;
+    [propName: string]: unknown;
+  };
+  options?: RenderOptions;
+  pathPrefix?: string;
+}>();
 
 const route = useRoute();
 const nuxtApp = useNuxtApp();
@@ -22,7 +43,7 @@ const { data: schema } = await useAsyncData(
       $loadingBar.start();
       await nuxtApp.callHook(
         "fast-admin:get-amis-options",
-        [route.params.key].flat()[0],
+        props.name ?? [route.params.key].flat()[0],
         result,
       );
       $loadingBar.finish();

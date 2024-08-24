@@ -1,5 +1,5 @@
 <template>
-  <fc-crud v-bind="props" :options="options">
+  <fc-crud :auto-fetch="autoFetch" :options="options" :overrides="overrides">
     <template v-for="(_, slot) of slots" #[slot]="scope">
       <slot :name="slot" v-bind="scope" />
     </template>
@@ -22,7 +22,8 @@ import type {
   GlobalFormScope,
   SearchScope,
 } from "@ucstu/nuxt-fast-crud/types";
-import type { Paths } from "@ucstu/nuxt-fast-utils/exports";
+import { extendRef, type Paths } from "@ucstu/nuxt-fast-utils/exports";
+import defu from "defu";
 
 defineOptions({
   name: "FaPagesCrud",
@@ -31,9 +32,9 @@ defineOptions({
 const props = withDefaults(
   defineProps<{
     /**
-     * 开启初始请求
+     * 自动请求
      */
-    initFetch?: boolean | "auto";
+    autoFetch?: boolean;
     /**
      * 覆盖及扩展 Crud 选项
      */
@@ -41,14 +42,16 @@ const props = withDefaults(
     /**
      * API
      */
+    // eslint-disable-next-line vue/require-default-prop
     api?: OpenFetchClient<unknown>;
     /**
      * 资源
      */
+    // eslint-disable-next-line vue/require-default-prop
     resource?: string;
   }>(),
   {
-    initFetch: "auto",
+    autoFetch: true,
     overrides: () => ({}),
   },
 );
@@ -93,7 +96,19 @@ const nuxtApp = useNuxtApp();
 
 const { data: options } = await useAsyncData(
   async () => {
-    const result = shallowRef<CrudOptions<unknown>>({});
+    const _result = shallowRef<CrudOptions<unknown>>({});
+    const result = extendRef(_result, {
+      merge(
+        value: Partial<CrudOptions<unknown>>,
+        order: "before" | "after" = "before",
+      ) {
+        _result.value = (
+          order === "before"
+            ? defu(value, _result.value)
+            : defu(_result.value, value)
+        ) as CrudOptions<unknown>;
+      },
+    });
     try {
       $loadingBar.start();
       await nuxtApp.callHook(

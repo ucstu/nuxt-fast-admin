@@ -3,8 +3,8 @@
     <n-layout-sider
       ref="sider"
       v-model:collapsed="layoutConfig!.menu!.collapsed"
-      :collapsed-width="layoutConfig!.menu!.collapsedWidth"
-      :width="layoutConfig!.menu!.width"
+      :collapsed-width="isMobile ? 0 : layoutConfig!.menu!.collapsedWidth"
+      :width="isMobile ? 0 : layoutConfig!.menu!.width"
       collapse-mode="width"
       bordered
     >
@@ -54,7 +54,7 @@ import { useDraggable, useElementSize } from "@ucstu/nuxt-fast-utils/exports";
 import { useProvideDefaultLayoutStore } from "../../../../composables/store";
 import { configKey } from "../../../../config";
 
-const { content, showPage } = useProvideDefaultLayoutStore();
+const { content, showPage, isMobile } = useProvideDefaultLayoutStore();
 const layoutConfig = useModuleConfig(configKey, "layouts.default");
 
 defineOptions({
