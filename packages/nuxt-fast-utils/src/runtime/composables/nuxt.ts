@@ -39,16 +39,16 @@ export function $useRouter(nuxtApp: NuxtApp = useNuxtApp()): Router {
   try {
     return useRouter();
   } catch {
-    return nuxtApp.$router as Router;
+    return nuxtApp.$router as unknown as Router;
   }
 }
 
 export function $useRuntimeConfig(
-  nuxtApp: NuxtApp = useNuxtApp(),
+  nuxtApp: NuxtApp = useNuxtApp()
 ): RuntimeConfig {
   try {
     return useRuntimeConfig();
   } catch {
-    return nuxtApp.$config as RuntimeConfig;
+    return nuxtApp.$config as unknown as RuntimeConfig;
   }
 }

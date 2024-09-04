@@ -83,7 +83,7 @@ export default defineNuxtPlugin({
                 },
               },
             ) as FetchOptions;
-            return getFetchOptions(name, result, nuxtApp);
+            return getFetchOptions(name, result, nuxtApp as NuxtApp);
           }, localFetch),
         }),
         {},

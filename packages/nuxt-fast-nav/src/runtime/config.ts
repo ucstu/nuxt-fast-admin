@@ -39,6 +39,9 @@ export const configs: ModuleConfigDefaults = {
       show: true,
     },
   },
+  head: {
+    has: true,
+  },
   home: "/",
 };
 

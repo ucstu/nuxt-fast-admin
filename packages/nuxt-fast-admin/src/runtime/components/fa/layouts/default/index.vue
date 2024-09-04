@@ -1,10 +1,16 @@
 <template>
-  <n-layout class="fast-admin-layout-default" content-style="display: flex; flex-direction: column">
+  <n-layout
+    class="fast-admin-layout-default"
+    content-style="display: flex; flex-direction: column"
+  >
     <n-layout-header>
       <slot name="header" />
     </n-layout-header>
     <n-layout-content style="flex: 1">
-      <n-layout class="fast-admin-layout-default-content" :has-sider="current?.menu?.has !== false">
+      <n-layout
+        class="fast-admin-layout-default-content"
+        :has-sider="current?.menu?.has !== false"
+      >
         <n-layout-sider
           v-if="current?.menu?.has !== false"
           ref="sider"

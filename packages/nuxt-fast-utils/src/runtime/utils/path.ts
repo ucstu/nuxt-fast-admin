@@ -5,11 +5,11 @@ import type { RouteLocationRaw, RouteLocationResolved } from "#vue-router";
 export function resolveTo(to: undefined, nuxtApp?: NuxtApp): undefined;
 export function resolveTo(
   to: RouteLocationRaw,
-  nuxtApp?: NuxtApp
+  nuxtApp?: NuxtApp,
 ): RouteLocationResolved;
 export function resolveTo(
   to: RouteLocationRaw | undefined,
-  nuxtApp: NuxtApp = useNuxtApp()
+  nuxtApp: NuxtApp = useNuxtApp(),
 ) {
   if (!to) return;
   try {
@@ -22,7 +22,7 @@ export function resolveTo(
 
 export function getToPath(
   to: RouteLocationRaw | undefined,
-  nuxtApp: NuxtApp = useNuxtApp()
+  nuxtApp: NuxtApp = useNuxtApp(),
 ) {
   if (!to) return;
   return resolveTo(to, nuxtApp).fullPath ?? "";

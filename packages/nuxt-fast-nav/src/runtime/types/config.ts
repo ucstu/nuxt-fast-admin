@@ -41,6 +41,12 @@ export interface ModuleConfig {
      */
     tab?: Pick<TabMeta, "has" | "show">;
   };
+  head?: {
+    /**
+     * 默认标签配置
+     */
+    has?: boolean;
+  };
   /**
    * 首页路由
    * @description 用于关闭所有标签时跳转

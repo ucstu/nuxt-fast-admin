@@ -41,7 +41,7 @@
               <template #trigger>
                 <n-flex align="center" style="cursor: pointer">
                   <v-node :node="menu.icon" />
-                  <!-- @vue-ignore -->
+                  <!-- @vue-expect-error -->
                   <v-node :node="menu.label" />
                 </n-flex>
               </template>

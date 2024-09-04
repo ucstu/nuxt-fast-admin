@@ -106,6 +106,15 @@ export interface TabMeta extends BaseMeta {
   show?: boolean;
 }
 
+export interface HeadMeta {
+  /**
+   * 标签有无
+   * @description 是否显示标签
+   * @default true
+   */
+  has?: boolean;
+}
+
 interface MenuMetaParent {
   /**
    * 父级菜单
@@ -143,6 +152,10 @@ export interface FastNavPage extends BaseMeta, Required<FastNavExtra> {
    * 标签配置
    */
   tab?: TabMeta;
+  /**
+   * 标题配置
+   */
+  head?: HeadMeta;
 }
 
 /**
