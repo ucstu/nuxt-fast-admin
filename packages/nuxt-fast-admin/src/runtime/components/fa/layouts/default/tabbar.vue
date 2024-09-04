@@ -75,7 +75,7 @@ import {
   toEqual,
   useModuleConfig,
   useNavHistories,
-  useRoute,
+  useRouter,
 } from "#imports";
 import { computedEager } from "@ucstu/nuxt-fast-utils/exports";
 import type { DropdownOption } from "naive-ui";
@@ -86,8 +86,8 @@ defineOptions({
   name: "FaLayoutesDefaultTabbar",
 });
 
-const route = useRoute();
 const histories = useNavHistories();
+const { currentRoute: route } = useRouter();
 const { close, closeAll, closeOthers } = histories;
 const { showPage, refreshPage, pageFullscreen } = useDefaultLayoutStore()!;
 const tabbarConfig = useModuleConfig(configKey, "layouts.default.tabbar");
@@ -124,7 +124,7 @@ async function handleSelect(value: string) {
 }
 </script>
 
-<style scoped>
+<style>
 .fast-admin-layout-default-tabbar {
   height: 39px;
 }

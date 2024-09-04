@@ -1,6 +1,6 @@
 {
   "name": "@ucstu/nuxt-fast-admin-root",
-  "version": "2.0.9",
+  "version": "2.0.10",
   "private": true,
   "scripts": {
     "dev": "pnpm run --filter @ucstu/nuxt-admin-layer dev",
@@ -20,5 +20,8 @@
     "admin"
   ],
   "author": "UCSTU",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@ucstu/nuxt-fast-admin-root": "file:"
+  }
 }

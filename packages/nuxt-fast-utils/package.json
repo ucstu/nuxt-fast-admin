@@ -1,6 +1,6 @@
 {
   "name": "@ucstu/nuxt-fast-utils",
-  "version": "2.0.9",
+  "version": "2.0.10",
   "description": "Nuxt fast utils module",
   "homepage": "https://github.com/ucstu/nuxt-fast-admin/tree/master/packages/nuxt-fast-utils#readme",
   "repository": "https://github.com/ucstu/nuxt-fast-admin/tree/master/packages/nuxt-fast-utils",
@@ -44,6 +44,7 @@
   },
   "dependencies": {
     "@nuxt/kit": "^3.12.4",
+    "@ucstu/nuxt-fast-utils": "file:",
     "@vueuse/core": "^10.11.1",
     "cookie-storage": "^6.1.0",
     "nanoid": "^5.0.7",

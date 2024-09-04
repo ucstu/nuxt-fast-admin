@@ -1,6 +1,6 @@
 {
   "name": "@ucstu/nuxt-fast-admin-doc",
-  "version": "2.0.9",
+  "version": "2.0.10",
   "private": true,
   "scripts": {
     "dev": "nuxi dev",
@@ -16,5 +16,8 @@
     "@types/node": "^20.14.10",
     "eslint": "^9.7.0",
     "nuxt": "^3.12.3"
+  },
+  "dependencies": {
+    "@ucstu/nuxt-fast-admin-doc": "file:"
   }
 }

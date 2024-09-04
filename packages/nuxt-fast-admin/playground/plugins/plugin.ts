@@ -9,7 +9,7 @@ export default defineNuxtPlugin({
     nuxtApp.hook("fast-nav:get-pages", (pages) => {
       pages.value.push(
         {
-          title: "Iframe",
+          title: "百度",
           icon: "ic:sharp-dashboard",
           type: "iframe",
           to: {
@@ -23,7 +23,7 @@ export default defineNuxtPlugin({
           },
         },
         {
-          title: "Iframe",
+          title: "QQ",
           icon: "ic:sharp-dashboard",
           type: "iframe",
           to: {
