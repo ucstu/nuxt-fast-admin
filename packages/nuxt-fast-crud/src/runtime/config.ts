@@ -7,7 +7,7 @@ import type {
 } from "./types/index";
 
 export const name = "@ucstu/nuxt-fast-crud";
-export const version = "2.0.10";
+export const version = "2.0.11";
 export const configKey = "fastCrud";
 
 export const defaults: ModuleOptionsDefaults = {
