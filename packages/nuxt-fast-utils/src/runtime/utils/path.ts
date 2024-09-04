@@ -13,7 +13,6 @@ export function resolveTo(
 ) {
   if (!to) return;
   try {
-    console.log(to, toRaw($useRouter(nuxtApp)).resolve(to));
     return toRaw($useRouter(nuxtApp)).resolve(to);
   } catch {
     console.error("[fast-utils] 不能解析路由", to);
