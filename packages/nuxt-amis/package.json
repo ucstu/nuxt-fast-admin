@@ -38,27 +38,27 @@
     "test:types": "vue-tsc --noEmit && cd playground && vue-tsc --noEmit"
   },
   "dependencies": {
-    "@nuxt/kit": "^3.12.4",
+    "@nuxt/kit": "^3.13.1",
     "@ucstu/nuxt-fast-utils": "workspace:^",
-    "amis": "^6.7.0",
-    "amis-editor": "^6.7.0",
-    "monaco-editor": "^0.50.0",
+    "amis": "^6.8.0",
+    "amis-editor": "^6.8.0",
+    "monaco-editor": "^0.51.0",
     "nuxt-monaco-editor": "^1.2.9",
-    "veaury": "^2.4.2"
+    "veaury": "^2.4.3"
   },
   "devDependencies": {
-    "@nuxt/devtools": "^1.3.9",
-    "@nuxt/eslint-config": "^0.5.0",
-    "@nuxt/module-builder": "^0.8.1",
-    "@nuxt/schema": "^3.12.4",
-    "@nuxt/test-utils": "^3.14.0",
-    "@types/node": "^22.1.0",
+    "@nuxt/devtools": "^1.4.1",
+    "@nuxt/eslint-config": "^0.5.5",
+    "@nuxt/module-builder": "^0.8.3",
+    "@nuxt/schema": "^3.13.1",
+    "@nuxt/test-utils": "^3.14.1",
+    "@types/node": "^22.5.3",
     "changelogen": "^0.5.5",
-    "eslint": "^9.8.0",
-    "nuxt": "^3.12.4",
-    "typescript": "latest",
+    "eslint": "^9.9.1",
+    "nuxt": "^3.13.1",
+    "typescript": "^5.5.4",
     "vitest": "^2.0.5",
-    "vue-tsc": "^2.0.29"
+    "vue-tsc": "^2.1.4"
   },
   "publishConfig": {
     "access": "public"
