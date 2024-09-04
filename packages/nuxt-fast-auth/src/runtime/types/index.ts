@@ -18,6 +18,8 @@ declare module "@nuxt/schema" {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
 declare module "@ucstu/nuxt-fast-utils/types" {
   interface ModuleConfigs {
     fastAuth: ModuleConfigDefaults;
