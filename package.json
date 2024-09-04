@@ -20,8 +20,5 @@
     "admin"
   ],
   "author": "UCSTU",
-  "license": "MIT",
-  "dependencies": {
-    "@ucstu/nuxt-fast-admin-root": "file:"
-  }
+  "license": "MIT"
 }

@@ -44,7 +44,6 @@
   },
   "dependencies": {
     "@nuxt/kit": "^3.12.4",
-    "@ucstu/nuxt-fast-utils": "file:",
     "@vueuse/core": "^10.11.1",
     "cookie-storage": "^6.1.0",
     "nanoid": "^5.0.7",
