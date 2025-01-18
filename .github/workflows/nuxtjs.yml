@@ -36,6 +36,8 @@ jobs:
         with:
           node-version: "20"
           cache: pnpm
+      - name: Setup pnpm and Install
+        uses: seepine/action-setup-pnpm@v1
       - name: Setup Pages
         uses: actions/configure-pages@v5
         with:
