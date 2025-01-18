@@ -16,5 +16,8 @@
     "@types/node": "^22.5.3",
     "eslint": "^9.9.1",
     "nuxt": "^3.13.1"
+  },
+  "dependencies": {
+    "mermaid": "^11.4.1"
   }
 }
